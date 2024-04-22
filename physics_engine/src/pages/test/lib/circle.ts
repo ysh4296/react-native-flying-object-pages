@@ -7,19 +7,28 @@ export default class Circle extends Shape {
   radius: number;
   drawUtils: Draw;
 
-  constructor(ctx: CanvasRenderingContext2D, position: Vector, radius: number) {
-    super(ctx, [
-      new Vector(position),
-      new Vector({ x: position.x + radius, y: position.y }),
-    ]);
+  constructor(
+    ctx: CanvasRenderingContext2D,
+    position: Vector,
+    radius: number,
+    color: string
+  ) {
+    super(
+      ctx,
+      [
+        new Vector(position),
+        new Vector({ x: position.x + radius, y: position.y }),
+      ],
+      color
+    );
     this.position = position;
     this.radius = radius;
     this.drawUtils = Draw.getInstance(ctx);
   }
 
-  draw = () => {
-    this.drawUtils.strokePoint(this.position, this.radius, "black");
+  draw() {
+    this.drawUtils.strokePoint(this.position, this.radius, this.color);
     super.setCentroid(this.position);
     super.draw();
-  };
+  }
 }

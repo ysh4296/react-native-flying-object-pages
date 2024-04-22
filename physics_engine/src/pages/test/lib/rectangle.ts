@@ -10,14 +10,19 @@ export default class Rectangle extends Polygon {
     ctx: CanvasRenderingContext2D,
     position: Vector,
     width: number,
-    height: number
+    height: number,
+    color: string
   ) {
-    super(ctx, [
-      new Vector({ x: position.x - width / 2, y: position.y - height / 2 }),
-      new Vector({ x: position.x + width / 2, y: position.y - height / 2 }),
-      new Vector({ x: position.x + width / 2, y: position.y + height / 2 }),
-      new Vector({ x: position.x - width / 2, y: position.y + height / 2 }),
-    ]);
+    super(
+      ctx,
+      [
+        new Vector({ x: position.x - width / 2, y: position.y - height / 2 }),
+        new Vector({ x: position.x + width / 2, y: position.y - height / 2 }),
+        new Vector({ x: position.x + width / 2, y: position.y + height / 2 }),
+        new Vector({ x: position.x - width / 2, y: position.y + height / 2 }),
+      ],
+      color
+    );
     this.position = position;
     this.width = width;
     this.height = height;
