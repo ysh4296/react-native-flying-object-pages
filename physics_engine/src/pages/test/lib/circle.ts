@@ -1,4 +1,4 @@
-import Draw from "./draw";
+import Draw from "../utils/draw";
 import Shape from "./shape";
 import Vector from "./vector";
 
@@ -18,7 +18,8 @@ export default class Circle extends Shape {
   }
 
   draw = () => {
-    super.draw();
     this.drawUtils.strokePoint(this.position, this.radius, "black");
+    super.setCentroid(this.position);
+    super.draw();
   };
 }

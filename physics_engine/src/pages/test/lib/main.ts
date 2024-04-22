@@ -13,10 +13,11 @@ const main = (document: Document) => {
   let mousePos = [0, 0];
 
   if (ctx) {
-    const engine = new Engine(ctx);
-    engine.draw();
+    const engine = new Engine(canvas, ctx);
 
     const loop = () => {
+      engine.clear();
+      engine.draw();
       window.requestAnimationFrame(loop);
       currentTime = performance.now();
     };

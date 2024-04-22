@@ -1,4 +1,4 @@
-import Vector, { addVector, scaleVector, subVector } from "./vector";
+import Vector, { addVector, scaleVector, subVector } from "../lib/vector";
 
 export default class Draw {
   ctx: CanvasRenderingContext2D;
@@ -50,7 +50,7 @@ export default class Draw {
     this.drawLine(headPosition, tailPosition, color);
     const direction: Vector = subVector(headPosition, tailPosition);
     direction.normalize();
-    console.log(direction);
+
     const arrowCenter = subVector(headPosition, scaleVector(direction, 5));
 
     const OrthoVector = direction.getOrthogonal();
