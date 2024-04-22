@@ -2,9 +2,17 @@ import Vector, { addVector, scaleVector, subVector } from "./vector";
 
 export default class Draw {
   ctx: CanvasRenderingContext2D;
+  private static instance: Draw;
 
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
+  }
+
+  public static getInstance(ctx: CanvasRenderingContext2D): Draw {
+    if (!Draw.instance) {
+      Draw.instance = new Draw(ctx);
+    }
+    return Draw.instance;
   }
 
   drawPoint = (position: Vector, radius: number, color: string) => {

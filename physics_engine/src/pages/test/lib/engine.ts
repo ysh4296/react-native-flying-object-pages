@@ -1,34 +1,29 @@
+import Circle from "./circle";
 import Draw from "./draw";
+import Rectangle from "./rectangle";
 import Vector from "./vector";
 
 export default class Engine {
-  drawUtils;
+  drawUtils: Draw;
+  testCircle: Circle;
+  testRectangle: Rectangle;
 
   constructor(ctx: CanvasRenderingContext2D) {
-    this.drawUtils = new Draw(ctx);
+    this.drawUtils = Draw.getInstance(ctx);
+    this.testCircle = new Circle(ctx, new Vector({ x: 200, y: 200 }), 100);
+    this.testRectangle = new Rectangle(
+      ctx,
+      new Vector({ x: 400, y: 400 }),
+      200,
+      200
+    );
   }
 
   update = () => {};
 
   draw = () => {
-    // this.drawUtils.drawPoint(new Vector({ x: 400, y: 400 }), 20, "red");
-    // this.drawUtils.strokePoint(new Vector({ x: 700, y: 400 }), 20, "red");
-    // this.drawUtils.drawLine(
-    //   new Vector({ x: 200, y: 200 }),
-    //   new Vector({ x: 500, y: 500 }),
-    //   "blue"
-    // );
-    // this.drawUtils.drawText(
-    //   new Vector({ x: 800, y: 500 }),
-    //   21,
-    //   "black",
-    //   "hello world"
-    // );
-    this.drawUtils.drawArrow(
-      new Vector({ x: 200, y: 600 }),
-      new Vector({ x: 200, y: 200 }),
-      "black"
-    );
+    this.testCircle.draw();
+    this.testRectangle.draw();
   };
 
   onKeyboardPressed = (e: KeyboardEvent) => {
