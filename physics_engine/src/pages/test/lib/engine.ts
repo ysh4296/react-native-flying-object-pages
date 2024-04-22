@@ -1,14 +1,34 @@
+import Draw from "./draw";
+import Vector from "./vector";
+
 export default class Engine {
-  constructor() {}
+  drawUtils;
+
+  constructor(ctx: CanvasRenderingContext2D) {
+    this.drawUtils = new Draw(ctx);
+  }
 
   update = () => {};
 
-  draw = (ctx: CanvasRenderingContext2D) => {
-    ctx.beginPath();
-    ctx.rect(20, 40, 50, 50);
-    ctx.fillStyle = "red";
-    ctx.fill();
-    ctx.closePath();
+  draw = () => {
+    // this.drawUtils.drawPoint(new Vector({ x: 400, y: 400 }), 20, "red");
+    // this.drawUtils.strokePoint(new Vector({ x: 700, y: 400 }), 20, "red");
+    // this.drawUtils.drawLine(
+    //   new Vector({ x: 200, y: 200 }),
+    //   new Vector({ x: 500, y: 500 }),
+    //   "blue"
+    // );
+    // this.drawUtils.drawText(
+    //   new Vector({ x: 800, y: 500 }),
+    //   21,
+    //   "black",
+    //   "hello world"
+    // );
+    this.drawUtils.drawArrow(
+      new Vector({ x: 200, y: 600 }),
+      new Vector({ x: 200, y: 200 }),
+      "black"
+    );
   };
 
   onKeyboardPressed = (e: KeyboardEvent) => {
