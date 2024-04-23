@@ -23,12 +23,12 @@ export default class Circle extends Shape {
     );
     this.position = position;
     this.radius = radius;
-    this.drawUtils = Draw.getInstance(ctx);
+    this.drawUtils = Draw.getInstance();
+    super.setCentroid(this.position);
   }
 
   draw() {
-    this.drawUtils.strokePoint(this.position, this.radius, this.color);
-    super.setCentroid(this.position);
     super.draw();
+    this.drawUtils.strokePoint(this.position, this.radius, this.color);
   }
 }

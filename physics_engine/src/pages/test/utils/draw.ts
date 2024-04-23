@@ -7,11 +7,14 @@ export default class Draw {
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
   }
-
-  public static getInstance(ctx: CanvasRenderingContext2D): Draw {
+  public static createInstance(ctx: CanvasRenderingContext2D): Draw {
     if (!Draw.instance) {
       Draw.instance = new Draw(ctx);
     }
+    return Draw.instance;
+  }
+
+  public static getInstance(): Draw {
     return Draw.instance;
   }
 

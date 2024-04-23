@@ -16,7 +16,7 @@ export default class Shape {
     color: string
   ) {
     this.ctx = ctx;
-    this.drawUtils = Draw.getInstance(ctx);
+    this.drawUtils = Draw.getInstance();
     this.calculatorUtils = Calculator.getInstance();
     this.vertices = vertices;
     this.centroid = new Vector({ x: 0, y: 0 });

@@ -1,5 +1,6 @@
 import Circle from "../lib/circle";
-import { subVector } from "../lib/vector";
+import { addVector, scaleVector, subVector } from "../lib/vector";
+import CollisionManifold from "./collisionManifold";
 
 export default class Collision {
   private static instance: Collision;
@@ -16,10 +17,22 @@ export default class Collision {
     let direction = subVector(centroidA, centroidB);
 
     let radiusSum = circleA.radius + circleB.radius;
+
     if (direction.lengthSquare() < radiusSum * radiusSum) {
-      return true;
+      let directionLength = direction.length();
+      let penetratedNormal = scaleVector(direction, 1 / directionLength);
+      let penetrationDepth = radiusSum - directionLength;
+      let penetrationPoint = subVector(
+        centroidA,
+        scaleVector(penetratedNormal, circleA.radius)
+      );
+      return new CollisionManifold(
+        penetrationDepth,
+        penetratedNormal,
+        penetrationPoint
+      );
     } else {
-      return false;
+      return null;
     }
   }
 }

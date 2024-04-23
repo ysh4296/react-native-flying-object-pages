@@ -17,6 +17,7 @@ const main = (document: Document) => {
 
     const loop = () => {
       engine.clear();
+      engine.update();
       engine.draw();
       window.requestAnimationFrame(loop);
       currentTime = performance.now();
