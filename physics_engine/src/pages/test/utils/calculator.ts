@@ -65,4 +65,16 @@ export default class Calculator {
     result.add(position);
     return result;
   }
+
+  calcNormals(vertices: Vector[]) {
+    let normals: Vector[] = [];
+    for (let i = 0; i < vertices.length; i++) {
+      let next = this.getIndex(i + 1, vertices.length);
+      let direction = subVector(vertices[next], vertices[i]);
+      let normal = direction.getOrthogonal();
+      normal.normalize();
+      normals.push(normal);
+    }
+    return normals;
+  }
 }

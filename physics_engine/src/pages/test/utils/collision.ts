@@ -1,6 +1,16 @@
 import Circle from "../lib/circle";
-import { addVector, scaleVector, subVector } from "../lib/vector";
+import Polygon from "../lib/polygon";
+import Vector, { addVector, scaleVector, subVector } from "../lib/vector";
 import CollisionManifold from "./collisionManifold";
+
+class SupportPoint {
+  vertex: Vector;
+  penetrationDepth: number;
+  constructor(vertex: Vector, penetrationDepth: number) {
+    this.vertex = vertex;
+    this.penetrationDepth = penetrationDepth;
+  }
+}
 
 export default class Collision {
   private static instance: Collision;
@@ -10,7 +20,8 @@ export default class Collision {
     }
     return Collision.instance;
   }
-  circlevscircle(circleA: Circle, circleB: Circle) {
+
+  circleVScircle(circleA: Circle, circleB: Circle) {
     let centroidA = circleA.centroid;
     let centroidB = circleB.centroid;
 
@@ -34,5 +45,83 @@ export default class Collision {
     } else {
       return null;
     }
+  }
+
+  polygonVSpolygon(polygonA: Polygon, polygonB: Polygon) {
+    let contactPointA = this.getContactPoint(polygonA, polygonB);
+    if (contactPointA === null) {
+      return null;
+    }
+    let contactPointB = this.getContactPoint(polygonB, polygonA);
+    if (contactPointB === null) {
+      return null;
+    }
+    if (contactPointA.depth < contactPointB.depth) {
+      return new CollisionManifold(
+        contactPointA.depth,
+        contactPointA.normal,
+        contactPointA.penetrationPoint
+      );
+    } else {
+      return new CollisionManifold(
+        contactPointB.depth,
+        scaleVector(contactPointB.normal, -1),
+        contactPointB.penetrationPoint
+      );
+    }
+  }
+
+  getContactPoint(polygonA: Polygon, polygonB: Polygon) {
+    let contact = null;
+    let minimumPenetrationDepth = Number.MAX_VALUE;
+
+    for (let i = 0; i < polygonA.normals.length; i++) {
+      let pointOnEdge = polygonA.vertices[i];
+      let normalOnEdge = polygonA.normals[i];
+
+      let supportPoint = this.getSupportPoint(
+        normalOnEdge,
+        pointOnEdge,
+        polygonB.vertices
+      );
+
+      if (!supportPoint) {
+        return null;
+      }
+
+      if (supportPoint.penetrationDepth < minimumPenetrationDepth) {
+        minimumPenetrationDepth = supportPoint.penetrationDepth;
+        contact = new CollisionManifold(
+          supportPoint.penetrationDepth,
+          normalOnEdge,
+          supportPoint.vertex
+        );
+      }
+    }
+    return contact;
+  }
+
+  getSupportPoint(
+    normalOnEdge: Vector,
+    pointOnEdge: Vector,
+    polygonVertices: Vector[]
+  ) {
+    let supportPenetrationDepth = 0;
+    let supportPoint = null;
+
+    for (let i = 0; i < polygonVertices.length; i++) {
+      let vertex = polygonVertices[i];
+      let penetrateVector = subVector(vertex, pointOnEdge);
+      let penetrationDepth = penetrateVector.getDotProduct(
+        scaleVector(normalOnEdge, -1)
+      );
+
+      if (penetrationDepth > supportPenetrationDepth) {
+        supportPenetrationDepth = penetrationDepth;
+        supportPoint = new SupportPoint(vertex, penetrationDepth);
+      }
+    }
+
+    return supportPoint;
   }
 }

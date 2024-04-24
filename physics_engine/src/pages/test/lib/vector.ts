@@ -25,7 +25,7 @@ export default class Vector {
   };
 
   getDotProduct = (target: Vector) => {
-    return this.x * target.x + this.y + target.y;
+    return this.x * target.x + this.y * target.y;
   };
 
   getCopy = () => {
