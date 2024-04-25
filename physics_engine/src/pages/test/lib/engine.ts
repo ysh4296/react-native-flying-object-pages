@@ -12,11 +12,12 @@ export default class Engine {
   ctx: CanvasRenderingContext2D;
   drawUtils: Draw;
   calculatorUtils: Calculator;
-  //   testCircle1: Circle;
+  testCircle1: Circle;
   //   testCircle2: Circle;
   testRectangle1: Rectangle;
   testRectangle2: Rectangle;
   testRectangle3: Rectangle;
+  triangle1: Polygon;
   shape: Shape[];
   collision: Collision;
 
@@ -28,18 +29,27 @@ export default class Engine {
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
 
-    // this.testCircle1 = new Circle(
-    //   ctx,
-    //   new Vector({ x: 200, y: 200 }),
-    //   50,
-    //   "black"
-    // );
+    this.testCircle1 = new Circle(
+      ctx,
+      new Vector({ x: 50, y: 50 }),
+      50,
+      "black"
+    );
     // this.testCircle2 = new Circle(
     //   ctx,
     //   new Vector({ x: 400, y: 200 }),
     //   50,
     //   "black"
     // );
+    this.triangle1 = new Polygon(
+      ctx,
+      [
+        new Vector({ x: 100, y: 100 }),
+        new Vector({ x: 200, y: 100 }),
+        new Vector({ x: 150, y: 150 }),
+      ],
+      "black"
+    );
     this.testRectangle2 = new Rectangle(
       ctx,
       new Vector({ x: 400, y: 400 }),
@@ -62,9 +72,11 @@ export default class Engine {
       "black"
     );
     this.shape = [];
+    this.shape.push(this.testCircle1);
     this.shape.push(this.testRectangle1);
     this.shape.push(this.testRectangle2);
     this.shape.push(this.testRectangle3);
+    this.shape.push(this.triangle1);
   }
 
   update = () => {
@@ -73,7 +85,7 @@ export default class Engine {
         if (i === j) continue;
         let objectA = this.shape[i] as Polygon;
         let objectB = this.shape[j] as Polygon;
-        let result = this.collision.polygonVSpolygon(objectA, objectB);
+        let result = this.collision.checkCollision(objectA, objectB);
         if (result) {
           result.draw();
         }
@@ -124,10 +136,10 @@ export default class Engine {
         this.shape[0].move(new Vector({ x: 0, y: 10 }));
         break;
       case "ArrowRight":
-        this.shape[0].rotate(1);
+        this.shape[0].rotate(0.05);
         break;
       case "ArrowLeft":
-        this.shape[0].rotate(-1);
+        this.shape[0].rotate(-0.05);
         break;
     }
   };

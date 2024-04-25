@@ -1,6 +1,8 @@
 import Circle from "../lib/circle";
 import Polygon from "../lib/polygon";
+import Shape from "../lib/shape";
 import Vector, { addVector, scaleVector, subVector } from "../lib/vector";
+import Calculator from "./calculator";
 import CollisionManifold from "./collisionManifold";
 
 class SupportPoint {
@@ -13,12 +15,34 @@ class SupportPoint {
 }
 
 export default class Collision {
+  calculatorUtil: Calculator;
   private static instance: Collision;
+  constructor() {
+    this.calculatorUtil = Calculator.getInstance();
+  }
   public static getInstance(): Collision {
     if (!Collision.instance) {
       Collision.instance = new Collision();
     }
     return Collision.instance;
+  }
+
+  checkCollision(shapeA: Shape, shapeB: Shape) {
+    let collisionManifold = null;
+    if (shapeA instanceof Circle && shapeB instanceof Circle) {
+      collisionManifold = this.circleVScircle(shapeA, shapeB);
+    }
+    if (shapeA instanceof Polygon && shapeB instanceof Polygon) {
+      collisionManifold = this.polygonVSpolygon(shapeA, shapeB);
+    }
+    if (shapeA instanceof Circle && shapeB instanceof Polygon) {
+      collisionManifold = this.circleVSpolygon(shapeA, shapeB);
+    }
+    if (shapeA instanceof Polygon && shapeB instanceof Circle) {
+      collisionManifold = this.circleVSpolygon(shapeB, shapeA);
+    }
+
+    return collisionManifold;
   }
 
   circleVScircle(circleA: Circle, circleB: Circle) {
@@ -123,5 +147,79 @@ export default class Collision {
     }
 
     return supportPoint;
+  }
+
+  circleVSpolygon(circle: Circle, polygon: Polygon) {
+    let contact = this.circleVSpolgonEdges(circle, polygon);
+    if (contact) {
+      return contact;
+    } else {
+      return this.circleVSpolygonCorner(circle, polygon);
+    }
+  }
+
+  circleVSpolgonEdges(circle: Circle, polygon: Polygon) {
+    let circleCentroid = circle.centroid;
+    let nearestEdgeVertex = null;
+    let nearestEdgeNormal = null;
+    for (let i = 0; i < polygon.vertices.length; i++) {
+      let vertex = polygon.vertices[i];
+      let normal = polygon.normals[i];
+      let nextVertex =
+        polygon.vertices[
+          this.calculatorUtil.getIndex(i + 1, polygon.vertices.length)
+        ];
+
+      let vertexToCircle = subVector(circleCentroid, vertex);
+      let directionToNext = subVector(nextVertex, vertex);
+      let directionToNextLength = directionToNext.length();
+      directionToNext.normalize();
+      let projection = vertexToCircle.getDotProduct(directionToNext);
+      let circleNormalProjection = vertexToCircle.getDotProduct(normal);
+      if (
+        projection > 0 &&
+        projection < directionToNextLength &&
+        circleNormalProjection >= 0
+      ) {
+        nearestEdgeNormal = normal;
+        nearestEdgeVertex = vertex;
+      }
+    }
+    // out of circle-polygonEdge scope
+    if (nearestEdgeNormal === null || nearestEdgeVertex === null) {
+      return null;
+    }
+
+    let penetrationVector = subVector(circleCentroid, nearestEdgeVertex);
+    let penetrationProjection =
+      penetrationVector.getDotProduct(nearestEdgeNormal);
+    let projectionDepth = penetrationProjection - circle.radius;
+    if (projectionDepth < 0) {
+      // scale 배율을 radius로 설정해도 될듯?
+      let penetreationPoint = addVector(
+        circleCentroid,
+        scaleVector(nearestEdgeNormal, -circle.radius)
+      );
+      return new CollisionManifold(
+        projectionDepth,
+        nearestEdgeNormal,
+        penetreationPoint
+      );
+    }
+    return null;
+  }
+
+  circleVSpolygonCorner(circle: Circle, polygon: Polygon) {
+    for (let i = 0; i < polygon.vertices.length; i++) {
+      let vertex = polygon.vertices[i];
+      let direction = subVector(vertex, circle.centroid);
+      let distance = direction.length();
+      if (distance < circle.radius) {
+        let penetrationDepth = circle.radius - distance;
+        direction.normalize();
+        return new CollisionManifold(penetrationDepth, direction, vertex);
+      }
+    }
+    return null;
   }
 }
