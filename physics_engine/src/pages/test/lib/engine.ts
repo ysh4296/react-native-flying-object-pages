@@ -22,6 +22,7 @@ export default class Engine {
   shape: Shape[];
   collision: Collision;
   rigidBodies: RigidBody[];
+  gravity: Vector;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     this.canvas = canvas;
@@ -73,6 +74,7 @@ export default class Engine {
       200,
       "black"
     );
+    this.gravity = new Vector({ x: 0, y: 0.005 });
     this.shape = [];
     this.shape.push(this.testCircle1);
     this.shape.push(this.testRectangle1);
@@ -80,15 +82,16 @@ export default class Engine {
     this.shape.push(this.testRectangle3);
     this.shape.push(this.triangle1);
     this.rigidBodies = [];
-    this.rigidBodies.push(new RigidBody(this.testCircle1, 10));
-    this.rigidBodies.push(new RigidBody(this.testRectangle1, 10));
-    this.rigidBodies.push(new RigidBody(this.testRectangle2, 10));
-    this.rigidBodies.push(new RigidBody(this.testRectangle3, 10));
-    this.rigidBodies.push(new RigidBody(this.triangle1, 10));
+    this.rigidBodies.push(new RigidBody(this.testCircle1, 100));
+    this.rigidBodies.push(new RigidBody(this.testRectangle1, 100));
+    this.rigidBodies.push(new RigidBody(this.testRectangle2, 100));
+    this.rigidBodies.push(new RigidBody(this.testRectangle3, 100));
+    this.rigidBodies.push(new RigidBody(this.triangle1, 100));
   }
 
   update = (deltaTime: number) => {
     for (let i = 0; i < this.rigidBodies.length; i++) {
+      this.rigidBodies[i].addForce(this.gravity);
       this.rigidBodies[i].update(deltaTime);
     }
     // this.rigidBodies[0].log();

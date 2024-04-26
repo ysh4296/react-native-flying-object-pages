@@ -11,11 +11,11 @@ export default class RigidBody {
     this.shape = shape;
     this.mass = mass;
     if (this.mass > 0) {
-      this.massInverse = 1 / mass;
+      this.massInverse = 1.0 / mass;
     } else {
       this.mass = 0;
       // Number.MAX_VALUE 로 설정해야 하지 않을까?
-      this.massInverse = 0;
+      this.massInverse = Number.MAX_VALUE;
     }
     this.force = new Vector({ x: 0, y: 0 });
     this.velocity = new Vector({ x: 0, y: 0 });
@@ -39,6 +39,7 @@ export default class RigidBody {
 
   update(deltaTime: number) {
     this.integrate(deltaTime);
+    this.force = new Vector({ x: 0, y: 0 });
   }
 
   integrate(deltaTime: number) {
@@ -53,7 +54,6 @@ export default class RigidBody {
     );
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
-    this.force = new Vector({ x: 0, y: 0 });
   }
 
   forwardEuler(deltaTime: number) {
@@ -64,7 +64,6 @@ export default class RigidBody {
       this.velocity,
       scaleVector(accelation, deltaTime)
     );
-    this.force = new Vector({ x: 0, y: 0 });
   }
 
   midPoint(deltaTime: number) {
@@ -76,7 +75,42 @@ export default class RigidBody {
     );
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
-    this.force = new Vector({ x: 0, y: 0 });
+  }
+
+  rungeKutta4(deltaTime: number) {
+    let p1, p2, p3, p4;
+    let computeAccelation = (force: Vector) =>
+      scaleVector(force, this.massInverse);
+
+    // p1 계산
+    let accelation = computeAccelation(this.force);
+    p1 = scaleVector(accelation, deltaTime);
+
+    // p2 계산
+    let tempForce = addVector(this.force, scaleVector(p1, 0.5));
+    accelation = computeAccelation(tempForce);
+    p2 = scaleVector(accelation, deltaTime);
+
+    // p3 계산
+    tempForce = addVector(this.force, scaleVector(p2, 0.5));
+    accelation = computeAccelation(tempForce);
+    p3 = scaleVector(accelation, deltaTime);
+
+    // p4 계산
+    tempForce = addVector(this.force, scaleVector(p3, 0.5));
+    accelation = computeAccelation(tempForce);
+    p4 = scaleVector(accelation, deltaTime);
+
+    let deltaVelocity = p1;
+    deltaVelocity.add(p4);
+    deltaVelocity.add(scaleVector(p2, 2));
+    deltaVelocity.add(scaleVector(p3, 2));
+    deltaVelocity.scale(1 / 6.0);
+
+    this.velocity = addVector(this.velocity, deltaVelocity);
+
+    let deltaPosition = scaleVector(this.velocity, deltaTime);
+    this.shape.move(deltaPosition);
   }
 
   log() {
