@@ -16,11 +16,12 @@ const main = (document: Document) => {
     const engine = new Engine(canvas, ctx);
 
     const loop = () => {
+      let targetTime = performance.now();
       engine.clear();
-      engine.update();
+      engine.update(targetTime - currentTime);
       engine.draw();
       window.requestAnimationFrame(loop);
-      currentTime = performance.now();
+      currentTime = targetTime;
     };
 
     loop();
