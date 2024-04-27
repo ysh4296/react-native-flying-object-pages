@@ -1,5 +1,6 @@
 import Engine from "./engine";
 import getMousePosition from "./getMousePosition";
+import Vector from "./vector";
 
 const main = (document: Document) => {
   const canvas: HTMLCanvasElement = document.getElementById(
@@ -13,7 +14,7 @@ const main = (document: Document) => {
   let mousePos = [0, 0];
 
   if (ctx) {
-    const engine = new Engine(canvas, ctx);
+    const engine = new Engine(canvas, ctx, new Vector({ x: 1200, y: 700 }));
 
     const loop = () => {
       let targetTime = performance.now();

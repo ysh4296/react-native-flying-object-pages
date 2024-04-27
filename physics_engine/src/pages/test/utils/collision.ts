@@ -38,9 +38,9 @@ export default class Collision {
     if (shapeA instanceof Circle && shapeB instanceof Polygon) {
       collisionManifold = this.circleVSpolygon(shapeA, shapeB);
     }
-    if (shapeA instanceof Polygon && shapeB instanceof Circle) {
-      collisionManifold = this.circleVSpolygon(shapeB, shapeA);
-    }
+    // if (shapeA instanceof Polygon && shapeB instanceof Circle) {
+    //   collisionManifold = this.circleVSpolygon(shapeB, shapeA);
+    // }
 
     return collisionManifold;
   }
@@ -49,7 +49,7 @@ export default class Collision {
     let centroidA = circleA.centroid;
     let centroidB = circleB.centroid;
 
-    let direction = subVector(centroidA, centroidB);
+    let direction = subVector(centroidB, centroidA);
 
     let radiusSum = circleA.radius + circleB.radius;
 
@@ -202,7 +202,7 @@ export default class Collision {
       );
       return new CollisionManifold(
         projectionDepth,
-        nearestEdgeNormal,
+        scaleVector(nearestEdgeNormal, -1),
         penetreationPoint
       );
     }

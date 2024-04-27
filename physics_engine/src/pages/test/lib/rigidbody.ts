@@ -1,3 +1,4 @@
+import Matter from "./matter";
 import Shape from "./shape";
 import Vector, { addVector, scaleVector } from "./vector";
 
@@ -7,18 +8,22 @@ export default class RigidBody {
   massInverse: number;
   force: Vector;
   velocity: Vector;
+  isKinematic: boolean;
+  matter: Matter;
   constructor(shape: Shape, mass: number) {
     this.shape = shape;
     this.mass = mass;
     if (this.mass > 0) {
       this.massInverse = 1.0 / mass;
+      this.isKinematic = false;
     } else {
       this.mass = 0;
-      // Number.MAX_VALUE 로 설정해야 하지 않을까?
-      this.massInverse = Number.MAX_VALUE;
+      this.massInverse = 0;
+      this.isKinematic = true;
     }
     this.force = new Vector({ x: 0, y: 0 });
     this.velocity = new Vector({ x: 0, y: 0 });
+    this.matter = new Matter();
   }
 
   getShape() {
