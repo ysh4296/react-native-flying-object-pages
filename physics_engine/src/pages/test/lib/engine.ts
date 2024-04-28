@@ -119,17 +119,17 @@ export default class Engine {
     );
     this.gravity = new Vector({ x: 0, y: 0.05 });
     this.rigidBodies = [];
-    this.rigidBodies.push(new RigidBody(this.testCircle1, 1));
+    this.rigidBodies.push(new RigidBody(this.testCircle1, 500));
     this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
-    this.rigidBodies.push(new RigidBody(this.testRectangle1, 100));
+    this.rigidBodies.push(new RigidBody(this.testRectangle1, 500));
     this.rigidBodies.push(new RigidBody(this.right, 0));
-    this.rigidBodies.push(new RigidBody(this.testCircle2, 1));
+    this.rigidBodies.push(new RigidBody(this.testCircle2, 500));
     this.rigidBodies.push(new RigidBody(this.left, 0));
-    this.rigidBodies.push(new RigidBody(this.testRectangle3, 100));
-    this.rigidBodies.push(new RigidBody(this.testCircle3, 1));
-    // this.rigidBodies.push(new RigidBody(this.testRectangle2, 100));
-    // this.rigidBodies.push(new RigidBody(this.triangle1, 100));
+    this.rigidBodies.push(new RigidBody(this.testRectangle3, 500));
+    this.rigidBodies.push(new RigidBody(this.testCircle3, 500));
+    this.rigidBodies.push(new RigidBody(this.testRectangle2, 500));
+    this.rigidBodies.push(new RigidBody(this.triangle1, 500));
   }
 
   update = (deltaTime: number) => {
@@ -141,8 +141,6 @@ export default class Engine {
         this.rigidBodies[i].update(deltaTime);
       }
     }
-    // this.rigidBodies[0].velocity = new Vector({ x: 0, y: 0 });
-    // this.rigidBodies[0].log();
     for (let i = 0; i < this.rigidBodies.length; i++) {
       for (let j = 0; j < this.rigidBodies.length; j++) {
         if (i === j) continue;
@@ -153,9 +151,9 @@ export default class Engine {
           objectB.shape
         );
         if (result) {
-          result.draw();
-          result.positionalCorrection();
           result.resolveCollision(objectA, objectB);
+          result.positionalCorrection(objectA, objectB);
+          result.draw();
         }
       }
     }
@@ -175,16 +173,16 @@ export default class Engine {
   onKeyboardPressed = (e: KeyboardEvent) => {
     switch (e.key) {
       case "d":
-        this.rigidBodies[0].addForce(new Vector({ x: 0.1, y: 0 }));
+        this.rigidBodies[0].addForce(new Vector({ x: 1, y: 0 }));
         break;
       case "a":
-        this.rigidBodies[0].addForce(new Vector({ x: -0.1, y: 0 }));
+        this.rigidBodies[0].addForce(new Vector({ x: -1, y: 0 }));
         break;
       case "w":
-        this.rigidBodies[0].addForce(new Vector({ x: 0, y: -0.1 }));
+        this.rigidBodies[0].addForce(new Vector({ x: 0, y: -1 }));
         break;
       case "s":
-        this.rigidBodies[0].addForce(new Vector({ x: 0, y: 0.1 }));
+        this.rigidBodies[0].addForce(new Vector({ x: 0, y: -50 }));
         break;
       //   case "ArrowRight":
       //     this.rigidBodies[0].rotate(0.05);

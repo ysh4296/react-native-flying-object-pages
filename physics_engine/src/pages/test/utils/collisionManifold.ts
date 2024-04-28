@@ -40,14 +40,25 @@ export default class CollisionManifold {
       -1 * objectA.massInverse
     );
     let impulseVectorB = scaleVector(impulseCollision, objectB.massInverse);
-    console.log("this. depth  " + this.depth);
-    console.log("BounceA  ", impulseVectorA.length());
-    console.log("BounceB  ", impulseVectorB.length());
     objectA.velocity = addVector(objectA.velocity, impulseVectorA);
     objectB.velocity = addVector(objectB.velocity, impulseVectorB);
   }
 
-  positionalCorrection() {}
+  positionalCorrection(objectA: RigidBody, objectB: RigidBody) {
+    let correctDelta = 1.5;
+    let correction =
+      (this.depth / (objectA.massInverse + objectB.massInverse)) * correctDelta;
+
+    let correctVector = scaleVector(this.normal, correction);
+    let correctMoveA = scaleVector(correctVector, objectA.massInverse * -1);
+    let correctMoveB = scaleVector(correctVector, objectB.massInverse);
+    if (!objectA.isKinematic) {
+      objectA.getShape().move(correctMoveA);
+    }
+    if (!objectB.isKinematic) {
+      objectB.getShape().move(correctMoveB);
+    }
+  }
 
   draw() {
     const headPosition = addVector(
@@ -55,5 +66,7 @@ export default class CollisionManifold {
       scaleVector(this.normal, this.depth * -1)
     );
     this.drawUtils.drawArrow(headPosition, this.penetrationPoint, "blue");
+
+    this.drawUtils.drawPoint(this.penetrationPoint, 3, "gray");
   }
 }
