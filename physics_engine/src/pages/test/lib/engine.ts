@@ -35,32 +35,15 @@ export default class Engine {
   ) {
     this.canvas = canvas;
     this.ctx = ctx;
-    Draw.createInstance(ctx);
     this.drawUtils = Draw.getInstance();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
     this.world = world;
 
-    this.testCircle1 = new Circle(
-      ctx,
-      new Vector({ x: 150, y: 100 }),
-      50,
-      "black"
-    );
-    this.testCircle2 = new Circle(
-      ctx,
-      new Vector({ x: 100, y: 300 }),
-      50,
-      "black"
-    );
-    this.testCircle3 = new Circle(
-      ctx,
-      new Vector({ x: 200, y: 250 }),
-      50,
-      "black"
-    );
+    this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, "black");
+    this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, "black");
+    this.testCircle3 = new Circle(new Vector({ x: 200, y: 250 }), 50, "black");
     this.triangle1 = new Polygon(
-      ctx,
       [
         new Vector({ x: 150, y: 150 }),
         new Vector({ x: 100, y: 100 }),
@@ -69,57 +52,50 @@ export default class Engine {
       "black"
     );
     this.testRectangle2 = new Rectangle(
-      ctx,
       new Vector({ x: 250, y: 275 }),
+      200,
+      200,
+      "black"
+    );
+    this.testRectangle1 = new Rectangle(
+      new Vector({ x: 250, y: 150 }),
       200,
       200,
       "black"
     );
     // this.testRectangle1 = new Rectangle(
     //   ctx,
-    //   new Vector({ x: 250, y: 150 }),
-    //   200,
-    //   200,
+    //   new Vector({ x: 620, y: 600 }),
+    //   1400,
+    //   100,
     //   "black"
     // );
-    this.testRectangle1 = new Rectangle(
-      ctx,
-      new Vector({ x: 620, y: 600 }),
-      1400,
-      100,
-      "black"
-    );
-    this.testRectangle1.rotate(0.2);
+    // this.testRectangle1.rotate(0.2);
     this.testRectangle3 = new Rectangle(
-      ctx,
       new Vector({ x: 620, y: 400 }),
       200,
       200,
       "black"
     );
     this.top = new Rectangle(
-      ctx,
       new Vector({ x: this.world.x / 2 - 10, y: 10 }),
       this.world.x - 100,
       20,
       "red"
     );
     this.bottom = new Rectangle(
-      ctx,
       new Vector({ x: this.world.x / 2 - 10, y: this.world.y - 10 }),
       this.world.x - 100,
       20,
       "red"
     );
     this.left = new Rectangle(
-      ctx,
       new Vector({ x: 10, y: this.world.y / 2 - 10 }),
       20,
       this.world.y - 100,
       "red"
     );
     this.right = new Rectangle(
-      ctx,
       new Vector({ x: this.world.x - 10, y: this.world.y / 2 - 10 }),
       20,
       this.world.y - 100,
@@ -127,13 +103,14 @@ export default class Engine {
     );
     this.gravity = new Vector({ x: 0, y: 0.05 });
     this.rigidBodies = [];
-    this.rigidBodies.push(new RigidBody(this.triangle1, 200));
-    this.rigidBodies.push(new RigidBody(this.testRectangle1, 0));
-    this.rigidBodies.push(new RigidBody(this.testCircle1, 500));
-    this.rigidBodies.push(new RigidBody(this.testCircle2, 500));
-    this.rigidBodies.push(new RigidBody(this.testRectangle3, 500));
-    this.rigidBodies.push(new RigidBody(this.testCircle3, 500));
-    this.rigidBodies.push(new RigidBody(this.testRectangle2, 5000));
+    // this.rigidBodies.push(new RigidBody(this.triangle1, 100));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle1, 100));
+    // this.rigidBodies.push(new RigidBody(this.testCircle1, 100));
+    // this.rigidBodies.push(new RigidBody(this.testCircle2, 100));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle3, 100));
+    // this.rigidBodies.push(new RigidBody(this.testCircle3, 100));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle2, 100));
+    this.createTempPyramid();
     this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
     this.rigidBodies.push(new RigidBody(this.left, 0));
@@ -142,19 +119,21 @@ export default class Engine {
 
   update = (deltaTime: number) => {
     for (let i = 0; i < this.rigidBodies.length; i++) {
-      this.rigidBodies[i].shape.calculateBoundingBox();
       this.rigidBodies[i].addForce(
         scaleVector(this.gravity, this.rigidBodies[i].mass / 100)
       );
-      if (!this.rigidBodies[i].isKinematic) {
-        this.rigidBodies[i].update(deltaTime);
-      }
+      this.rigidBodies[i].update(deltaTime);
+      this.rigidBodies[i].shape.boundingBox.collision = false;
     }
     for (let i = 0; i < this.rigidBodies.length; i++) {
       for (let j = 0; j < this.rigidBodies.length; j++) {
         if (i === j) continue;
         let objectA = this.rigidBodies[i];
         let objectB = this.rigidBodies[j];
+        if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
+          // no collision
+          continue;
+        }
         let result = this.collision.checkCollision(
           objectA.shape,
           objectB.shape
@@ -164,6 +143,8 @@ export default class Engine {
           result.positionalCorrection(objectA, objectB);
           result.draw();
         }
+        objectA.shape.boundingBox.collision = true;
+        objectB.shape.boundingBox.collision = true;
       }
     }
   };
@@ -171,6 +152,7 @@ export default class Engine {
   draw = () => {
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].getShape().draw();
+      this.rigidBodies[i].shape.calculateBoundingBox();
       this.rigidBodies[i].getShape().boundingBox.draw();
     }
   };
@@ -179,6 +161,30 @@ export default class Engine {
     this.ctx.fillStyle = "white";
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   };
+
+  createTempPyramid() {
+    let boxSize = 80;
+    let iteration = 10;
+    let leftOffset = 400;
+    let topOffset = this.world.y - iteration * boxSize - 10;
+    for (let i = 0; i < iteration; i++) {
+      for (let j = iteration; j >= iteration - i; j--) {
+        let x = boxSize * i + (boxSize * j) / 2;
+        let y = boxSize * j;
+        this.rigidBodies.push(
+          new RigidBody(
+            new Rectangle(
+              new Vector({ x: x + leftOffset, y: y + topOffset }),
+              boxSize,
+              boxSize,
+              "black"
+            ),
+            1
+          )
+        );
+      }
+    }
+  }
 
   onKeyboardPressed = (e: KeyboardEvent) => {
     switch (e.key) {

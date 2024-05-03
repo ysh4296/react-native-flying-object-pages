@@ -7,14 +7,8 @@ export default class Circle extends Shape {
   radius: number;
   drawUtils: Draw;
 
-  constructor(
-    ctx: CanvasRenderingContext2D,
-    position: Vector,
-    radius: number,
-    color: string
-  ) {
+  constructor(position: Vector, radius: number, color: string) {
     super(
-      ctx,
       [
         new Vector(position),
         new Vector({ x: position.x + radius, y: position.y }),

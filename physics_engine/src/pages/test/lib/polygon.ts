@@ -4,12 +4,8 @@ import Vector, { addVector, scaleVector, subVector } from "./vector";
 export default class Polygon extends Shape {
   normals: Vector[];
 
-  constructor(
-    ctx: CanvasRenderingContext2D,
-    vertices: Vector[],
-    color: string
-  ) {
-    super(ctx, vertices, color);
+  constructor(vertices: Vector[], color: string) {
+    super(vertices, color);
     this.normals = this.calculatorUtils.calcNormals(this.vertices);
     let centroid = this.calculatorUtils.calcCentroid(this.vertices);
     super.setCentroid(centroid);

@@ -5,19 +5,13 @@ import Vector from "./vector";
 
 export default class Shape {
   vertices: Vector[];
-  ctx: CanvasRenderingContext2D;
   drawUtils: Draw;
   calculatorUtils: Calculator;
   centroid: Vector;
   color: string;
   boundingBox: BoundingBox;
 
-  constructor(
-    ctx: CanvasRenderingContext2D,
-    vertices: Vector[],
-    color: string
-  ) {
-    this.ctx = ctx;
+  constructor(vertices: Vector[], color: string) {
     this.drawUtils = Draw.getInstance();
     this.calculatorUtils = Calculator.getInstance();
     this.vertices = vertices;
@@ -36,7 +30,6 @@ export default class Shape {
   }
 
   setColor(color: string) {
-    this.ctx.strokeStyle = color;
     this.color = color;
   }
 
