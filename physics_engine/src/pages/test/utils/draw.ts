@@ -56,12 +56,12 @@ export default class Draw {
 
     const arrowCenter = subVector(headPosition, scaleVector(direction, 5));
 
-    const OrthoVector = direction.getOrthogonal();
+    const OrthoVector = direction.getNormal();
 
     const leftArrowPoint = addVector(arrowCenter, scaleVector(OrthoVector, 5));
     const rightArrowPoint = subVector(arrowCenter, scaleVector(OrthoVector, 5));
 
-    this.drawLine(headPosition, leftArrowPoint, "black");
-    this.drawLine(headPosition, rightArrowPoint, "black");
+    this.drawLine(headPosition, leftArrowPoint, color);
+    this.drawLine(headPosition, rightArrowPoint, color);
   };
 }

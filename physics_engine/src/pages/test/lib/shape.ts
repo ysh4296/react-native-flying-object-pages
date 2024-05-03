@@ -70,4 +70,8 @@ export default class Shape {
       this.vertices[i] = rotatedVertice;
     }
   }
+
+  calculateInertia(mass: number) {
+    return 0;
+  }
 }

@@ -71,7 +71,7 @@ export default class Calculator {
     for (let i = 0; i < vertices.length; i++) {
       let next = this.getIndex(i + 1, vertices.length);
       let direction = subVector(vertices[next], vertices[i]);
-      let normal = direction.getOrthogonal();
+      let normal = direction.getNormal();
       normal.normalize();
       normals.push(normal);
     }

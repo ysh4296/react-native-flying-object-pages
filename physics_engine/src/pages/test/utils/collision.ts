@@ -42,6 +42,9 @@ export default class Collision {
       collisionManifold = this.circleVSpolygon(shapeB, shapeA);
       if (collisionManifold) {
         collisionManifold?.normal.scale(-1);
+        collisionManifold.penetrationPoint.add(
+          scaleVector(collisionManifold.normal, collisionManifold.depth)
+        );
       }
     }
 
@@ -217,10 +220,18 @@ export default class Collision {
       let vertex = polygon.vertices[i];
       let direction = subVector(vertex, circle.centroid);
       let distance = direction.length();
+      direction.normalize();
       if (distance < circle.radius) {
+        let penetrationPoint = addVector(
+          circle.centroid,
+          scaleVector(direction, circle.radius)
+        );
         let penetrationDepth = circle.radius - distance;
-        direction.normalize();
-        return new CollisionManifold(penetrationDepth, direction, vertex);
+        return new CollisionManifold(
+          penetrationDepth,
+          direction,
+          penetrationPoint
+        );
       }
     }
     return null;

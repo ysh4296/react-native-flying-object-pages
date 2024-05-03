@@ -1,6 +1,7 @@
 export default class Vector {
   x: number;
   y: number;
+  this: any;
   constructor(pos: position) {
     this.x = pos.x;
     this.y = pos.y;
@@ -20,7 +21,7 @@ export default class Vector {
     return this.x * this.x + this.y * this.y;
   };
 
-  getOrthogonal = () => {
+  getNormal = () => {
     return new Vector({ x: this.y, y: -this.x });
   };
 

@@ -1,7 +1,7 @@
 import Circle from "./circle";
 import Draw from "../utils/draw";
 import Rectangle from "./rectangle";
-import Vector, { scaleVector } from "./vector";
+import Vector, { addVector, scaleVector } from "./vector";
 import Calculator from "../utils/calculator";
 import Collision from "../utils/collision";
 import Polygon from "./polygon";
@@ -16,7 +16,7 @@ export default class Engine {
   testCircle1: Circle;
   testCircle2: Circle;
   testCircle3: Circle;
-  testRectangle1: Rectangle;
+  testRectangle1: Polygon;
   testRectangle2: Rectangle;
   testRectangle3: Rectangle;
   top: Rectangle;
@@ -43,13 +43,13 @@ export default class Engine {
 
     this.testCircle1 = new Circle(
       ctx,
-      new Vector({ x: 150, y: 500 }),
+      new Vector({ x: 150, y: 100 }),
       50,
       "black"
     );
     this.testCircle2 = new Circle(
       ctx,
-      new Vector({ x: 100, y: 150 }),
+      new Vector({ x: 100, y: 300 }),
       50,
       "black"
     );
@@ -62,26 +62,34 @@ export default class Engine {
     this.triangle1 = new Polygon(
       ctx,
       [
-        new Vector({ x: 150, y: 50 }),
-        new Vector({ x: 100, y: 0 }),
-        new Vector({ x: 200, y: 0 }),
+        new Vector({ x: 150, y: 150 }),
+        new Vector({ x: 100, y: 100 }),
+        new Vector({ x: 200, y: 100 }),
       ],
       "black"
     );
     this.testRectangle2 = new Rectangle(
       ctx,
-      new Vector({ x: 600, y: 275 }),
+      new Vector({ x: 250, y: 275 }),
       200,
       200,
       "black"
     );
+    // this.testRectangle1 = new Rectangle(
+    //   ctx,
+    //   new Vector({ x: 250, y: 150 }),
+    //   200,
+    //   200,
+    //   "black"
+    // );
     this.testRectangle1 = new Rectangle(
       ctx,
-      new Vector({ x: 600, y: 150 }),
-      200,
-      200,
+      new Vector({ x: 620, y: 600 }),
+      1400,
+      100,
       "black"
     );
+    this.testRectangle1.rotate(0.2);
     this.testRectangle3 = new Rectangle(
       ctx,
       new Vector({ x: 620, y: 400 }),
@@ -119,17 +127,17 @@ export default class Engine {
     );
     this.gravity = new Vector({ x: 0, y: 0.05 });
     this.rigidBodies = [];
+    this.rigidBodies.push(new RigidBody(this.triangle1, 200));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle1, 0));
     this.rigidBodies.push(new RigidBody(this.testCircle1, 500));
+    this.rigidBodies.push(new RigidBody(this.testCircle2, 500));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle3, 500));
+    // this.rigidBodies.push(new RigidBody(this.testCircle3, 500));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle2, 5000));
     this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
-    this.rigidBodies.push(new RigidBody(this.testRectangle1, 500));
-    this.rigidBodies.push(new RigidBody(this.right, 0));
-    this.rigidBodies.push(new RigidBody(this.testCircle2, 500));
     this.rigidBodies.push(new RigidBody(this.left, 0));
-    this.rigidBodies.push(new RigidBody(this.testRectangle3, 500));
-    this.rigidBodies.push(new RigidBody(this.testCircle3, 500));
-    this.rigidBodies.push(new RigidBody(this.testRectangle2, 500));
-    this.rigidBodies.push(new RigidBody(this.triangle1, 500));
+    this.rigidBodies.push(new RigidBody(this.right, 0));
   }
 
   update = (deltaTime: number) => {
@@ -182,14 +190,14 @@ export default class Engine {
         this.rigidBodies[0].addForce(new Vector({ x: 0, y: -1 }));
         break;
       case "s":
-        this.rigidBodies[0].addForce(new Vector({ x: 0, y: -50 }));
+        this.rigidBodies[0].addForce(new Vector({ x: 0, y: 1 }));
         break;
-      //   case "ArrowRight":
-      //     this.rigidBodies[0].rotate(0.05);
-      //     break;
-      //   case "ArrowLeft":
-      //     this.rigidBodies[0].rotate(-0.05);
-      //     break;
+      case "ArrowRight":
+        this.rigidBodies[0].shape.rotate(0.05);
+        break;
+      case "ArrowLeft":
+        this.rigidBodies[0].shape.rotate(-0.05);
+        break;
     }
   };
 }

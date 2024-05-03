@@ -1,8 +1,8 @@
 export default class Matter {
-  bounce: number;
+  restitution: number;
   friction: number;
   constructor() {
-    this.bounce = 0.2;
-    this.friction = 1.0;
+    this.restitution = 0.2;
+    this.friction = 0.1;
   }
 }

@@ -27,6 +27,10 @@ export default class Circle extends Shape {
     super.setCentroid(this.position);
   }
 
+  calculateInertia(mass: number) {
+    return mass * this.radius * this.radius * 0.5;
+  }
+
   draw() {
     super.draw();
     this.drawUtils.strokePoint(this.position, this.radius, this.color);

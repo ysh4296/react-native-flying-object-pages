@@ -16,23 +16,62 @@ export default class CollisionManifold {
 
   resolveCollision(objectA: RigidBody, objectB: RigidBody) {
     // 부딧혔다면 상대속도를 통해 충돌을 해결한다.
-    let relativeVelocity = subVector(objectB.velocity, objectA.velocity);
+    if (objectA.isKinematic && objectB.isKinematic) {
+      return;
+    }
+
+    let penetrationPointToCentroidA = subVector(
+      this.penetrationPoint,
+      objectA.shape.centroid
+    );
+
+    let penetrationPointToCentroidB = subVector(
+      this.penetrationPoint,
+      objectB.shape.centroid
+    );
+
+    let angularVelocityA = new Vector({
+      x: -1 * objectA.angularVelocity * penetrationPointToCentroidA.y,
+      y: objectA.angularVelocity * penetrationPointToCentroidA.x,
+    });
+    let angularVelocityB = new Vector({
+      x: -1 * objectB.angularVelocity * penetrationPointToCentroidB.y,
+      y: objectB.angularVelocity * penetrationPointToCentroidB.x,
+    });
+
+    let relativeVelocityA = addVector(objectA.velocity, angularVelocityA);
+
+    let relativeVelocityB = addVector(objectB.velocity, angularVelocityB);
+
+    let relativeVelocity = subVector(relativeVelocityB, relativeVelocityA);
     let velocityDotCollision = relativeVelocity.getDotProduct(this.normal);
     if (velocityDotCollision > 0) {
       return;
     }
 
-    if (objectA.isKinematic && objectB.isKinematic) {
-      return;
-    }
-
     let massInverseSum = objectA.massInverse + objectB.massInverse;
-    // 반발계수는 bounce를 통해 계산 가능
+    // 반발력 연산
     let collisionRestitution =
-      (2 * objectA.matter.bounce * objectB.matter.bounce) /
-      (objectA.matter.bounce + objectB.matter.bounce);
+      (2 * objectA.matter.restitution * objectB.matter.restitution) /
+      (objectA.matter.restitution + objectB.matter.restitution);
+
+    let crossRestitutionVectorA = penetrationPointToCentroidA.cross(
+      this.normal
+    );
+    let crossRestitutionVectorB = penetrationPointToCentroidB.cross(
+      this.normal
+    );
+
+    let crossSum =
+      crossRestitutionVectorA *
+        crossRestitutionVectorA *
+        objectA.inertiaInverse +
+      crossRestitutionVectorB *
+        crossRestitutionVectorB *
+        objectB.inertiaInverse;
+
     let j = -(1 + collisionRestitution) * velocityDotCollision;
-    j /= massInverseSum;
+    j /= massInverseSum + crossSum;
 
     let impulseCollision = scaleVector(this.normal, j);
     let impulseVectorA = scaleVector(
@@ -40,12 +79,91 @@ export default class CollisionManifold {
       -1 * objectA.massInverse
     );
     let impulseVectorB = scaleVector(impulseCollision, objectB.massInverse);
+
     objectA.velocity = addVector(objectA.velocity, impulseVectorA);
     objectB.velocity = addVector(objectB.velocity, impulseVectorB);
+
+    objectA.angularVelocity +=
+      -crossRestitutionVectorA * j * objectA.inertiaInverse;
+    objectB.angularVelocity +=
+      crossRestitutionVectorB * j * objectB.inertiaInverse;
+
+    // 마찰력 연산
+
+    let velocityNormalDirection = scaleVector(
+      this.normal,
+      relativeVelocity.getDotProduct(this.normal)
+    );
+    let tangent = subVector(relativeVelocity, velocityNormalDirection);
+    tangent = scaleVector(tangent, -1);
+
+    let collisionFriction =
+      (2 * objectA.matter.friction * objectB.matter.friction) /
+      (objectA.matter.friction + objectB.matter.friction);
+
+    if (Math.abs(tangent.x) > 0.00001 || Math.abs(tangent.y) > 0.00001) {
+      tangent.normalize();
+      this.drawUtils.drawArrow(
+        addVector(objectA.shape.centroid, scaleVector(tangent, 40)),
+        objectA.shape.centroid,
+        "blue"
+      );
+      console.log("보정됨!!!!");
+    } else {
+      console.log("마찰력이 너무 약합니다!");
+      return;
+    }
+
+    let crossFrictionVectorA = penetrationPointToCentroidA.cross(tangent);
+    let crossFrictionVectorB = penetrationPointToCentroidB.cross(tangent);
+
+    let crossTangentSum =
+      crossFrictionVectorA * crossFrictionVectorA * objectA.inertiaInverse +
+      crossFrictionVectorB * crossFrictionVectorB * objectB.inertiaInverse;
+
+    let minFriction = Math.min(
+      objectA.matter.friction,
+      objectB.matter.friction
+    );
+
+    let velocityDotFriction = relativeVelocity.getDotProduct(tangent);
+
+    let frictionalImpulse =
+      -(1 + collisionFriction) * velocityDotFriction * minFriction;
+    frictionalImpulse /= massInverseSum + crossTangentSum;
+
+    console.log(frictionalImpulse);
+    if (frictionalImpulse > j) {
+      frictionalImpulse = j;
+    }
+
+    let frictionalImpulseVector = scaleVector(tangent, frictionalImpulse);
+
+    this.drawUtils.drawArrow(
+      addVector(
+        objectA.shape.centroid,
+        scaleVector(frictionalImpulseVector, 40)
+      ),
+      objectA.shape.centroid,
+      "red"
+    );
+    objectA.velocity = subVector(
+      objectA.velocity,
+      scaleVector(frictionalImpulseVector, objectA.massInverse)
+    );
+    objectB.velocity = addVector(
+      objectB.velocity,
+      scaleVector(frictionalImpulseVector, objectB.massInverse)
+    );
+
+    objectA.angularVelocity +=
+      -crossFrictionVectorA * frictionalImpulse * objectA.inertiaInverse;
+    objectB.angularVelocity +=
+      crossFrictionVectorB * frictionalImpulse * objectB.inertiaInverse;
   }
 
   positionalCorrection(objectA: RigidBody, objectB: RigidBody) {
-    let correctDelta = 1.5;
+    let correctDelta = 0.8;
     let correction =
       (this.depth / (objectA.massInverse + objectB.massInverse)) * correctDelta;
 

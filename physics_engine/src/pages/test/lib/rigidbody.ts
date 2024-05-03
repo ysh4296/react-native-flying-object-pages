@@ -1,3 +1,5 @@
+import { join } from "path";
+import Circle from "./circle";
 import Matter from "./matter";
 import Shape from "./shape";
 import Vector, { addVector, scaleVector } from "./vector";
@@ -8,8 +10,12 @@ export default class RigidBody {
   massInverse: number;
   force: Vector;
   velocity: Vector;
+  angularVelocity: number;
   isKinematic: boolean;
   matter: Matter;
+  inertia: number;
+  inertiaInverse: number;
+
   constructor(shape: Shape, mass: number) {
     this.shape = shape;
     this.mass = mass;
@@ -23,11 +29,23 @@ export default class RigidBody {
     }
     this.force = new Vector({ x: 0, y: 0 });
     this.velocity = new Vector({ x: 0, y: 0 });
+    this.angularVelocity = 0;
     this.matter = new Matter();
+    this.inertia = this.shape.calculateInertia(this.mass);
+
+    if (this.inertia > 0.0001) {
+      this.inertiaInverse = 1.0 / this.inertia;
+    } else {
+      this.inertiaInverse = 0;
+    }
   }
 
   getShape() {
     return this.shape;
+  }
+
+  getAngularVelocity() {
+    return this.angularVelocity;
   }
 
   addForce(forceVector: Vector) {
@@ -44,11 +62,13 @@ export default class RigidBody {
 
   update(deltaTime: number) {
     this.integrate(deltaTime);
+    this.velocity.scale(0.99);
+    this.angularVelocity *= 0.99;
     this.force = new Vector({ x: 0, y: 0 });
   }
 
   integrate(deltaTime: number) {
-    this.midPoint(deltaTime);
+    this.semiImplicitEuler(deltaTime);
   }
 
   semiImplicitEuler(deltaTime: number) {
@@ -59,6 +79,9 @@ export default class RigidBody {
     );
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
+
+    let deltaRotation = this.angularVelocity * deltaTime;
+    this.shape.rotate(deltaRotation);
   }
 
   forwardEuler(deltaTime: number) {
