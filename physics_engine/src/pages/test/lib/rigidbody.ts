@@ -1,4 +1,5 @@
 import { join } from "path";
+import BoundingBox from "./boundingBox";
 import Circle from "./circle";
 import Matter from "./matter";
 import Shape from "./shape";
@@ -18,6 +19,7 @@ export default class RigidBody {
 
   constructor(shape: Shape, mass: number) {
     this.shape = shape;
+    this.shape.calculateBoundingBox();
     this.mass = mass;
     if (this.mass > 0) {
       this.massInverse = 1.0 / mass;

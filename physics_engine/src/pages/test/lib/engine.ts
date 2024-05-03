@@ -128,12 +128,12 @@ export default class Engine {
     this.gravity = new Vector({ x: 0, y: 0.05 });
     this.rigidBodies = [];
     this.rigidBodies.push(new RigidBody(this.triangle1, 200));
-    // this.rigidBodies.push(new RigidBody(this.testRectangle1, 0));
+    this.rigidBodies.push(new RigidBody(this.testRectangle1, 0));
     this.rigidBodies.push(new RigidBody(this.testCircle1, 500));
     this.rigidBodies.push(new RigidBody(this.testCircle2, 500));
-    // this.rigidBodies.push(new RigidBody(this.testRectangle3, 500));
-    // this.rigidBodies.push(new RigidBody(this.testCircle3, 500));
-    // this.rigidBodies.push(new RigidBody(this.testRectangle2, 5000));
+    this.rigidBodies.push(new RigidBody(this.testRectangle3, 500));
+    this.rigidBodies.push(new RigidBody(this.testCircle3, 500));
+    this.rigidBodies.push(new RigidBody(this.testRectangle2, 5000));
     this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
     this.rigidBodies.push(new RigidBody(this.left, 0));
@@ -142,6 +142,7 @@ export default class Engine {
 
   update = (deltaTime: number) => {
     for (let i = 0; i < this.rigidBodies.length; i++) {
+      this.rigidBodies[i].shape.calculateBoundingBox();
       this.rigidBodies[i].addForce(
         scaleVector(this.gravity, this.rigidBodies[i].mass / 100)
       );
@@ -170,6 +171,7 @@ export default class Engine {
   draw = () => {
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].getShape().draw();
+      this.rigidBodies[i].getShape().boundingBox.draw();
     }
   };
 

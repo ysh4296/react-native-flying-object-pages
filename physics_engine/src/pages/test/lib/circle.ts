@@ -31,6 +31,17 @@ export default class Circle extends Shape {
     return mass * this.radius * this.radius * 0.5;
   }
 
+  calculateBoundingBox() {
+    this.boundingBox.topLeft = new Vector({
+      x: this.position.x - this.radius,
+      y: this.position.y - this.radius,
+    });
+    this.boundingBox.bottomRight = new Vector({
+      x: this.position.x + this.radius,
+      y: this.position.y + this.radius,
+    });
+  }
+
   draw() {
     super.draw();
     this.drawUtils.strokePoint(this.position, this.radius, this.color);

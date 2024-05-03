@@ -108,9 +108,7 @@ export default class CollisionManifold {
         objectA.shape.centroid,
         "blue"
       );
-      console.log("보정됨!!!!");
     } else {
-      console.log("마찰력이 너무 약합니다!");
       return;
     }
 
@@ -132,7 +130,6 @@ export default class CollisionManifold {
       -(1 + collisionFriction) * velocityDotFriction * minFriction;
     frictionalImpulse /= massInverseSum + crossTangentSum;
 
-    console.log(frictionalImpulse);
     if (frictionalImpulse > j) {
       frictionalImpulse = j;
     }
