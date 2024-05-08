@@ -1,7 +1,7 @@
 import Circle from "./circle";
 import Draw from "../utils/draw";
 import Rectangle from "./rectangle";
-import Vector, { addVector, scaleVector } from "./vector";
+import Vector, { scaleVector } from "./vector";
 import Calculator from "../utils/calculator";
 import Collision from "../utils/collision";
 import Polygon from "./polygon";
@@ -27,6 +27,7 @@ export default class Engine {
   collision: Collision;
   rigidBodies: RigidBody[];
   gravity: Vector;
+  iteration: number;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -39,6 +40,7 @@ export default class Engine {
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
     this.world = world;
+    this.iteration = 20;
 
     this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, "black");
     this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, "black");
@@ -101,15 +103,15 @@ export default class Engine {
       this.world.y - 100,
       "red"
     );
-    this.gravity = new Vector({ x: 0, y: 0.05 });
+    this.gravity = new Vector({ x: 0, y: 700 });
     this.rigidBodies = [];
-    // this.rigidBodies.push(new RigidBody(this.triangle1, 100));
-    // this.rigidBodies.push(new RigidBody(this.testRectangle1, 100));
-    // this.rigidBodies.push(new RigidBody(this.testCircle1, 100));
-    // this.rigidBodies.push(new RigidBody(this.testCircle2, 100));
-    // this.rigidBodies.push(new RigidBody(this.testRectangle3, 100));
-    // this.rigidBodies.push(new RigidBody(this.testCircle3, 100));
-    // this.rigidBodies.push(new RigidBody(this.testRectangle2, 100));
+    // this.rigidBodies.push(new RigidBody(this.triangle1, 1));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle1, 1));
+    // this.rigidBodies.push(new RigidBody(this.testCircle1, 1));
+    // this.rigidBodies.push(new RigidBody(this.testCircle2, 1));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle3, 1));
+    // this.rigidBodies.push(new RigidBody(this.testCircle3, 1));
+    // this.rigidBodies.push(new RigidBody(this.testRectangle2, 1));
     this.createTempPyramid();
     this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
@@ -118,33 +120,38 @@ export default class Engine {
   }
 
   update = (deltaTime: number) => {
-    for (let i = 0; i < this.rigidBodies.length; i++) {
-      this.rigidBodies[i].addForce(
-        scaleVector(this.gravity, this.rigidBodies[i].mass / 100)
-      );
-      this.rigidBodies[i].update(deltaTime);
-      this.rigidBodies[i].shape.boundingBox.collision = false;
-    }
-    for (let i = 0; i < this.rigidBodies.length; i++) {
-      for (let j = 0; j < this.rigidBodies.length; j++) {
-        if (i === j) continue;
-        let objectA = this.rigidBodies[i];
-        let objectB = this.rigidBodies[j];
-        if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
-          // no collision
-          continue;
-        }
-        let result = this.collision.checkCollision(
-          objectA.shape,
-          objectB.shape
+    let fpsText = Math.round(1 / deltaTime) + " FPS";
+    this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, "black", fpsText);
+
+    for (let it = 0; it < this.iteration; it++) {
+      for (let i = 0; i < this.rigidBodies.length; i++) {
+        this.rigidBodies[i].addForce(
+          scaleVector(this.gravity, this.rigidBodies[i].mass)
         );
-        if (result) {
-          result.resolveCollision(objectA, objectB);
-          result.positionalCorrection(objectA, objectB);
-          result.draw();
+        this.rigidBodies[i].update(deltaTime / this.iteration);
+        this.rigidBodies[i].shape.boundingBox.collision = false;
+      }
+      for (let i = 0; i < this.rigidBodies.length; i++) {
+        for (let j = 0; j < this.rigidBodies.length; j++) {
+          if (i === j) continue;
+          let objectA = this.rigidBodies[i];
+          let objectB = this.rigidBodies[j];
+          if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
+            // no collision
+            continue;
+          }
+          let result = this.collision.checkCollision(
+            objectA.shape,
+            objectB.shape
+          );
+          if (result) {
+            result.resolveCollision(objectA, objectB);
+            result.positionalCorrection(objectA, objectB);
+            result.draw();
+          }
+          objectA.shape.boundingBox.collision = true;
+          objectB.shape.boundingBox.collision = true;
         }
-        objectA.shape.boundingBox.collision = true;
-        objectB.shape.boundingBox.collision = true;
       }
     }
   };
@@ -153,7 +160,7 @@ export default class Engine {
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].getShape().draw();
       this.rigidBodies[i].shape.calculateBoundingBox();
-      this.rigidBodies[i].getShape().boundingBox.draw();
+      // this.rigidBodies[i].getShape().boundingBox.draw();
     }
   };
 
@@ -163,10 +170,10 @@ export default class Engine {
   };
 
   createTempPyramid() {
-    let boxSize = 80;
-    let iteration = 10;
-    let leftOffset = 400;
-    let topOffset = this.world.y - iteration * boxSize - 10;
+    let boxSize = 50;
+    let iteration = 5;
+    let leftOffset = 40;
+    let topOffset = this.world.y - iteration * boxSize - 36;
     for (let i = 0; i < iteration; i++) {
       for (let j = iteration; j >= iteration - i; j--) {
         let x = boxSize * i + (boxSize * j) / 2;
@@ -181,24 +188,33 @@ export default class Engine {
             ),
             1
           )
+          // new RigidBody(
+          //   new Circle(
+          //     new Vector({ x: x + leftOffset, y: y + topOffset }),
+          //     boxSize,
+          //     "black"
+          //   ),
+          //   1
+          // )
         );
       }
     }
   }
 
   onKeyboardPressed = (e: KeyboardEvent) => {
+    let force = 5000;
     switch (e.key) {
       case "d":
-        this.rigidBodies[0].addForce(new Vector({ x: 1, y: 0 }));
+        this.rigidBodies[0].addForce(new Vector({ x: 200000, y: 0 }));
         break;
       case "a":
-        this.rigidBodies[0].addForce(new Vector({ x: -1, y: 0 }));
+        this.rigidBodies[0].addForce(new Vector({ x: -200000, y: 0 }));
         break;
       case "w":
-        this.rigidBodies[0].addForce(new Vector({ x: 0, y: -1 }));
+        this.rigidBodies[0].addForce(new Vector({ x: 0, y: -200000 }));
         break;
       case "s":
-        this.rigidBodies[0].addForce(new Vector({ x: 0, y: 1 }));
+        this.rigidBodies[0].addForce(new Vector({ x: 0, y: 200000 }));
         break;
       case "ArrowRight":
         this.rigidBodies[0].shape.rotate(0.05);
