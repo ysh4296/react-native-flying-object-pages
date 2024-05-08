@@ -150,6 +150,15 @@ export default class Collision {
         supportPenetrationDepth = penetrationDepth;
         supportPoint = new SupportPoint(vertex, penetrationDepth);
       }
+      if (
+        supportPoint &&
+        Math.abs(penetrationDepth - supportPenetrationDepth) === 0
+      ) {
+        supportPoint = new SupportPoint(
+          scaleVector(addVector(vertex, supportPoint.vertex), 0.5),
+          penetrationDepth
+        );
+      }
     }
 
     return supportPoint;

@@ -55,6 +55,11 @@ export default class CollisionManifold {
       (2 * objectA.matter.restitution * objectB.matter.restitution) /
       (objectA.matter.restitution + objectB.matter.restitution);
 
+    // let collisionRestitution = Math.min(
+    //   objectA.matter.restitution,
+    //   objectB.matter.restitution
+    // );
+
     let crossRestitutionVectorA = penetrationPointToCentroidA.cross(
       this.normal
     );
@@ -100,16 +105,18 @@ export default class CollisionManifold {
     let collisionFriction =
       (2 * objectA.matter.friction * objectB.matter.friction) /
       (objectA.matter.friction + objectB.matter.friction);
+    // let collisionFriction = Math.min(
+    //   objectA.matter.friction,
+    //   objectB.matter.friction
+    // );
 
     if (Math.abs(tangent.x) > 0.00001 || Math.abs(tangent.y) > 0.00001) {
       tangent.normalize();
-      this.drawUtils.drawArrow(
-        addVector(objectA.shape.centroid, scaleVector(tangent, 40)),
-        objectA.shape.centroid,
-        "blue"
-      );
-    } else {
-      return;
+      // this.drawUtils.drawArrow(
+      //   addVector(objectA.shape.centroid, scaleVector(tangent, 40)),
+      //   objectA.shape.centroid,
+      //   "blue"
+      // );
     }
 
     let crossFrictionVectorA = penetrationPointToCentroidA.cross(tangent);
@@ -136,14 +143,14 @@ export default class CollisionManifold {
 
     let frictionalImpulseVector = scaleVector(tangent, frictionalImpulse);
 
-    this.drawUtils.drawArrow(
-      addVector(
-        objectA.shape.centroid,
-        scaleVector(frictionalImpulseVector, 40)
-      ),
-      objectA.shape.centroid,
-      "red"
-    );
+    // this.drawUtils.drawArrow(
+    //   addVector(
+    //     objectA.shape.centroid,
+    //     scaleVector(frictionalImpulseVector, 40)
+    //   ),
+    //   objectA.shape.centroid,
+    //   "red"
+    // );
     objectA.velocity = subVector(
       objectA.velocity,
       scaleVector(frictionalImpulseVector, objectA.massInverse)
@@ -160,7 +167,7 @@ export default class CollisionManifold {
   }
 
   positionalCorrection(objectA: RigidBody, objectB: RigidBody) {
-    let correctDelta = 0.8;
+    let correctDelta = 0.3;
     let correction =
       (this.depth / (objectA.massInverse + objectB.massInverse)) * correctDelta;
 
