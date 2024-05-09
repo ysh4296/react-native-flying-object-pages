@@ -167,7 +167,7 @@ export default class CollisionManifold {
   }
 
   positionalCorrection(objectA: RigidBody, objectB: RigidBody) {
-    let correctDelta = 0.3;
+    let correctDelta = 0.1;
     let correction =
       (this.depth / (objectA.massInverse + objectB.massInverse)) * correctDelta;
 

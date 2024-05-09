@@ -171,7 +171,7 @@ export default class Engine {
 
   createTempPyramid() {
     let boxSize = 50;
-    let iteration = 5;
+    let iteration = 4;
     let leftOffset = 40;
     let topOffset = this.world.y - iteration * boxSize - 36;
     for (let i = 0; i < iteration; i++) {
