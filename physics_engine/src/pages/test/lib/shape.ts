@@ -1,6 +1,6 @@
 import Calculator from "../utils/calculator";
 import Draw from "../utils/draw";
-import BoundingBox from "./boundingBox";
+import BoundingBox from "../optimization/boundingBox";
 import Vector from "./vector";
 
 export default class Shape {

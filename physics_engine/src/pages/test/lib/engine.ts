@@ -6,6 +6,7 @@ import Calculator from "../utils/calculator";
 import Collision from "../utils/collision";
 import Polygon from "./polygon";
 import RigidBody from "./rigidbody";
+import SpatialGrid from "../optimization/spatialGrid";
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -28,6 +29,7 @@ export default class Engine {
   rigidBodies: RigidBody[];
   gravity: Vector;
   iteration: number;
+  grid: SpatialGrid;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -40,7 +42,7 @@ export default class Engine {
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
     this.world = world;
-    this.iteration = 20;
+    this.iteration = 10;
 
     this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, "black");
     this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, "black");
@@ -117,12 +119,16 @@ export default class Engine {
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
     this.rigidBodies.push(new RigidBody(this.left, 0));
     this.rigidBodies.push(new RigidBody(this.right, 0));
+
+    this.grid = new SpatialGrid(30);
+    this.grid.initialize(this.world, this.rigidBodies);
   }
 
   update = (deltaTime: number) => {
     let fpsText = Math.round(1 / deltaTime) + " FPS";
     this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, "black", fpsText);
 
+    this.grid.refreshGrid();
     for (let it = 0; it < this.iteration; it++) {
       for (let i = 0; i < this.rigidBodies.length; i++) {
         this.rigidBodies[i].addForce(
@@ -132,10 +138,10 @@ export default class Engine {
         this.rigidBodies[i].shape.boundingBox.collision = false;
       }
       for (let i = 0; i < this.rigidBodies.length; i++) {
-        for (let j = 0; j < this.rigidBodies.length; j++) {
-          if (i === j) continue;
-          let objectA = this.rigidBodies[i];
-          let objectB = this.rigidBodies[j];
+        let objectA = this.rigidBodies[i];
+        let neighbors = this.grid.getNeighborObject(i, objectA);
+        for (let j = 0; j < neighbors.length; j++) {
+          let objectB = neighbors[j];
           if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
             // no collision
             continue;
@@ -162,6 +168,7 @@ export default class Engine {
       this.rigidBodies[i].shape.calculateBoundingBox();
       // this.rigidBodies[i].getShape().boundingBox.draw();
     }
+    // this.grid.draw();
   };
 
   clear = () => {
@@ -171,7 +178,7 @@ export default class Engine {
 
   createTempPyramid() {
     let boxSize = 50;
-    let iteration = 4;
+    let iteration = 8;
     let leftOffset = 40;
     let topOffset = this.world.y - iteration * boxSize - 36;
     for (let i = 0; i < iteration; i++) {
@@ -202,7 +209,7 @@ export default class Engine {
   }
 
   onKeyboardPressed = (e: KeyboardEvent) => {
-    let force = 5000;
+    // let force = 5000;
     switch (e.key) {
       case "d":
         this.rigidBodies[0].addForce(new Vector({ x: 200000, y: 0 }));

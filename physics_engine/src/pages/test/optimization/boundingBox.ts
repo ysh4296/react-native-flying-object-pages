@@ -1,5 +1,5 @@
 import Draw from "../utils/draw";
-import Vector from "./vector";
+import Vector from "../lib/vector";
 
 export default class BoundingBox {
   topLeft: Vector;

@@ -64,4 +64,11 @@ export default class Draw {
     this.drawLine(headPosition, leftArrowPoint, color);
     this.drawLine(headPosition, rightArrowPoint, color);
   };
+
+  drawRect(start: Vector, size: Vector, color: string) {
+    this.ctx.strokeStyle = color;
+    this.ctx.beginPath();
+    this.ctx.rect(start.x, start.y, size.x, size.y);
+    this.ctx.stroke();
+  }
 }

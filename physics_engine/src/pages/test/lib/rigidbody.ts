@@ -1,5 +1,5 @@
 import { join } from "path";
-import BoundingBox from "./boundingBox";
+import BoundingBox from "../optimization/boundingBox";
 import Circle from "./circle";
 import Matter from "./matter";
 import Shape from "./shape";
@@ -64,13 +64,13 @@ export default class RigidBody {
 
   update(deltaTime: number) {
     this.integrate(deltaTime);
-    this.velocity.scale(0.999);
-    this.angularVelocity *= 0.999;
+    this.velocity.scale(0.99999);
+    this.angularVelocity *= 0.99999;
     this.force = new Vector({ x: 0, y: 0 });
   }
 
   integrate(deltaTime: number) {
-    this.rungeKutta4(deltaTime);
+    this.midPoint(deltaTime);
   }
 
   semiImplicitEuler(deltaTime: number) {
