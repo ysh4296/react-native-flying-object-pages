@@ -7,6 +7,7 @@ import Collision from "../utils/collision";
 import Polygon from "./polygon";
 import RigidBody from "./rigidbody";
 import SpatialGrid from "../optimization/spatialGrid";
+import HashGrid from "../optimization/hashGrid";
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -120,7 +121,7 @@ export default class Engine {
     this.rigidBodies.push(new RigidBody(this.left, 0));
     this.rigidBodies.push(new RigidBody(this.right, 0));
 
-    this.grid = new SpatialGrid(30);
+    this.grid = new HashGrid(15);
     this.grid.initialize(this.world, this.rigidBodies);
   }
 
