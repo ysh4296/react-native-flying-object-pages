@@ -1,7 +1,7 @@
 import Calculator from "../utils/calculator";
 import Draw from "../utils/draw";
 import BoundingBox from "../optimization/boundingBox";
-import Vector from "./vector";
+import Vector, { addVector } from "./vector";
 
 export default class Shape {
   vertices: Vector[];
@@ -10,6 +10,7 @@ export default class Shape {
   centroid: Vector;
   color: string;
   boundingBox: BoundingBox;
+  anchorPoints: Map<number, Vector>;
 
   constructor(vertices: Vector[], color: string) {
     this.drawUtils = Draw.getInstance();
@@ -23,6 +24,7 @@ export default class Shape {
         "Cannot construct abstract instances directly of Class 'Shape'"
       );
     }
+    this.anchorPoints = new Map();
   }
 
   setCentroid(position: Vector) {
@@ -31,6 +33,20 @@ export default class Shape {
 
   setColor(color: string) {
     this.color = color;
+  }
+
+  createAnchor(anchorPoint: Vector) {
+    let id = this.anchorPoints.size;
+    this.anchorPoints.set(id, addVector(this.centroid, anchorPoint));
+    return id;
+  }
+
+  removeAnchor(id: number) {
+    let removed = this.anchorPoints.delete(id);
+    if (!removed) {
+      console.log("not found!");
+    }
+    return removed;
   }
 
   draw() {
@@ -47,6 +63,10 @@ export default class Shape {
       this.color
     );
     this.drawUtils.drawPoint(this.centroid, 5, this.color);
+
+    for (const [, anchor] of this.anchorPoints.entries()) {
+      this.drawUtils.drawPoint(anchor, 5, "green");
+    }
   }
 
   move(delta: Vector) {
@@ -54,6 +74,10 @@ export default class Shape {
       this.vertices[i].add(delta);
     }
     this.centroid.add(delta);
+
+    for (const [id, anchor] of this.anchorPoints.entries()) {
+      this.anchorPoints.set(id, addVector(anchor, delta));
+    }
   }
 
   rotate(radian: number) {
@@ -64,6 +88,14 @@ export default class Shape {
         radian
       );
       this.vertices[i] = rotatedVertice;
+    }
+    for (const [id, anchor] of this.anchorPoints.entries()) {
+      let rotatedAnchor = this.calculatorUtils.rotateAroundPoint(
+        anchor,
+        this.centroid,
+        radian
+      );
+      this.anchorPoints.set(id, rotatedAnchor);
     }
   }
 
