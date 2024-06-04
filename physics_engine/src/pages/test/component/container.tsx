@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import main from "../lib/main";
+import main from "../../../engine/lib/main";
 
-const container = () => {
+const Container = () => {
   useEffect(() => {
     if (document) {
       main(document);
@@ -16,4 +16,4 @@ const container = () => {
   );
 };
 
-export default container;
+export default Container;

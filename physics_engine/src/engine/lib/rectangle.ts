@@ -1,5 +1,3 @@
-import { Over_the_Rainbow } from "next/font/google";
-import Draw from "../utils/draw";
 import Polygon from "./polygon";
 import Vector, { subVector } from "./vector";
 
