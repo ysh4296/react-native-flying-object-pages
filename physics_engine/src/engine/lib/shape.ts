@@ -1,7 +1,7 @@
 import Calculator from "../utils/calculator";
 import Draw from "../utils/draw";
 import BoundingBox from "../optimization/boundingBox";
-import Vector, { addVector } from "./vector";
+import Vector, { addVector, subVector } from "./vector";
 
 export default class Shape {
   vertices: Vector[];
@@ -11,6 +11,7 @@ export default class Shape {
   color: string;
   boundingBox: BoundingBox;
   anchorPoints: Map<number, Vector>;
+  normals: Vector[];
 
   constructor(vertices: Vector[], color: string) {
     this.drawUtils = Draw.getInstance();
@@ -18,6 +19,7 @@ export default class Shape {
     this.vertices = vertices;
     this.centroid = new Vector({ x: 0, y: 0 });
     this.color = color;
+    this.normals = [];
     this.boundingBox = new BoundingBox();
     if (new.target === Shape) {
       throw new TypeError(
@@ -127,5 +129,17 @@ export default class Shape {
     }
     this.boundingBox.topLeft = topLeft;
     this.boundingBox.bottomRight = bottomRight;
+  }
+
+  isInside(position: Vector) {
+    for (let i = 0; i < this.vertices.length; i++) {
+      let vertex = this.vertices[i];
+      let normal = this.normals[i];
+      let vertexToPoint = subVector(position, vertex);
+      if (vertexToPoint.getDotProduct(normal) > 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }

@@ -2,8 +2,6 @@ import Shape from "./shape";
 import Vector, { addVector, scaleVector, subVector } from "./vector";
 
 export default class Polygon extends Shape {
-  normals: Vector[];
-
   constructor(vertices: Vector[], color: string) {
     super(vertices, color);
     this.normals = this.calculatorUtils.calcNormals(this.vertices);

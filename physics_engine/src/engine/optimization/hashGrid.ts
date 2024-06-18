@@ -89,4 +89,15 @@ export default class HashGrid extends SpatialGrid {
       (item, index) => neighborObjects.indexOf(item) === index
     );
   }
+
+  getContentOfCell(id: number) {
+    let content = this.hashMap.get(id);
+    if (content === null || content === undefined) return [];
+    return content;
+  }
+  getCellIdFromPosition(pos: Vector) {
+    let x = parseInt(String(pos.x / this.cellSize));
+    let y = parseInt(String(pos.y / this.cellSize));
+    return this.cellIndexToHash(x, y);
+  }
 }

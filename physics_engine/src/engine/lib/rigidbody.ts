@@ -1,21 +1,20 @@
-import { join } from "path";
-import BoundingBox from "../optimization/boundingBox";
-import Circle from "./circle";
 import Matter from "./matter";
 import Shape from "./shape";
-import Vector, { addVector, scaleVector } from "./vector";
+import Vector, { addVector, scaleVector, subVector } from "./vector";
 
 export default class RigidBody {
   shape: Shape;
   mass: number;
   massInverse: number;
   force: Vector;
+  torque: number;
   velocity: Vector;
   angularVelocity: number;
   isKinematic: boolean;
   matter: Matter;
   inertia: number;
   inertiaInverse: number;
+  private static instance: RigidBody;
 
   constructor(shape: Shape, mass: number) {
     this.shape = shape;
@@ -30,6 +29,7 @@ export default class RigidBody {
       this.isKinematic = true;
     }
     this.force = new Vector({ x: 0, y: 0 });
+    this.torque = 0;
     this.velocity = new Vector({ x: 0, y: 0 });
     this.angularVelocity = 0;
     this.matter = new Matter();
@@ -54,6 +54,12 @@ export default class RigidBody {
     this.force.add(forceVector);
   }
 
+  addForceAtPoint(point: Vector, forceVector: Vector) {
+    let direction = subVector(point, this.shape.centroid);
+    this.force.add(forceVector);
+    this.torque += direction.cross(forceVector);
+  }
+
   addVelocity(velocityVector: Vector) {
     this.velocity.add(velocityVector);
   }
@@ -67,6 +73,7 @@ export default class RigidBody {
     this.velocity.scale(0.99999);
     this.angularVelocity *= 0.99999;
     this.force = new Vector({ x: 0, y: 0 });
+    this.torque = 0;
   }
 
   integrate(deltaTime: number) {
@@ -82,6 +89,9 @@ export default class RigidBody {
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
 
+    let rotationalAcceleration = this.torque * this.inertiaInverse;
+    this.angularVelocity += rotationalAcceleration * deltaTime;
+
     let deltaRotation = this.angularVelocity * deltaTime;
     this.shape.rotate(deltaRotation);
   }
@@ -94,6 +104,9 @@ export default class RigidBody {
       this.velocity,
       scaleVector(accelation, deltaTime)
     );
+
+    let rotationalAcceleration = this.torque * this.inertiaInverse;
+    this.angularVelocity += rotationalAcceleration * deltaTime;
 
     let deltaRotation = this.angularVelocity * deltaTime;
     this.shape.rotate(deltaRotation);
@@ -108,6 +121,9 @@ export default class RigidBody {
     );
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
+
+    let rotationalAcceleration = this.torque * this.inertiaInverse;
+    this.angularVelocity += rotationalAcceleration * deltaTime;
 
     let deltaRotation = this.angularVelocity * deltaTime;
     this.shape.rotate(deltaRotation / 2);
@@ -147,6 +163,9 @@ export default class RigidBody {
 
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
+
+    let rotationalAcceleration = this.torque * this.inertiaInverse;
+    this.angularVelocity += rotationalAcceleration * deltaTime;
 
     let deltaRotation = this.angularVelocity * deltaTime;
     this.shape.rotate(deltaRotation);

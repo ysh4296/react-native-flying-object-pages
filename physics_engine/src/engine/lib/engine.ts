@@ -8,6 +8,7 @@ import Polygon from "./polygon";
 import RigidBody from "./rigidbody";
 import SpatialGrid from "../optimization/spatialGrid";
 import HashGrid from "../optimization/hashGrid";
+import Mouse from "../event/mouse";
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -31,6 +32,7 @@ export default class Engine {
   gravity: Vector;
   iteration: number;
   grid: SpatialGrid;
+  MouseEvent: Mouse;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -40,10 +42,11 @@ export default class Engine {
     this.canvas = canvas;
     this.ctx = ctx;
     this.drawUtils = Draw.getInstance();
+    this.MouseEvent = new Mouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
     this.world = world;
-    this.iteration = 10;
+    this.iteration = 15;
 
     this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, "black");
     this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, "black");
@@ -68,14 +71,6 @@ export default class Engine {
       200,
       "black"
     );
-    // this.testRectangle1 = new Rectangle(
-    //   ctx,
-    //   new Vector({ x: 620, y: 600 }),
-    //   1400,
-    //   100,
-    //   "black"
-    // );
-    // this.testRectangle1.rotate(0.2);
     this.testRectangle3 = new Rectangle(
       new Vector({ x: 620, y: 400 }),
       200,
@@ -131,6 +126,23 @@ export default class Engine {
     this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, "black", fpsText);
 
     this.grid.refreshGrid();
+    this.MouseEvent.followMouse();
+    
+    if (this.MouseEvent.grabbedObject){
+      this.drawUtils.drawPoint(this.MouseEvent.mousePosition, 5, "red");
+
+
+      let anchorPosition = this.MouseEvent.grabbedObject
+        .getShape()
+        .anchorPoints.get(this.MouseEvent.grabbedAnchorId);
+      if (anchorPosition) {
+        this.drawUtils.drawLine(
+          this.MouseEvent.mousePosition,
+          anchorPosition,
+          "black"
+        );
+      }
+    }
     for (let it = 0; it < this.iteration; it++) {
       for (let i = 0; i < this.rigidBodies.length; i++) {
         this.rigidBodies[i].addForce(
@@ -208,6 +220,18 @@ export default class Engine {
         );
       }
     }
+  }
+
+  onMouseMove(e: MouseEvent) {
+    this.MouseEvent.mouseMove(e, this.canvas, this);
+  }
+
+  onMouseDown(e: MouseEvent) {
+    this.MouseEvent.mouseDown(e, this.canvas, this);
+  }
+
+  onMouseUp(e: MouseEvent) {
+    this.MouseEvent.mouseUp(e, this.canvas, this);
   }
 
   onKeyboardPressed = (e: KeyboardEvent) => {

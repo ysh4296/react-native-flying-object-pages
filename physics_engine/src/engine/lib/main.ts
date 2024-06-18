@@ -1,3 +1,4 @@
+import Mouse from "../event/mouse";
 import Draw from "../utils/draw";
 import Engine from "./engine";
 import getMousePosition from "./getMousePosition";
@@ -15,7 +16,6 @@ const main = (document: Document) => {
   if (ctx) {
     Draw.createInstance(ctx);
     const engine = new Engine(canvas, ctx, new Vector({ x: 1200, y: 700 }));
-
     currentTime = performance.now();
     const loop = () => {
       let targetTime = performance.now();
@@ -30,8 +30,17 @@ const main = (document: Document) => {
     loop();
 
     canvas.addEventListener("mousemove", (e: MouseEvent) => {
-      const currentPosition = getMousePosition(canvas, e);
-      console.log(currentPosition);
+      // const currentPosition = getMousePosition(canvas, e);
+      // console.log(currentPosition);
+      engine.onMouseMove(e);
+    });
+
+    canvas.addEventListener("mousedown", (e: MouseEvent) => {
+      engine.onMouseDown(e);
+    });
+
+    canvas.addEventListener("mouseup", (e: MouseEvent) => {
+      engine.onMouseUp(e);
     });
 
     window.addEventListener("keydown", (e: KeyboardEvent) => {

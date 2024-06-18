@@ -129,6 +129,16 @@ export default class SpatialGrid {
     );
   }
 
+  getContentOfCell(id: number) {
+    return this.cells[id];
+  }
+
+  getCellIdFromPosition(pos: Vector) {
+    let x = parseInt(String(pos.x / this.cellSize));
+    let y = parseInt(String(pos.y / this.cellSize));
+    return x + y * this.cellCntX;
+  }
+
   draw() {
     for (let i = 0; i < this.cellCntX; i++) {
       for (let j = 0; j < this.cellCntY; j++) {
