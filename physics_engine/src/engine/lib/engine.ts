@@ -126,12 +126,10 @@ export default class Engine {
     this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, "black", fpsText);
 
     this.grid.refreshGrid();
-    this.MouseEvent.followMouse();
     
     if (this.MouseEvent.grabbedObject){
+      this.MouseEvent.followMouse();
       this.drawUtils.drawPoint(this.MouseEvent.mousePosition, 5, "red");
-
-
       let anchorPosition = this.MouseEvent.grabbedObject
         .getShape()
         .anchorPoints.get(this.MouseEvent.grabbedAnchorId);

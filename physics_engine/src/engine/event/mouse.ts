@@ -2,21 +2,21 @@ import Engine from "../lib/engine";
 import getMousePosition from "../lib/getMousePosition";
 import RigidBody from "../lib/rigidbody";
 import Vector, { scaleVector, subVector } from "../lib/vector";
-import Draw from "../utils/draw";
+import Calculator from "../utils/calculator";
 
 export default class Mouse {
   isGrab: boolean;
   grabbedAnchorId: number;
   grabbedObject: RigidBody | undefined;
-  drawUtils: Draw;
   mousePosition: Vector;
+  calculatorUtils: Calculator;
 
   constructor() {
     this.isGrab = false;
     this.grabbedAnchorId = 0;
     this.grabbedObject = undefined;
-    this.drawUtils = Draw.getInstance();
     this.mousePosition = new Vector({ x: 0, y: 0 });
+    this.calculatorUtils = Calculator.getInstance();
   }
 
   mouseDown(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
@@ -54,7 +54,6 @@ export default class Mouse {
   }
 
   mouseMove(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
-    // if (!this.grabbedObject) return;
     let mousePosition: Vector = getMousePosition(canvas, e);
     this.mousePosition = mousePosition;
   }
@@ -65,10 +64,17 @@ export default class Mouse {
       .getShape()
       .anchorPoints.get(this.grabbedAnchorId);
     if (!anchorPosition) return;
-    let force = scaleVector(
+
+    const distanceVector = subVector(anchorPosition, this.mousePosition);
+    const distance = distanceVector.length() * 500;
+
+    const mult = 10000 - this.calculatorUtils.clamp(distance,9500,500);
+
+    const force = scaleVector(
       subVector(this.mousePosition, anchorPosition),
-      this.grabbedObject.mass * 1000
+      this.grabbedObject.mass * mult
     );
+
     this.grabbedObject.addForceAtPoint(anchorPosition, force);
   }
 }
