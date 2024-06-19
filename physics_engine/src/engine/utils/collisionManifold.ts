@@ -143,14 +143,6 @@ export default class CollisionManifold {
 
     let frictionalImpulseVector = scaleVector(tangent, frictionalImpulse);
 
-    // this.drawUtils.drawArrow(
-    //   addVector(
-    //     objectA.shape.centroid,
-    //     scaleVector(frictionalImpulseVector, 40)
-    //   ),
-    //   objectA.shape.centroid,
-    //   "red"
-    // );
     objectA.velocity = subVector(
       objectA.velocity,
       scaleVector(frictionalImpulseVector, objectA.massInverse)
