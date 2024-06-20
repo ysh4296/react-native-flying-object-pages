@@ -68,7 +68,9 @@ export default class Mouse {
     const distanceVector = subVector(anchorPosition, this.mousePosition);
     const distance = distanceVector.length() * 500;
 
-    const mult = 10000 - this.calculatorUtils.clamp(distance,9500,500);
+    const mult = 10000 - this.calculatorUtils.clamp(distance, 9750, 100);
+
+    if (distance < 20000) return;
 
     const force = scaleVector(
       subVector(this.mousePosition, anchorPosition),
