@@ -2,25 +2,19 @@ import Engine from "../lib/engine";
 import getMousePosition from "../lib/getMousePosition";
 import RigidBody from "../lib/rigidbody";
 import Vector, { scaleVector, subVector } from "../lib/vector";
-import Calculator from "../utils/calculator";
+import { mouseEvent } from "./mouseEvent";
 
-export default class Mouse {
-  isGrab: boolean;
+export default class GrabMouse extends mouseEvent {
   grabbedAnchorId: number;
   grabbedObject: RigidBody | undefined;
-  mousePosition: Vector;
-  calculatorUtils: Calculator;
 
   constructor() {
-    this.isGrab = false;
+    super();
     this.grabbedAnchorId = 0;
     this.grabbedObject = undefined;
-    this.mousePosition = new Vector({ x: 0, y: 0 });
-    this.calculatorUtils = Calculator.getInstance();
   }
 
   mouseDown(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
-    console.log("mouseDown");
     this.mousePosition = getMousePosition(canvas, e);
     let gridId = engine.grid.getCellIdFromPosition(this.mousePosition);
     let objects = engine.grid.getContentOfCell(gridId);
@@ -43,7 +37,6 @@ export default class Mouse {
   }
 
   mouseUp(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
-    console.log("mouseUP");
     if (this.grabbedObject) {
       this.grabbedObject.getShape().removeAnchor(this.grabbedAnchorId);
 
