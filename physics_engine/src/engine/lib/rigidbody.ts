@@ -14,6 +14,7 @@ export default class RigidBody {
   matter: Matter;
   inertia: number;
   inertiaInverse: number;
+  nonCollisionObjects: Set<RigidBody>;
   private static instance: RigidBody;
 
   constructor(shape: Shape, mass: number) {
@@ -34,12 +35,31 @@ export default class RigidBody {
     this.angularVelocity = 0;
     this.matter = new Matter();
     this.inertia = this.shape.calculateInertia(this.mass);
+    this.nonCollisionObjects = new Set();
 
     if (this.inertia > 0.0001) {
       this.inertiaInverse = 1.0 / this.inertia;
     } else {
       this.inertiaInverse = 0;
     }
+  }
+
+  addNonCollisionObject(object: RigidBody) {
+    this.nonCollisionObjects.add(object);
+    object.nonCollisionObjects.add(this);
+  }
+
+  deleteNonCollisionObject(object: RigidBody) {
+    if (this.nonCollisionObjects.has(object)) {
+      this.nonCollisionObjects.delete(object);
+    }
+    if (object.nonCollisionObjects.has(object)) {
+      object.nonCollisionObjects.delete(object);
+    }
+  }
+
+  canCollision(object: RigidBody): boolean {
+    return !this.nonCollisionObjects.has(object);
   }
 
   getShape() {
@@ -70,7 +90,7 @@ export default class RigidBody {
 
   update(deltaTime: number) {
     this.integrate(deltaTime);
-    this.velocity.scale(0.999);
+    this.velocity.scale(0.99999);
     this.angularVelocity *= 0.999;
     this.force = new Vector({ x: 0, y: 0 });
     this.torque = 0;

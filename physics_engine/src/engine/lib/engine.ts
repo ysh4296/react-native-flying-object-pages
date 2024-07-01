@@ -121,6 +121,10 @@ export default class Engine {
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
     this.rigidBodies.push(new RigidBody(this.left, 0));
     this.rigidBodies.push(new RigidBody(this.right, 0));
+    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[1]);
+    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[2]);
+    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[3]);
+    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[4]);
 
     this.grid = new HashGrid(15);
     this.grid.initialize(this.world, this.rigidBodies);
@@ -166,26 +170,32 @@ export default class Engine {
         this.rigidBodies[i].update(deltaTime / this.iteration);
         this.rigidBodies[i].shape.boundingBox.collision = false;
       }
+
       for (let i = 0; i < this.rigidBodies.length; i++) {
         let objectA = this.rigidBodies[i];
         let neighbors = this.grid.getNeighborObject(i, objectA);
         for (let j = 0; j < neighbors.length; j++) {
           let objectB = neighbors[j];
-          if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
-            // no collision
-            continue;
+
+          if (objectA.canCollision(objectB)) {
+            if (
+              !objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)
+            ) {
+              // no collision
+              continue;
+            }
+            let result = this.collision.checkCollision(
+              objectA.shape,
+              objectB.shape
+            );
+            if (result) {
+              result.resolveCollision(objectA, objectB);
+              result.positionalCorrection(objectA, objectB);
+              result.draw();
+            }
+            objectA.shape.boundingBox.collision = true;
+            objectB.shape.boundingBox.collision = true;
           }
-          let result = this.collision.checkCollision(
-            objectA.shape,
-            objectB.shape
-          );
-          if (result) {
-            result.resolveCollision(objectA, objectB);
-            result.positionalCorrection(objectA, objectB);
-            result.draw();
-          }
-          objectA.shape.boundingBox.collision = true;
-          objectB.shape.boundingBox.collision = true;
         }
       }
     }
