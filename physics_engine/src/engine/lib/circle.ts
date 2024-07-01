@@ -1,6 +1,6 @@
 import Draw from "../utils/draw";
 import Shape from "./shape";
-import Vector from "./vector";
+import Vector, { subVector } from "./vector";
 
 export default class Circle extends Shape {
   position: Vector;
@@ -39,5 +39,11 @@ export default class Circle extends Shape {
   draw() {
     super.draw();
     this.drawUtils.strokePoint(this.position, this.radius, this.color);
+  }
+
+  isInside(position: Vector) {
+    const distance = subVector(this.centroid, position).length();
+    if (distance > this.radius) return false;
+    return true;
   }
 }

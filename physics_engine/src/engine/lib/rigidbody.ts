@@ -70,8 +70,8 @@ export default class RigidBody {
 
   update(deltaTime: number) {
     this.integrate(deltaTime);
-    this.velocity.scale(0.99999);
-    this.angularVelocity *= 0.99999;
+    this.velocity.scale(0.999);
+    this.angularVelocity *= 0.999;
     this.force = new Vector({ x: 0, y: 0 });
     this.torque = 0;
   }

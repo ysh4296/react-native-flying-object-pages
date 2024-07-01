@@ -124,7 +124,6 @@ export default class Engine {
 
     this.grid = new HashGrid(15);
     this.grid.initialize(this.world, this.rigidBodies);
-    this.rigidBodies[0].shape.createAnchor(new Vector({ x: 10, y: -20 }));
   }
 
   handleJoints() {

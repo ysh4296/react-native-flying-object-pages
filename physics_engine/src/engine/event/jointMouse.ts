@@ -7,6 +7,7 @@ import RigidBody from "../lib/rigidbody";
 import Vector, { subVector } from "../lib/vector";
 import { mouseEvent } from "./mouseEvent";
 import ForceJoint from "../joints/forceJoint";
+import ReverseJoint from "../joints/reverseJoints";
 
 export default class JointMouse extends mouseEvent {
   grabbedAnchorAId: number;
@@ -78,10 +79,15 @@ export default class JointMouse extends mouseEvent {
         case "NONE":
           return;
         case "FORCE":
-          registry.engine.joints.push(new ForceJoint(jointConnection, 50000));
+          registry.engine.joints.push(new ForceJoint(jointConnection, 500000));
           break;
         case "SPRING":
           registry.engine.joints.push(new SpringJoint(jointConnection, 10, 50));
+          break;
+        case "REVERSE":
+          registry.engine.joints.push(
+            new ReverseJoint(jointConnection, 100, 400)
+          );
           break;
       }
     } else {
@@ -92,6 +98,10 @@ export default class JointMouse extends mouseEvent {
         this.grabbedObjectB.getShape().removeAnchor(this.grabbedAnchorBId);
       }
     }
+    this.grabbedAnchorAId = 0;
+    this.grabbedObjectA = undefined;
+    this.grabbedAnchorBId = 0;
+    this.grabbedObjectB = undefined;
   }
 
   mouseMove(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
