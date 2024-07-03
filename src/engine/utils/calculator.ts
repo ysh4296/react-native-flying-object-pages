@@ -1,4 +1,4 @@
-import Vector, { subVector } from "../lib/vector";
+import Vector, { subVector } from "@engine/lib/vector";
 
 export default class Calculator {
   private static instance: Calculator;

@@ -1,5 +1,5 @@
-import Vector, { subVector } from "../lib/vector";
-import CollisionManifold from "../utils/collisionManifold";
+import Vector, { subVector } from "@engine/lib/vector";
+import CollisionManifold from "@engine/utils/collisionManifold";
 import Joint from "./joint";
 import JointConnection from "./jointConnection";
 

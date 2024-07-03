@@ -1,5 +1,5 @@
-import RigidBody from "../lib/rigidbody";
-import Draw from "../utils/draw";
+import RigidBody from "@engine/lib/rigidbody";
+import Draw from "@engine/utils/draw";
 
 export default class JointConnection {
   objectA: RigidBody;

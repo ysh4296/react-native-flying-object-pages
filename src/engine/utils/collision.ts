@@ -1,7 +1,7 @@
-import Circle from "../lib/circle";
-import Polygon from "../lib/polygon";
-import Shape from "../lib/shape";
-import Vector, { addVector, scaleVector, subVector } from "../lib/vector";
+import Circle from "@engine/lib/Circle";
+import Polygon from "@engine/lib/polygon";
+import Shape from "@engine/lib/Shape";
+import Vector, { addVector, scaleVector, subVector } from "@engine/lib/vector";
 import Calculator from "./calculator";
 import CollisionManifold from "./collisionManifold";
 

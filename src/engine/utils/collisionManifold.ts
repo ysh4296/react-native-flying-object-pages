@@ -1,5 +1,5 @@
-import RigidBody from "../lib/rigidbody";
-import Vector, { addVector, scaleVector, subVector } from "../lib/vector";
+import RigidBody from "@engine/lib/rigidbody";
+import Vector, { addVector, scaleVector, subVector } from "@engine/lib/vector";
 import Draw from "./draw";
 
 export default class CollisionManifold {

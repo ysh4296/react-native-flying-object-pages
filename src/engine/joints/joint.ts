@@ -1,4 +1,4 @@
-import RigidBody from "../lib/rigidbody";
+import RigidBody from "@engine/lib/rigidbody";
 import JointConnection from "./jointConnection";
 
 export default class Joint {

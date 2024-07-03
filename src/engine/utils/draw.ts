@@ -1,4 +1,4 @@
-import Vector, { addVector, scaleVector, subVector } from "../lib/vector";
+import Vector, { addVector, scaleVector, subVector } from "@engine/lib/vector";
 
 export default class Draw {
   ctx: CanvasRenderingContext2D;

@@ -1,15 +1,15 @@
-import SpringJoint from "../joints/springJoint";
-import JointConnection from "../joints/jointConnection";
-import Engine from "../lib/engine";
-import getMousePosition from "../lib/getMousePosition";
-import { registry } from "../lib/main";
-import RigidBody from "../lib/rigidbody";
-import Vector, { subVector } from "../lib/vector";
+import SpringJoint from "@engine/joints/springJoint";
+import JointConnection from "@engine/joints/jointConnection";
+import Engine from "@engine/lib/engine";
+import getMousePosition from "@engine/lib/getMousePosition";
+import { registry } from "@engine/lib/main";
+import RigidBody from "@engine/lib/rigidbody";
+import Vector, { subVector } from "@engine/lib/vector";
 import { mouseEvent } from "./mouseEvent";
-import ForceJoint from "../joints/forceJoint";
-import ReverseJoint from "../joints/reverseJoints";
-import FixedJoint from "../joints/fixedJoint";
-import HingeJoint from "../joints/hingeJoint";
+import ForceJoint from "@engine/joints/forceJoint";
+import ReverseJoint from "@engine/joints/reverseJoints";
+import FixedJoint from "@engine/joints/fixedJoint";
+import HingeJoint from "@engine/joints/hingeJoint";
 
 export default class JointMouse extends mouseEvent {
   grabbedAnchorAId: number;

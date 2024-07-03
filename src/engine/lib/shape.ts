@@ -1,6 +1,6 @@
-import Calculator from "../utils/calculator";
-import Draw from "../utils/draw";
-import BoundingBox from "../optimization/boundingBox";
+import Calculator from "@engine/utils/calculator";
+import Draw from "@engine/utils/draw";
+import BoundingBox from "@engine/optimization/boundingBox";
 import Vector, { addVector, subVector } from "./vector";
 
 export default class Shape {

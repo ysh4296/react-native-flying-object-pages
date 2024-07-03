@@ -1,4 +1,4 @@
-import Draw from "../utils/draw";
+import Draw from "@engine/utils/draw";
 import Shape from "./shape";
 import Vector, { subVector } from "./vector";
 

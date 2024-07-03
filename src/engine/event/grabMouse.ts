@@ -1,7 +1,7 @@
-import Engine from "../lib/engine";
-import getMousePosition from "../lib/getMousePosition";
-import RigidBody from "../lib/rigidbody";
-import Vector, { scaleVector, subVector } from "../lib/vector";
+import Engine from "@engine/lib/engine";
+import getMousePosition from "@engine/lib/getMousePosition";
+import RigidBody from "@engine/lib/rigidbody";
+import Vector, { scaleVector, subVector } from "@engine/lib/vector";
 import { mouseEvent } from "./mouseEvent";
 
 export default class GrabMouse extends mouseEvent {

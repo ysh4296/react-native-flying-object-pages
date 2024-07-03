@@ -1,5 +1,5 @@
-import RigidBody from "../lib/rigidbody";
-import Vector from "../lib/vector";
+import RigidBody from "@engine/lib/rigidbody";
+import Vector from "@engine/lib/vector";
 import SpatialGrid from "./spatialGrid";
 
 export default class HashGrid extends SpatialGrid {

@@ -1,7 +1,7 @@
-import RigidBody from "../lib/rigidbody";
-import Vector from "../lib/vector";
-import Calculator from "../utils/calculator";
-import Draw from "../utils/draw";
+import RigidBody from "@engine/lib/rigidbody";
+import Vector from "@engine/lib/vector";
+import Calculator from "@engine/utils/calculator";
+import Draw from "@engine/utils/draw";
 
 export default class SpatialGrid {
   world: Vector;

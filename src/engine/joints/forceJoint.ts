@@ -1,4 +1,4 @@
-import { scaleVector, subVector } from "../lib/vector";
+import { scaleVector, subVector } from "@engine/lib/vector";
 import Joint from "./joint";
 import JointConnection from "./jointConnection";
 

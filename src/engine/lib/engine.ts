@@ -1,17 +1,17 @@
 import Circle from "./circle";
-import Draw from "../utils/draw";
+import Draw from "@engine/utils/draw";
 import Rectangle from "./rectangle";
 import Vector, { scaleVector } from "./vector";
-import Calculator from "../utils/calculator";
-import Collision from "../utils/collision";
+import Calculator from "@engine/utils/calculator";
+import Collision from "@engine/utils/collision";
 import Polygon from "./polygon";
 import RigidBody from "./rigidbody";
-import SpatialGrid from "../optimization/spatialGrid";
-import HashGrid from "../optimization/hashGrid";
-import GrabMouse from "../event/grabMouse";
-import Joint from "../joints/joint";
+import SpatialGrid from "@engine/optimization/spatialGrid";
+import HashGrid from "@engine/optimization/hashGrid";
+import GrabMouse from "@engine/event/grabMouse";
+import Joint from "@engine/joints/joint";
 import { registry } from "./main";
-import JointMouse from "../event/jointMouse";
+import JointMouse from "@engine/event/jointMouse";
 
 export default class Engine {
   canvas: HTMLCanvasElement;
