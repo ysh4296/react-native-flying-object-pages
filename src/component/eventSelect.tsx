@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { getEventLabel, getEventList } from "../enum/engine";
+import {
+  getEventLabel,
+  getEventList,
+} from "../engine/utils/eventLabelConverter";
 
 type EventSelectProps = {
   eventName: EventName;
