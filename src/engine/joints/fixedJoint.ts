@@ -25,13 +25,12 @@ export default class FixedJoint extends Joint {
     this.objectBFriction = this.objectB.matter.friction;
     this.relationOrientation = 0;
     // @add add joint to moving object
-    // this.objectB.getShape().orientation - this.objectA.getShape().orientation;
+    this.objectB.getShape().orientation - this.objectA.getShape().orientation;
     this.jointIteration = 20;
   }
 
   updateConnectionA() {
     this.clearMaterial();
-    if (this.objectB.isKinematic) return;
 
     for (let i = 0; i < this.jointIteration; i++) {
       const anchorAPos = this.getAnchorAPos();
@@ -57,6 +56,8 @@ export default class FixedJoint extends Joint {
       contact.resolveCollision(this.objectB, this.objectA);
       contact.positionalCorrection(this.objectB, this.objectA, 0.3);
 
+      if (this.objectB.isKinematic) continue;
+
       const currentOrientationDiff =
         this.objectB.getShape().orientation - this.objectA.getShape().orientation;
       const fixedOrientation = this.relationOrientation - currentOrientationDiff;
@@ -68,7 +69,6 @@ export default class FixedJoint extends Joint {
 
   updateConnectionB() {
     this.clearMaterial();
-    if (this.objectA.isKinematic) return;
 
     for (let i = 0; i < this.jointIteration; i++) {
       const anchorAPos = this.getAnchorAPos();
@@ -93,6 +93,9 @@ export default class FixedJoint extends Joint {
 
       contact.positionalCorrection(this.objectA, this.objectB, 0.3);
       contact.resolveCollision(this.objectA, this.objectB);
+
+      if (this.objectA.isKinematic) continue;
+
       const currentOrientationDiff =
         this.objectA.getShape().orientation - this.objectB.getShape().orientation;
       const fixedOrientation = this.relationOrientation - currentOrientationDiff;

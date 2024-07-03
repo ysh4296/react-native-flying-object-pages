@@ -27,7 +27,6 @@ export default class HingeJoint extends Joint {
 
   updateConnectionA() {
     this.clearMaterial();
-    if (this.objectB.isKinematic) return;
 
     for (let i = 0; i < this.jointIteration; i++) {
       const anchorAPos = this.getAnchorAPos();
@@ -59,7 +58,6 @@ export default class HingeJoint extends Joint {
 
   updateConnectionB() {
     this.clearMaterial();
-    if (this.objectA.isKinematic) return;
 
     for (let i = 0; i < this.jointIteration; i++) {
       const anchorAPos = this.getAnchorAPos();
