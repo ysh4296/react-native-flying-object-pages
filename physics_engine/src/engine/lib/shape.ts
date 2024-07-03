@@ -12,12 +12,14 @@ export default class Shape {
   boundingBox: BoundingBox;
   anchorPoints: Map<number, Vector>;
   normals: Vector[];
+  orientation: number;
 
   constructor(vertices: Vector[], color: string) {
     this.drawUtils = Draw.getInstance();
     this.calculatorUtils = Calculator.getInstance();
     this.vertices = vertices;
     this.centroid = new Vector({ x: 0, y: 0 });
+    this.orientation = 0;
     this.color = color;
     this.normals = [];
     this.boundingBox = new BoundingBox();
@@ -99,6 +101,8 @@ export default class Shape {
       );
       this.anchorPoints.set(id, rotatedAnchor);
     }
+
+    this.orientation += radian;
   }
 
   calculateInertia(mass: number) {

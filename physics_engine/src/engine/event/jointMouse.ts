@@ -8,6 +8,8 @@ import Vector, { subVector } from "../lib/vector";
 import { mouseEvent } from "./mouseEvent";
 import ForceJoint from "../joints/forceJoint";
 import ReverseJoint from "../joints/reverseJoints";
+import FixedJoint from "../joints/fixedJoint";
+import HingeJoint from "../joints/hingeJoint";
 
 export default class JointMouse extends mouseEvent {
   grabbedAnchorAId: number;
@@ -74,12 +76,11 @@ export default class JointMouse extends mouseEvent {
         this.grabbedAnchorBId
       );
 
-      console.log("joint  Event Type  :", registry.jointEventType);
       switch (registry.jointEventType) {
         case "NONE":
           return;
         case "FORCE":
-          registry.engine.joints.push(new ForceJoint(jointConnection, 500000));
+          registry.engine.joints.push(new ForceJoint(jointConnection, 5000));
           break;
         case "SPRING":
           registry.engine.joints.push(new SpringJoint(jointConnection, 10, 50));
@@ -88,6 +89,12 @@ export default class JointMouse extends mouseEvent {
           registry.engine.joints.push(
             new ReverseJoint(jointConnection, 100, 400)
           );
+          break;
+        case "FIXED":
+          registry.engine.joints.push(new FixedJoint(jointConnection));
+          break;
+        case "HINGE":
+          registry.engine.joints.push(new HingeJoint(jointConnection));
           break;
       }
     } else {

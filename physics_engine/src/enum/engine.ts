@@ -2,7 +2,13 @@ export type EventName = "Mouse" | "Joint";
 
 export type MouseType = "NONE" | "DRAG" | "JOINT";
 
-export type JointType = "NONE" | "FORCE" | "SPRING" | "REVERSE" | "FIXED";
+export type JointType =
+  | "NONE"
+  | "FORCE"
+  | "SPRING"
+  | "REVERSE"
+  | "FIXED"
+  | "HINGE";
 
 export type EventType = MouseType | JointType;
 
@@ -22,6 +28,8 @@ export const getEventLabel = (eventType?: EventType) => {
       return "reverse";
     case "FIXED":
       return "fixed";
+    case "HINGE":
+      return "hinge";
     default:
       return "no data";
   }
@@ -32,7 +40,7 @@ export const getEventList = (eventName?: EventName): EventType[] => {
     case "Mouse":
       return ["NONE", "DRAG", "JOINT"];
     case "Joint":
-      return ["NONE", "FORCE", "SPRING", "REVERSE", "FIXED"];
+      return ["NONE", "FORCE", "SPRING", "REVERSE", "FIXED", "HINGE"];
     default:
       return [];
   }

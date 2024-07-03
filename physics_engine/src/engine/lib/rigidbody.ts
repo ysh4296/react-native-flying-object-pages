@@ -193,6 +193,6 @@ export default class RigidBody {
 
   log() {
     console.log("force: x = " + this.force.x + " y = " + this.force.y);
-    console.log("force: x = " + this.velocity.x + " y = " + this.velocity.y);
+    console.log("velocity: x = " + this.velocity.x + " y = " + this.velocity.y);
   }
 }

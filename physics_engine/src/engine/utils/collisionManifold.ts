@@ -7,11 +7,20 @@ export default class CollisionManifold {
   normal: Vector;
   penetrationPoint: Vector;
   drawUtils: Draw;
+  flipNormalEnabled: boolean;
   constructor(depth: number, normal: Vector, penetrationPoint: Vector) {
     this.depth = depth;
     this.normal = normal;
     this.penetrationPoint = penetrationPoint;
     this.drawUtils = Draw.getInstance();
+    this.flipNormalEnabled = true;
+  }
+
+  flip() {
+    if (this.flipNormalEnabled) {
+      this.normal = scaleVector(this.normal, -1);
+      console.log("Flip");
+    }
   }
 
   resolveCollision(objectA: RigidBody, objectB: RigidBody) {
@@ -19,6 +28,21 @@ export default class CollisionManifold {
     if (objectA.isKinematic && objectB.isKinematic) {
       return;
     }
+
+    let dir = subVector(objectB.shape.centroid, objectA.shape.centroid);
+    if (dir.getDotProduct(this.normal) < 0) {
+      this.flip();
+    }
+
+    let minRestitution = Math.min(
+      objectA.matter.restitution,
+      objectB.matter.restitution
+    );
+
+    let minFriction = Math.min(
+      objectA.matter.friction,
+      objectB.matter.friction
+    );
 
     let penetrationPointToCentroidA = subVector(
       this.penetrationPoint,
@@ -55,10 +79,12 @@ export default class CollisionManifold {
       (2 * objectA.matter.restitution * objectB.matter.restitution) /
       (objectA.matter.restitution + objectB.matter.restitution);
 
-    // let collisionRestitution = Math.min(
-    //   objectA.matter.restitution,
-    //   objectB.matter.restitution
-    // );
+    if (!minRestitution) {
+      collisionRestitution = Math.min(
+        objectA.matter.restitution,
+        objectB.matter.restitution
+      );
+    }
 
     let crossRestitutionVectorA = penetrationPointToCentroidA.cross(
       this.normal
@@ -105,10 +131,13 @@ export default class CollisionManifold {
     let collisionFriction =
       (2 * objectA.matter.friction * objectB.matter.friction) /
       (objectA.matter.friction + objectB.matter.friction);
-    // let collisionFriction = Math.min(
-    //   objectA.matter.friction,
-    //   objectB.matter.friction
-    // );
+
+    if (!minFriction) {
+      collisionFriction = Math.min(
+        objectA.matter.friction,
+        objectB.matter.friction
+      );
+    }
 
     if (Math.abs(tangent.x) > 0.00001 || Math.abs(tangent.y) > 0.00001) {
       tangent.normalize();
@@ -125,11 +154,6 @@ export default class CollisionManifold {
     let crossTangentSum =
       crossFrictionVectorA * crossFrictionVectorA * objectA.inertiaInverse +
       crossFrictionVectorB * crossFrictionVectorB * objectB.inertiaInverse;
-
-    let minFriction = Math.min(
-      objectA.matter.friction,
-      objectB.matter.friction
-    );
 
     let velocityDotFriction = relativeVelocity.getDotProduct(tangent);
 
@@ -158,8 +182,11 @@ export default class CollisionManifold {
       crossFrictionVectorB * frictionalImpulse * objectB.inertiaInverse;
   }
 
-  positionalCorrection(objectA: RigidBody, objectB: RigidBody) {
-    let correctDelta = 0.1;
+  positionalCorrection(
+    objectA: RigidBody,
+    objectB: RigidBody,
+    correctDelta: number
+  ) {
     let correction =
       (this.depth / (objectA.massInverse + objectB.massInverse)) * correctDelta;
 

@@ -12,6 +12,8 @@ import GrabMouse from "../event/grabMouse";
 import Joint from "../joints/joint";
 import { registry } from "./main";
 import JointMouse from "../event/jointMouse";
+import FixedJoint from "../joints/fixedJoint";
+import JointConnection from "../joints/jointConnection";
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -107,6 +109,13 @@ export default class Engine {
       this.world.y - 100,
       "red"
     );
+
+    // let rect = new Rectangle(new Vector({ x: 400, y: 200 }), 200, 100, "blue");
+    // let anchorRectId = rect.createAnchor(new Vector({ x: 75, y: 0 }));
+
+    // let rect2 = new Rectangle(new Vector({ x: 600, y: 200 }), 300, 25, "blue");
+    // let anchorRect2Id = rect2.createAnchor(new Vector({ x: -125, y: 0 }));
+
     this.gravity = new Vector({ x: 0, y: 700 });
     this.rigidBodies = [];
     this.rigidBodies.push(new RigidBody(this.triangle1, 1));
@@ -117,25 +126,37 @@ export default class Engine {
     this.rigidBodies.push(new RigidBody(this.testCircle3, 1));
     this.rigidBodies.push(new RigidBody(this.testRectangle2, 1));
     // this.createTempPyramid();
+    // this.rigidBodies.push(new RigidBody(rect, 1));
+    // this.rigidBodies.push(new RigidBody(rect2, 1));
+
     this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
     this.rigidBodies.push(new RigidBody(this.left, 0));
     this.rigidBodies.push(new RigidBody(this.right, 0));
-    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[1]);
-    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[2]);
-    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[3]);
-    this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[4]);
+    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[1]);
+    // this.rigidBodies[1].addNonCollisionObject(this.rigidBodies[0]);
+    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[2]);
+    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[3]);
+    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[4]);
 
     this.grid = new HashGrid(15);
     this.grid.initialize(this.world, this.rigidBodies);
+    // let jointConnection2 = new JointConnection(
+    //   this.rigidBodies[0],
+    //   anchorRectId,
+    //   this.rigidBodies[1],
+    //   anchorRect2Id
+    // );
+
+    // this.joints.push(new FixedJoint(jointConnection2));
   }
 
   handleJoints() {
     for (let i = 0; i < this.joints.length; i++) {
       //console.log(this.joints[i].jointConnection.anchorA);
-      this.joints[i].draw();
       this.joints[i].updateConnectionA();
       this.joints[i].updateConnectionB();
+      this.joints[i].draw();
     }
   }
 
@@ -144,7 +165,6 @@ export default class Engine {
     this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, "black", fpsText);
 
     this.grid.refreshGrid();
-
     this.handleJoints();
 
     if (this.GrabMouseEvent.grabbedObject) {
@@ -190,7 +210,7 @@ export default class Engine {
             );
             if (result) {
               result.resolveCollision(objectA, objectB);
-              result.positionalCorrection(objectA, objectB);
+              result.positionalCorrection(objectA, objectB, 0.3);
               result.draw();
             }
             objectA.shape.boundingBox.collision = true;
