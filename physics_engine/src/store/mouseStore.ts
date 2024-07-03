@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { MouseType } from "../enum/engine";
 
 type mouseStoreType = {
   mouseEventType: MouseType;

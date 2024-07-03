@@ -1,5 +1,4 @@
 import RigidBody from "../lib/rigidbody";
-import { subVector } from "../lib/vector";
 import Draw from "../utils/draw";
 
 export default class JointConnection {

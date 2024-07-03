@@ -1,4 +1,4 @@
-import Vector, { scaleVector, subVector } from "../lib/vector";
+import Vector, { subVector } from "../lib/vector";
 import CollisionManifold from "../utils/collisionManifold";
 import Joint from "./joint";
 import JointConnection from "./jointConnection";

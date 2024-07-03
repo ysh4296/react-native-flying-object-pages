@@ -1,17 +1,3 @@
-export type EventName = "Mouse" | "Joint";
-
-export type MouseType = "NONE" | "DRAG" | "JOINT";
-
-export type JointType =
-  | "NONE"
-  | "FORCE"
-  | "SPRING"
-  | "REVERSE"
-  | "FIXED"
-  | "HINGE";
-
-export type EventType = MouseType | JointType;
-
 export const getEventLabel = (eventType?: EventType) => {
   switch (eventType) {
     case "NONE":

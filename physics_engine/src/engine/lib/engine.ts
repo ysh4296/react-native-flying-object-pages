@@ -12,8 +12,6 @@ import GrabMouse from "../event/grabMouse";
 import Joint from "../joints/joint";
 import { registry } from "./main";
 import JointMouse from "../event/jointMouse";
-import FixedJoint from "../joints/fixedJoint";
-import JointConnection from "../joints/jointConnection";
 
 export default class Engine {
   canvas: HTMLCanvasElement;

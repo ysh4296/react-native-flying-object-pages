@@ -1,5 +1,5 @@
 import Polygon from "./polygon";
-import Vector, { subVector } from "./vector";
+import Vector from "./vector";
 
 export default class Rectangle extends Polygon {
   position: Vector;
