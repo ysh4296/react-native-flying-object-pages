@@ -1,6 +1,6 @@
-import Circle from '@engine/lib/Circle';
+import Circle from '@engine/lib/circle';
 import Polygon from '@engine/lib/polygon';
-import Shape from '@engine/lib/Shape';
+import Shape from '@engine/lib/shape';
 import Vector, { addVector, scaleVector, subVector } from '@engine/lib/vector';
 import Calculator from './calculator';
 import CollisionManifold from './collisionManifold';
