@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
-    "test": "next lint"
+    "test": "next lint && prettier --write ."
   },
   "dependencies": {
     "next": "14.2.2",
@@ -23,7 +23,9 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
-    "typescript": "^5",
-    "husky": "^8.0.0"
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "^8.0.0",
+    "typescript": "^5"
   }
 }

@@ -1,8 +1,8 @@
-import Engine from "@engine/lib/engine";
-import getMousePosition from "@engine/lib/getMousePosition";
-import RigidBody from "@engine/lib/rigidbody";
-import Vector, { scaleVector, subVector } from "@engine/lib/vector";
-import { mouseEvent } from "./mouseEvent";
+import Engine from '@engine/lib/engine';
+import getMousePosition from '@engine/lib/getMousePosition';
+import RigidBody from '@engine/lib/rigidbody';
+import Vector, { scaleVector, subVector } from '@engine/lib/vector';
+import { mouseEvent } from './mouseEvent';
 
 export default class GrabMouse extends mouseEvent {
   grabbedAnchorId: number;
@@ -24,13 +24,8 @@ export default class GrabMouse extends mouseEvent {
         this.isGrab = true;
         this.grabbedObject = objects[i];
         // makes anchor and add to object
-        let anchorPosition = subVector(
-          this.mousePosition,
-          objects[i].shape.centroid
-        );
-        this.grabbedAnchorId = this.grabbedObject
-          .getShape()
-          .createAnchor(anchorPosition);
+        let anchorPosition = subVector(this.mousePosition, objects[i].shape.centroid);
+        this.grabbedAnchorId = this.grabbedObject.getShape().createAnchor(anchorPosition);
         break;
       }
     }
@@ -53,9 +48,7 @@ export default class GrabMouse extends mouseEvent {
 
   followMouse() {
     if (!this.grabbedObject) return;
-    let anchorPosition = this.grabbedObject
-      .getShape()
-      .anchorPoints.get(this.grabbedAnchorId);
+    let anchorPosition = this.grabbedObject.getShape().anchorPoints.get(this.grabbedAnchorId);
     if (!anchorPosition) return;
 
     const distanceVector = subVector(anchorPosition, this.mousePosition);
@@ -67,7 +60,7 @@ export default class GrabMouse extends mouseEvent {
 
     const force = scaleVector(
       subVector(this.mousePosition, anchorPosition),
-      this.grabbedObject.mass * mult
+      this.grabbedObject.mass * mult,
     );
 
     this.grabbedObject.addForceAtPoint(anchorPosition, force);

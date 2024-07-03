@@ -1,5 +1,5 @@
-import Draw from "@engine/utils/draw";
-import Vector from "@engine/lib/vector";
+import Draw from '@engine/utils/draw';
+import Vector from '@engine/lib/vector';
 
 export default class BoundingBox {
   topLeft: Vector;
@@ -32,29 +32,29 @@ export default class BoundingBox {
   }
 
   draw() {
-    let color = "green";
+    let color = 'green';
     if (this.collision) {
-      color = "red";
+      color = 'red';
     }
     this.drawUtils.drawLine(
       this.topLeft,
       new Vector({ x: this.bottomRight.x, y: this.topLeft.y }),
-      color
+      color,
     );
     this.drawUtils.drawLine(
       new Vector({ x: this.bottomRight.x, y: this.topLeft.y }),
       this.bottomRight,
-      color
+      color,
     );
     this.drawUtils.drawLine(
       this.bottomRight,
       new Vector({ x: this.topLeft.x, y: this.bottomRight.y }),
-      color
+      color,
     );
     this.drawUtils.drawLine(
       new Vector({ x: this.topLeft.x, y: this.bottomRight.y }),
       this.topLeft,
-      color
+      color,
     );
   }
 }

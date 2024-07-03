@@ -1,3 +1,3 @@
-import container from "./component/container";
+import container from './component/container';
 
 export default container;

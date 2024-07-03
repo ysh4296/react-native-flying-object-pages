@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 type mouseStoreType = {
   mouseEventType: MouseType;
@@ -6,9 +6,8 @@ type mouseStoreType = {
 };
 
 const useMouseStore = create<mouseStoreType>((set) => ({
-  mouseEventType: "NONE",
-  setMouseEventType: (eventType: MouseType) =>
-    set({ mouseEventType: eventType }),
+  mouseEventType: 'NONE',
+  setMouseEventType: (eventType: MouseType) => set({ mouseEventType: eventType }),
 }));
 
 export default useMouseStore;

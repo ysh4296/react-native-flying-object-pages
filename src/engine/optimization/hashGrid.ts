@@ -1,6 +1,6 @@
-import RigidBody from "@engine/lib/rigidbody";
-import Vector from "@engine/lib/vector";
-import SpatialGrid from "./spatialGrid";
+import RigidBody from '@engine/lib/rigidbody';
+import Vector from '@engine/lib/vector';
+import SpatialGrid from './spatialGrid';
 
 export default class HashGrid extends SpatialGrid {
   hashMap: Map<number, RigidBody[]>;
@@ -85,9 +85,7 @@ export default class HashGrid extends SpatialGrid {
         }
       }
     }
-    return neighborObjects.filter(
-      (item, index) => neighborObjects.indexOf(item) === index
-    );
+    return neighborObjects.filter((item, index) => neighborObjects.indexOf(item) === index);
   }
 
   getContentOfCell(id: number) {

@@ -1,16 +1,12 @@
-import { scaleVector, subVector } from "@engine/lib/vector";
-import Joint from "./joint";
-import JointConnection from "./jointConnection";
+import { scaleVector, subVector } from '@engine/lib/vector';
+import Joint from './joint';
+import JointConnection from './jointConnection';
 
 export default class SpringJoint extends Joint {
   springConstant: number;
   restLength: number;
 
-  constructor(
-    connection: JointConnection,
-    springConstant: number,
-    restLength: number
-  ) {
+  constructor(connection: JointConnection, springConstant: number, restLength: number) {
     super(connection);
     this.springConstant = springConstant;
     this.restLength = restLength;

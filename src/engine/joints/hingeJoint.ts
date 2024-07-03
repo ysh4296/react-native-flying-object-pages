@@ -1,7 +1,7 @@
-import Vector, { subVector } from "@engine/lib/vector";
-import CollisionManifold from "@engine/utils/collisionManifold";
-import Joint from "./joint";
-import JointConnection from "./jointConnection";
+import Vector, { subVector } from '@engine/lib/vector';
+import CollisionManifold from '@engine/utils/collisionManifold';
+import Joint from './joint';
+import JointConnection from './jointConnection';
 
 export default class HingeJoint extends Joint {
   initialLength: number;
@@ -15,7 +15,7 @@ export default class HingeJoint extends Joint {
     super(connection);
     this.initialLength = subVector(
       this.getAnchorAPos() as Vector,
-      this.getAnchorBPos() as Vector
+      this.getAnchorBPos() as Vector,
     ).length();
 
     this.objectARestitution = this.objectA.matter.restitution;

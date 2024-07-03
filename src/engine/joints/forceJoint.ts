@@ -1,6 +1,6 @@
-import { scaleVector, subVector } from "@engine/lib/vector";
-import Joint from "./joint";
-import JointConnection from "./jointConnection";
+import { scaleVector, subVector } from '@engine/lib/vector';
+import Joint from './joint';
+import JointConnection from './jointConnection';
 
 export default class ForceJoint extends Joint {
   strength: number;
@@ -17,10 +17,7 @@ export default class ForceJoint extends Joint {
     if (!anchorAPos || !anchorBPos) return;
     const direction = subVector(anchorAPos, anchorBPos);
     direction.normalize();
-    this.objectB.addForceAtPoint(
-      anchorBPos,
-      scaleVector(direction, this.strength * 0.5)
-    );
+    this.objectB.addForceAtPoint(anchorBPos, scaleVector(direction, this.strength * 0.5));
   }
 
   updateConnectionB() {
@@ -30,9 +27,6 @@ export default class ForceJoint extends Joint {
     if (!anchorAPos || !anchorBPos) return;
     const direction = subVector(anchorBPos, anchorAPos);
     direction.normalize();
-    this.objectA.addForceAtPoint(
-      anchorAPos,
-      scaleVector(direction, this.strength * 0.5)
-    );
+    this.objectA.addForceAtPoint(anchorAPos, scaleVector(direction, this.strength * 0.5));
   }
 }

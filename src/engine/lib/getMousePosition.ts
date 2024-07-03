@@ -1,4 +1,4 @@
-import Vector from "./vector";
+import Vector from './vector';
 
 const getMousePosition = (canvas: HTMLCanvasElement, e: MouseEvent): Vector => {
   var rect = canvas.getBoundingClientRect();

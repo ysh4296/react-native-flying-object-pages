@@ -1,7 +1,7 @@
-import RigidBody from "@engine/lib/rigidbody";
-import Vector from "@engine/lib/vector";
-import Calculator from "@engine/utils/calculator";
-import Draw from "@engine/utils/draw";
+import RigidBody from '@engine/lib/rigidbody';
+import Vector from '@engine/lib/vector';
+import Calculator from '@engine/utils/calculator';
+import Draw from '@engine/utils/draw';
 
 export default class SpatialGrid {
   world: Vector;
@@ -61,22 +61,22 @@ export default class SpatialGrid {
       let leftCellIndex = this.calculatorUtils.clamp(
         parseInt(String(left / this.cellSize)),
         this.cellCntX - 1,
-        0
+        0,
       );
       let RightCellIndex = this.calculatorUtils.clamp(
         parseInt(String(right / this.cellSize)),
         this.cellCntX - 1,
-        0
+        0,
       );
       let topCellIndex = this.calculatorUtils.clamp(
         parseInt(String(top / this.cellSize)),
         this.cellCntY - 1,
-        0
+        0,
       );
       let bottomCellIndex = this.calculatorUtils.clamp(
         parseInt(String(bottom / this.cellSize)),
         this.cellCntY - 1,
-        0
+        0,
       );
 
       for (let x = leftCellIndex; x <= RightCellIndex; x++) {
@@ -92,7 +92,7 @@ export default class SpatialGrid {
           this.drawUtils.drawRect(
             position,
             new Vector({ x: this.cellSize - 5, y: this.cellSize - 5 }),
-            "grey"
+            'grey',
           );
         }
       }
@@ -124,9 +124,7 @@ export default class SpatialGrid {
         }
       }
     }
-    return neighborObjects.filter(
-      (item, index) => neighborObjects.indexOf(item) === index
-    );
+    return neighborObjects.filter((item, index) => neighborObjects.indexOf(item) === index);
   }
 
   getContentOfCell(id: number) {
@@ -150,7 +148,7 @@ export default class SpatialGrid {
         this.drawUtils.drawRect(
           position,
           new Vector({ x: this.cellSize - 5, y: this.cellSize - 5 }),
-          "grey"
+          'grey',
         );
       }
     }

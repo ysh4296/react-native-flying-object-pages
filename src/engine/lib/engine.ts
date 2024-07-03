@@ -1,17 +1,17 @@
-import Circle from "./circle";
-import Draw from "@engine/utils/draw";
-import Rectangle from "./rectangle";
-import Vector, { scaleVector } from "./vector";
-import Calculator from "@engine/utils/calculator";
-import Collision from "@engine/utils/collision";
-import Polygon from "./polygon";
-import RigidBody from "./rigidbody";
-import SpatialGrid from "@engine/optimization/spatialGrid";
-import HashGrid from "@engine/optimization/hashGrid";
-import GrabMouse from "@engine/event/grabMouse";
-import Joint from "@engine/joints/joint";
-import { registry } from "./main";
-import JointMouse from "@engine/event/jointMouse";
+import Circle from './circle';
+import Draw from '@engine/utils/draw';
+import Rectangle from './rectangle';
+import Vector, { scaleVector } from './vector';
+import Calculator from '@engine/utils/calculator';
+import Collision from '@engine/utils/collision';
+import Polygon from './polygon';
+import RigidBody from './rigidbody';
+import SpatialGrid from '@engine/optimization/spatialGrid';
+import HashGrid from '@engine/optimization/hashGrid';
+import GrabMouse from '@engine/event/grabMouse';
+import Joint from '@engine/joints/joint';
+import { registry } from './main';
+import JointMouse from '@engine/event/jointMouse';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -39,11 +39,7 @@ export default class Engine {
   JointMouseEvent: JointMouse;
   joints: Joint[];
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
-    world: Vector
-  ) {
+  constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
     this.ctx = ctx;
     this.drawUtils = Draw.getInstance();
@@ -54,58 +50,43 @@ export default class Engine {
     this.collision = Collision.getInstance();
     this.world = world;
     this.iteration = 10;
-    this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, "black");
-    this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, "black");
-    this.testCircle3 = new Circle(new Vector({ x: 200, y: 250 }), 50, "black");
+    this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, 'black');
+    this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, 'black');
+    this.testCircle3 = new Circle(new Vector({ x: 200, y: 250 }), 50, 'black');
     this.triangle1 = new Polygon(
       [
         new Vector({ x: 150, y: 150 }),
         new Vector({ x: 100, y: 100 }),
         new Vector({ x: 200, y: 100 }),
       ],
-      "black"
+      'black',
     );
-    this.testRectangle2 = new Rectangle(
-      new Vector({ x: 250, y: 275 }),
-      200,
-      200,
-      "black"
-    );
-    this.testRectangle1 = new Rectangle(
-      new Vector({ x: 250, y: 150 }),
-      200,
-      200,
-      "black"
-    );
-    this.testRectangle3 = new Rectangle(
-      new Vector({ x: 620, y: 400 }),
-      200,
-      200,
-      "black"
-    );
+    this.testRectangle2 = new Rectangle(new Vector({ x: 250, y: 275 }), 200, 200, 'black');
+    this.testRectangle1 = new Rectangle(new Vector({ x: 250, y: 150 }), 200, 200, 'black');
+    this.testRectangle3 = new Rectangle(new Vector({ x: 620, y: 400 }), 200, 200, 'black');
     this.top = new Rectangle(
       new Vector({ x: this.world.x / 2 - 10, y: 10 }),
       this.world.x - 100,
       20,
-      "red"
+      'red',
     );
     this.bottom = new Rectangle(
       new Vector({ x: this.world.x / 2 - 10, y: this.world.y - 10 }),
       this.world.x - 100,
       20,
-      "red"
+      'red',
     );
     this.left = new Rectangle(
       new Vector({ x: 10, y: this.world.y / 2 - 10 }),
       20,
       this.world.y - 100,
-      "red"
+      'red',
     );
     this.right = new Rectangle(
       new Vector({ x: this.world.x - 10, y: this.world.y / 2 - 10 }),
       20,
       this.world.y - 100,
-      "red"
+      'red',
     );
 
     // let rect = new Rectangle(new Vector({ x: 400, y: 200 }), 200, 100, "blue");
@@ -159,32 +140,26 @@ export default class Engine {
   }
 
   update = (deltaTime: number) => {
-    let fpsText = Math.round(1 / deltaTime) + " FPS";
-    this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, "black", fpsText);
+    let fpsText = Math.round(1 / deltaTime) + ' FPS';
+    this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, 'black', fpsText);
 
     this.grid.refreshGrid();
     this.handleJoints();
 
     if (this.GrabMouseEvent.grabbedObject) {
       this.GrabMouseEvent.followMouse();
-      this.drawUtils.drawPoint(this.GrabMouseEvent.mousePosition, 5, "red");
+      this.drawUtils.drawPoint(this.GrabMouseEvent.mousePosition, 5, 'red');
       let anchorPosition = this.GrabMouseEvent.grabbedObject
         .getShape()
         .anchorPoints.get(this.GrabMouseEvent.grabbedAnchorId);
       if (anchorPosition) {
-        this.drawUtils.drawLine(
-          this.GrabMouseEvent.mousePosition,
-          anchorPosition,
-          "black"
-        );
+        this.drawUtils.drawLine(this.GrabMouseEvent.mousePosition, anchorPosition, 'black');
       }
     }
 
     for (let it = 0; it < this.iteration; it++) {
       for (let i = 0; i < this.rigidBodies.length; i++) {
-        this.rigidBodies[i].addForce(
-          scaleVector(this.gravity, this.rigidBodies[i].mass)
-        );
+        this.rigidBodies[i].addForce(scaleVector(this.gravity, this.rigidBodies[i].mass));
         this.rigidBodies[i].update(deltaTime / this.iteration);
         this.rigidBodies[i].shape.boundingBox.collision = false;
       }
@@ -196,16 +171,11 @@ export default class Engine {
           let objectB = neighbors[j];
 
           if (objectA.canCollision(objectB)) {
-            if (
-              !objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)
-            ) {
+            if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
               // no collision
               continue;
             }
-            let result = this.collision.checkCollision(
-              objectA.shape,
-              objectB.shape
-            );
+            let result = this.collision.checkCollision(objectA.shape, objectB.shape);
             if (result) {
               result.resolveCollision(objectA, objectB);
               result.positionalCorrection(objectA, objectB, 0.3);
@@ -227,7 +197,7 @@ export default class Engine {
   };
 
   clear = () => {
-    this.ctx.fillStyle = "white";
+    this.ctx.fillStyle = 'white';
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   };
 
@@ -246,10 +216,10 @@ export default class Engine {
               new Vector({ x: x + leftOffset, y: y + topOffset }),
               boxSize,
               boxSize,
-              "black"
+              'black',
             ),
-            1
-          )
+            1,
+          ),
         );
       }
     }
@@ -257,22 +227,22 @@ export default class Engine {
 
   onMouseMove(e: MouseEvent) {
     switch (registry.mouseEventType) {
-      case "DRAG":
+      case 'DRAG':
         this.GrabMouseEvent.mouseMove(e, this.canvas, this);
         break;
-      case "JOINT":
+      case 'JOINT':
         this.JointMouseEvent.mouseMove(e, this.canvas, this);
         break;
     }
   }
 
   onMouseDown(e: MouseEvent) {
-    console.log("mouse  Event Type  :", registry.mouseEventType);
+    console.log('mouse  Event Type  :', registry.mouseEventType);
     switch (registry.mouseEventType) {
-      case "DRAG":
+      case 'DRAG':
         this.GrabMouseEvent.mouseDown(e, this.canvas, this);
         break;
-      case "JOINT":
+      case 'JOINT':
         this.JointMouseEvent.mouseDown(e, this.canvas, this);
         break;
     }
@@ -280,10 +250,10 @@ export default class Engine {
 
   onMouseUp(e: MouseEvent) {
     switch (registry.mouseEventType) {
-      case "DRAG":
+      case 'DRAG':
         this.GrabMouseEvent.mouseUp(e, this.canvas, this);
         break;
-      case "JOINT":
+      case 'JOINT':
         this.JointMouseEvent.mouseUp(e, this.canvas, this);
         break;
     }
@@ -291,22 +261,22 @@ export default class Engine {
 
   onKeyboardPressed = (e: KeyboardEvent) => {
     switch (e.key) {
-      case "d":
+      case 'd':
         this.rigidBodies[0].addForce(new Vector({ x: 200000, y: 0 }));
         break;
-      case "a":
+      case 'a':
         this.rigidBodies[0].addForce(new Vector({ x: -200000, y: 0 }));
         break;
-      case "w":
+      case 'w':
         this.rigidBodies[0].addForce(new Vector({ x: 0, y: -200000 }));
         break;
-      case "s":
+      case 's':
         this.rigidBodies[0].addForce(new Vector({ x: 0, y: 200000 }));
         break;
-      case "ArrowRight":
+      case 'ArrowRight':
         this.rigidBodies[0].shape.rotate(0.05);
         break;
-      case "ArrowLeft":
+      case 'ArrowLeft':
         this.rigidBodies[0].shape.rotate(-0.05);
         break;
     }

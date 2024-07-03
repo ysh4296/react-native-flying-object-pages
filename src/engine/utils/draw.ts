@@ -1,4 +1,4 @@
-import Vector, { addVector, scaleVector, subVector } from "@engine/lib/vector";
+import Vector, { addVector, scaleVector, subVector } from '@engine/lib/vector';
 
 export default class Draw {
   ctx: CanvasRenderingContext2D;
@@ -44,7 +44,7 @@ export default class Draw {
   };
 
   drawText = (position: Vector, size: number, color: string, text: string) => {
-    this.ctx.font = size + "px Arial";
+    this.ctx.font = size + 'px Arial';
     this.ctx.fillStyle = color;
     this.ctx.fillText(text, position.x, position.y);
   };

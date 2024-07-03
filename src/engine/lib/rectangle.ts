@@ -1,5 +1,5 @@
-import Polygon from "./polygon";
-import Vector from "./vector";
+import Polygon from './polygon';
+import Vector from './vector';
 
 export default class Rectangle extends Polygon {
   position: Vector;
@@ -13,7 +13,7 @@ export default class Rectangle extends Polygon {
         new Vector({ x: position.x + width / 2, y: position.y + height / 2 }),
         new Vector({ x: position.x - width / 2, y: position.y + height / 2 }),
       ],
-      color
+      color,
     );
     this.position = position;
     super.setCentroid(this.position);

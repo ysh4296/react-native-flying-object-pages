@@ -1,7 +1,7 @@
-import Engine from "@engine/lib/engine";
-import RigidBody from "@engine/lib/rigidbody";
-import Vector from "@engine/lib/vector";
-import Calculator from "@engine/utils/calculator";
+import Engine from '@engine/lib/engine';
+import RigidBody from '@engine/lib/rigidbody';
+import Vector from '@engine/lib/vector';
+import Calculator from '@engine/utils/calculator';
 
 export class mouseEvent {
   isGrab: boolean;

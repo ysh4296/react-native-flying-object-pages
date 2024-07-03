@@ -1,5 +1,5 @@
-import RigidBody from "@engine/lib/rigidbody";
-import Draw from "@engine/utils/draw";
+import RigidBody from '@engine/lib/rigidbody';
+import Draw from '@engine/utils/draw';
 
 export default class JointConnection {
   objectA: RigidBody;
@@ -9,17 +9,12 @@ export default class JointConnection {
   color: string;
   drawUtils: Draw;
 
-  constructor(
-    objectA: RigidBody,
-    anchorAId: number,
-    objectB: RigidBody,
-    anchorBId: number
-  ) {
+  constructor(objectA: RigidBody, anchorAId: number, objectB: RigidBody, anchorBId: number) {
     this.objectA = objectA;
     this.anchorAId = anchorAId;
     this.objectB = objectB;
     this.anchorBId = anchorBId;
-    this.color = "green";
+    this.color = 'green';
     this.drawUtils = Draw.getInstance();
   }
 
@@ -33,11 +28,11 @@ export default class JointConnection {
 
   changeColor(distance: number) {
     if (distance < 50) {
-      this.color = "red";
+      this.color = 'red';
     } else if (distance < 100) {
-      this.color = "green";
+      this.color = 'green';
     } else {
-      this.color = "blue";
+      this.color = 'blue';
     }
   }
 }

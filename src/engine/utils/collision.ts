@@ -1,9 +1,9 @@
-import Circle from "@engine/lib/Circle";
-import Polygon from "@engine/lib/polygon";
-import Shape from "@engine/lib/Shape";
-import Vector, { addVector, scaleVector, subVector } from "@engine/lib/vector";
-import Calculator from "./calculator";
-import CollisionManifold from "./collisionManifold";
+import Circle from '@engine/lib/Circle';
+import Polygon from '@engine/lib/polygon';
+import Shape from '@engine/lib/Shape';
+import Vector, { addVector, scaleVector, subVector } from '@engine/lib/vector';
+import Calculator from './calculator';
+import CollisionManifold from './collisionManifold';
 
 class SupportPoint {
   vertex: Vector;
@@ -43,7 +43,7 @@ export default class Collision {
       if (collisionManifold) {
         collisionManifold?.normal.scale(-1);
         collisionManifold.penetrationPoint.add(
-          scaleVector(collisionManifold.normal, collisionManifold.depth)
+          scaleVector(collisionManifold.normal, collisionManifold.depth),
         );
       }
     }
@@ -63,15 +63,8 @@ export default class Collision {
       let directionLength = direction.length();
       let penetratedNormal = scaleVector(direction, 1 / directionLength);
       let penetrationDepth = radiusSum - directionLength;
-      let penetrationPoint = subVector(
-        centroidA,
-        scaleVector(penetratedNormal, -circleA.radius)
-      );
-      return new CollisionManifold(
-        penetrationDepth,
-        penetratedNormal,
-        penetrationPoint
-      );
+      let penetrationPoint = subVector(centroidA, scaleVector(penetratedNormal, -circleA.radius));
+      return new CollisionManifold(penetrationDepth, penetratedNormal, penetrationPoint);
     } else {
       return null;
     }
@@ -90,13 +83,13 @@ export default class Collision {
       return new CollisionManifold(
         contactPointA.depth,
         contactPointA.normal,
-        contactPointA.penetrationPoint
+        contactPointA.penetrationPoint,
       );
     } else {
       return new CollisionManifold(
         contactPointB.depth,
         scaleVector(contactPointB.normal, -1),
-        contactPointB.penetrationPoint
+        contactPointB.penetrationPoint,
       );
     }
   }
@@ -109,11 +102,7 @@ export default class Collision {
       let pointOnEdge = polygonA.vertices[i];
       let normalOnEdge = polygonA.normals[i];
 
-      let supportPoint = this.getSupportPoint(
-        normalOnEdge,
-        pointOnEdge,
-        polygonB.vertices
-      );
+      let supportPoint = this.getSupportPoint(normalOnEdge, pointOnEdge, polygonB.vertices);
 
       if (!supportPoint) {
         return null;
@@ -124,39 +113,30 @@ export default class Collision {
         contact = new CollisionManifold(
           supportPoint.penetrationDepth,
           normalOnEdge,
-          supportPoint.vertex
+          supportPoint.vertex,
         );
       }
     }
     return contact;
   }
 
-  getSupportPoint(
-    normalOnEdge: Vector,
-    pointOnEdge: Vector,
-    polygonVertices: Vector[]
-  ) {
+  getSupportPoint(normalOnEdge: Vector, pointOnEdge: Vector, polygonVertices: Vector[]) {
     let supportPenetrationDepth = 0;
     let supportPoint = null;
 
     for (let i = 0; i < polygonVertices.length; i++) {
       let vertex = polygonVertices[i];
       let penetrateVector = subVector(vertex, pointOnEdge);
-      let penetrationDepth = penetrateVector.getDotProduct(
-        scaleVector(normalOnEdge, -1)
-      );
+      let penetrationDepth = penetrateVector.getDotProduct(scaleVector(normalOnEdge, -1));
 
       if (penetrationDepth > supportPenetrationDepth) {
         supportPenetrationDepth = penetrationDepth;
         supportPoint = new SupportPoint(vertex, penetrationDepth);
       }
-      if (
-        supportPoint &&
-        Math.abs(penetrationDepth - supportPenetrationDepth) === 0
-      ) {
+      if (supportPoint && Math.abs(penetrationDepth - supportPenetrationDepth) === 0) {
         supportPoint = new SupportPoint(
           scaleVector(addVector(vertex, supportPoint.vertex), 0.5),
-          penetrationDepth
+          penetrationDepth,
         );
       }
     }
@@ -181,9 +161,7 @@ export default class Collision {
       let vertex = polygon.vertices[i];
       let normal = polygon.normals[i];
       let nextVertex =
-        polygon.vertices[
-          this.calculatorUtil.getIndex(i + 1, polygon.vertices.length)
-        ];
+        polygon.vertices[this.calculatorUtil.getIndex(i + 1, polygon.vertices.length)];
 
       let vertexToCircle = subVector(circleCentroid, vertex);
       let directionToNext = subVector(nextVertex, vertex);
@@ -191,11 +169,7 @@ export default class Collision {
       directionToNext.normalize();
       let projection = vertexToCircle.getDotProduct(directionToNext);
       let circleNormalProjection = vertexToCircle.getDotProduct(normal);
-      if (
-        projection > 0 &&
-        projection < directionToNextLength &&
-        circleNormalProjection >= 0
-      ) {
+      if (projection > 0 && projection < directionToNextLength && circleNormalProjection >= 0) {
         nearestEdgeNormal = normal;
         nearestEdgeVertex = vertex;
       }
@@ -206,19 +180,18 @@ export default class Collision {
     }
 
     let penetrationVector = subVector(circleCentroid, nearestEdgeVertex);
-    let penetrationProjection =
-      penetrationVector.getDotProduct(nearestEdgeNormal);
+    let penetrationProjection = penetrationVector.getDotProduct(nearestEdgeNormal);
     let projectionDepth = penetrationProjection - circle.radius;
     if (projectionDepth < 0) {
       // scale 배율을 radius로 설정해도 될듯?
       let penetreationPoint = addVector(
         circleCentroid,
-        scaleVector(nearestEdgeNormal, -circle.radius)
+        scaleVector(nearestEdgeNormal, -circle.radius),
       );
       return new CollisionManifold(
         projectionDepth * -1,
         scaleVector(nearestEdgeNormal, -1),
-        penetreationPoint
+        penetreationPoint,
       );
     }
     return null;
@@ -231,16 +204,9 @@ export default class Collision {
       let distance = direction.length();
       direction.normalize();
       if (distance < circle.radius) {
-        let penetrationPoint = addVector(
-          circle.centroid,
-          scaleVector(direction, circle.radius)
-        );
+        let penetrationPoint = addVector(circle.centroid, scaleVector(direction, circle.radius));
         let penetrationDepth = circle.radius - distance;
-        return new CollisionManifold(
-          penetrationDepth,
-          direction,
-          penetrationPoint
-        );
+        return new CollisionManifold(penetrationDepth, direction, penetrationPoint);
       }
     }
     return null;

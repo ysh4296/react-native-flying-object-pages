@@ -1,6 +1,6 @@
-import EventSelect from "@/component/eventSelect";
-import { useEffect } from "react";
-import main, { registry } from "../../../engine/lib/main";
+import EventSelect from '@/component/eventSelect';
+import { useEffect } from 'react';
+import main, { registry } from '../../../engine/lib/main';
 
 const Container = () => {
   useEffect(() => {

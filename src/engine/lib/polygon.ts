@@ -1,5 +1,5 @@
-import Shape from "./shape";
-import Vector, { addVector, scaleVector, subVector } from "./vector";
+import Shape from './shape';
+import Vector, { addVector, scaleVector, subVector } from './vector';
 
 export default class Polygon extends Shape {
   constructor(vertices: Vector[], color: string) {
@@ -35,7 +35,7 @@ export default class Polygon extends Shape {
       let direction = subVector(this.vertices[next], this.vertices[i]);
       let tail = addVector(this.vertices[i], scaleVector(direction, 1 / 2.0));
       let head = addVector(tail, scaleVector(this.normals[i], 10));
-      this.drawUtils.drawArrow(head, tail, "blue");
+      this.drawUtils.drawArrow(head, tail, 'blue');
     }
   }
 

@@ -1,7 +1,7 @@
-import Vector, { subVector } from "@engine/lib/vector";
-import CollisionManifold from "@engine/utils/collisionManifold";
-import Joint from "./joint";
-import JointConnection from "./jointConnection";
+import Vector, { subVector } from '@engine/lib/vector';
+import CollisionManifold from '@engine/utils/collisionManifold';
+import Joint from './joint';
+import JointConnection from './jointConnection';
 
 export default class FixedJoint extends Joint {
   initialLength: number;
@@ -16,7 +16,7 @@ export default class FixedJoint extends Joint {
     super(connection);
     this.initialLength = subVector(
       this.getAnchorAPos() as Vector,
-      this.getAnchorBPos() as Vector
+      this.getAnchorBPos() as Vector,
     ).length();
 
     this.objectARestitution = this.objectA.matter.restitution;
@@ -58,10 +58,8 @@ export default class FixedJoint extends Joint {
       contact.positionalCorrection(this.objectB, this.objectA, 0.3);
 
       const currentOrientationDiff =
-        this.objectB.getShape().orientation -
-        this.objectA.getShape().orientation;
-      const fixedOrientation =
-        this.relationOrientation - currentOrientationDiff;
+        this.objectB.getShape().orientation - this.objectA.getShape().orientation;
+      const fixedOrientation = this.relationOrientation - currentOrientationDiff;
 
       this.objectB.angularVelocity += fixedOrientation;
     }
@@ -96,10 +94,8 @@ export default class FixedJoint extends Joint {
       contact.positionalCorrection(this.objectA, this.objectB, 0.3);
       contact.resolveCollision(this.objectA, this.objectB);
       const currentOrientationDiff =
-        this.objectA.getShape().orientation -
-        this.objectB.getShape().orientation;
-      const fixedOrientation =
-        this.relationOrientation - currentOrientationDiff;
+        this.objectA.getShape().orientation - this.objectB.getShape().orientation;
+      const fixedOrientation = this.relationOrientation - currentOrientationDiff;
 
       this.objectA.angularVelocity += fixedOrientation;
     }

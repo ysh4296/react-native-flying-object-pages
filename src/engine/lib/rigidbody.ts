@@ -1,6 +1,6 @@
-import Matter from "./matter";
-import Shape from "./shape";
-import Vector, { addVector, scaleVector, subVector } from "./vector";
+import Matter from './matter';
+import Shape from './shape';
+import Vector, { addVector, scaleVector, subVector } from './vector';
 
 export default class RigidBody {
   shape: Shape;
@@ -102,10 +102,7 @@ export default class RigidBody {
 
   semiImplicitEuler(deltaTime: number) {
     let accelation = scaleVector(this.force, this.massInverse);
-    this.velocity = addVector(
-      this.velocity,
-      scaleVector(accelation, deltaTime)
-    );
+    this.velocity = addVector(this.velocity, scaleVector(accelation, deltaTime));
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
 
@@ -120,10 +117,7 @@ export default class RigidBody {
     let accelation = scaleVector(this.force, this.massInverse);
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
-    this.velocity = addVector(
-      this.velocity,
-      scaleVector(accelation, deltaTime)
-    );
+    this.velocity = addVector(this.velocity, scaleVector(accelation, deltaTime));
 
     let rotationalAcceleration = this.torque * this.inertiaInverse;
     this.angularVelocity += rotationalAcceleration * deltaTime;
@@ -135,10 +129,7 @@ export default class RigidBody {
   midPoint(deltaTime: number) {
     let accelation = scaleVector(this.force, this.massInverse);
     accelation.scale(0.5);
-    this.velocity = addVector(
-      this.velocity,
-      scaleVector(accelation, deltaTime)
-    );
+    this.velocity = addVector(this.velocity, scaleVector(accelation, deltaTime));
     let deltaPosition = scaleVector(this.velocity, deltaTime);
     this.shape.move(deltaPosition);
 
@@ -151,8 +142,7 @@ export default class RigidBody {
 
   rungeKutta4(deltaTime: number) {
     let p1, p2, p3, p4;
-    let computeAccelation = (force: Vector) =>
-      scaleVector(force, this.massInverse);
+    let computeAccelation = (force: Vector) => scaleVector(force, this.massInverse);
 
     // p1 계산
     let accelation = computeAccelation(this.force);
@@ -192,7 +182,7 @@ export default class RigidBody {
   }
 
   log() {
-    console.log("force: x = " + this.force.x + " y = " + this.force.y);
-    console.log("velocity: x = " + this.velocity.x + " y = " + this.velocity.y);
+    console.log('force: x = ' + this.force.x + ' y = ' + this.force.y);
+    console.log('velocity: x = ' + this.velocity.x + ' y = ' + this.velocity.y);
   }
 }

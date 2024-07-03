@@ -1,19 +1,17 @@
-import Draw from "@engine/utils/draw";
-import Engine from "./engine";
-import Vector from "./vector";
+import Draw from '@engine/utils/draw';
+import Engine from './engine';
+import Vector from './vector';
 
 export const registry: any = {
   engine: null as Engine | null,
-  mouseEventType: "NONE",
-  jointEventType: "NONE",
+  mouseEventType: 'NONE',
+  jointEventType: 'NONE',
 };
 
 const main = (document: Document) => {
-  const canvas: HTMLCanvasElement = document.getElementById(
-    "myCanvas"
-  ) as HTMLCanvasElement;
-  canvas.style.backgroundColor = "#eee";
-  const ctx = canvas.getContext("2d");
+  const canvas: HTMLCanvasElement = document.getElementById('myCanvas') as HTMLCanvasElement;
+  canvas.style.backgroundColor = '#eee';
+  const ctx = canvas.getContext('2d');
 
   let currentTime = 0;
 
@@ -33,19 +31,19 @@ const main = (document: Document) => {
 
     loop();
 
-    canvas.addEventListener("mousemove", (e: MouseEvent) => {
+    canvas.addEventListener('mousemove', (e: MouseEvent) => {
       registry.engine.onMouseMove(e);
     });
 
-    canvas.addEventListener("mousedown", (e: MouseEvent) => {
+    canvas.addEventListener('mousedown', (e: MouseEvent) => {
       registry.engine.onMouseDown(e);
     });
 
-    canvas.addEventListener("mouseup", (e: MouseEvent) => {
+    canvas.addEventListener('mouseup', (e: MouseEvent) => {
       registry.engine.onMouseUp(e);
     });
 
-    window.addEventListener("keydown", (e: KeyboardEvent) => {
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
       registry.engine.onKeyboardPressed(e);
     });
   }

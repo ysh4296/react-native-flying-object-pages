@@ -1,7 +1,7 @@
-import Calculator from "@engine/utils/calculator";
-import Draw from "@engine/utils/draw";
-import BoundingBox from "@engine/optimization/boundingBox";
-import Vector, { addVector, subVector } from "./vector";
+import Calculator from '@engine/utils/calculator';
+import Draw from '@engine/utils/draw';
+import BoundingBox from '@engine/optimization/boundingBox';
+import Vector, { addVector, subVector } from './vector';
 
 export default class Shape {
   vertices: Vector[];
@@ -24,9 +24,7 @@ export default class Shape {
     this.normals = [];
     this.boundingBox = new BoundingBox();
     if (new.target === Shape) {
-      throw new TypeError(
-        "Cannot construct abstract instances directly of Class 'Shape'"
-      );
+      throw new TypeError("Cannot construct abstract instances directly of Class 'Shape'");
     }
     this.anchorPoints = new Map();
   }
@@ -48,28 +46,20 @@ export default class Shape {
   removeAnchor(id: number) {
     let removed = this.anchorPoints.delete(id);
     if (!removed) {
-      console.log("not found!");
+      console.log('not found!');
     }
     return removed;
   }
 
   draw() {
     for (let i = 1; i < this.vertices.length; i++) {
-      this.drawUtils.drawLine(
-        this.vertices[i - 1],
-        this.vertices[i],
-        this.color
-      );
+      this.drawUtils.drawLine(this.vertices[i - 1], this.vertices[i], this.color);
     }
-    this.drawUtils.drawLine(
-      this.vertices[this.vertices.length - 1],
-      this.vertices[0],
-      this.color
-    );
+    this.drawUtils.drawLine(this.vertices[this.vertices.length - 1], this.vertices[0], this.color);
     this.drawUtils.drawPoint(this.centroid, 5, this.color);
 
     for (const [, anchor] of this.anchorPoints.entries()) {
-      this.drawUtils.drawPoint(anchor, 5, "green");
+      this.drawUtils.drawPoint(anchor, 5, 'green');
     }
   }
 
@@ -89,16 +79,12 @@ export default class Shape {
       let rotatedVertice = this.calculatorUtils.rotateAroundPoint(
         this.vertices[i],
         this.centroid,
-        radian
+        radian,
       );
       this.vertices[i] = rotatedVertice;
     }
     for (const [id, anchor] of this.anchorPoints.entries()) {
-      let rotatedAnchor = this.calculatorUtils.rotateAroundPoint(
-        anchor,
-        this.centroid,
-        radian
-      );
+      let rotatedAnchor = this.calculatorUtils.rotateAroundPoint(anchor, this.centroid, radian);
       this.anchorPoints.set(id, rotatedAnchor);
     }
 

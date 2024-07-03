@@ -1,6 +1,6 @@
-import Draw from "@engine/utils/draw";
-import Shape from "./shape";
-import Vector, { subVector } from "./vector";
+import Draw from '@engine/utils/draw';
+import Shape from './shape';
+import Vector, { subVector } from './vector';
 
 export default class Circle extends Shape {
   position: Vector;
@@ -8,13 +8,7 @@ export default class Circle extends Shape {
   drawUtils: Draw;
 
   constructor(position: Vector, radius: number, color: string) {
-    super(
-      [
-        new Vector(position),
-        new Vector({ x: position.x + radius, y: position.y }),
-      ],
-      color
-    );
+    super([new Vector(position), new Vector({ x: position.x + radius, y: position.y })], color);
     this.position = position;
     this.radius = radius;
     this.drawUtils = Draw.getInstance();

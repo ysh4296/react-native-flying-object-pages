@@ -1,15 +1,15 @@
-import SpringJoint from "@engine/joints/springJoint";
-import JointConnection from "@engine/joints/jointConnection";
-import Engine from "@engine/lib/engine";
-import getMousePosition from "@engine/lib/getMousePosition";
-import { registry } from "@engine/lib/main";
-import RigidBody from "@engine/lib/rigidbody";
-import Vector, { subVector } from "@engine/lib/vector";
-import { mouseEvent } from "./mouseEvent";
-import ForceJoint from "@engine/joints/forceJoint";
-import ReverseJoint from "@engine/joints/reverseJoints";
-import FixedJoint from "@engine/joints/fixedJoint";
-import HingeJoint from "@engine/joints/hingeJoint";
+import SpringJoint from '@engine/joints/springJoint';
+import JointConnection from '@engine/joints/jointConnection';
+import Engine from '@engine/lib/engine';
+import getMousePosition from '@engine/lib/getMousePosition';
+import { registry } from '@engine/lib/main';
+import RigidBody from '@engine/lib/rigidbody';
+import Vector, { subVector } from '@engine/lib/vector';
+import { mouseEvent } from './mouseEvent';
+import ForceJoint from '@engine/joints/forceJoint';
+import ReverseJoint from '@engine/joints/reverseJoints';
+import FixedJoint from '@engine/joints/fixedJoint';
+import HingeJoint from '@engine/joints/hingeJoint';
 
 export default class JointMouse extends mouseEvent {
   grabbedAnchorAId: number;
@@ -35,13 +35,8 @@ export default class JointMouse extends mouseEvent {
         this.isGrab = true;
         this.grabbedObjectA = objects[i];
         // makes anchor and add to object
-        let anchorPosition = subVector(
-          this.mousePosition,
-          objects[i].shape.centroid
-        );
-        this.grabbedAnchorAId = this.grabbedObjectA
-          .getShape()
-          .createAnchor(anchorPosition);
+        let anchorPosition = subVector(this.mousePosition, objects[i].shape.centroid);
+        this.grabbedAnchorAId = this.grabbedObjectA.getShape().createAnchor(anchorPosition);
         break;
       }
     }
@@ -57,13 +52,8 @@ export default class JointMouse extends mouseEvent {
         this.isGrab = true;
         this.grabbedObjectB = objects[i];
         // makes anchor and add to object
-        let anchorPosition = subVector(
-          this.mousePosition,
-          objects[i].shape.centroid
-        );
-        this.grabbedAnchorBId = this.grabbedObjectB
-          .getShape()
-          .createAnchor(anchorPosition);
+        let anchorPosition = subVector(this.mousePosition, objects[i].shape.centroid);
+        this.grabbedAnchorBId = this.grabbedObjectB.getShape().createAnchor(anchorPosition);
         break;
       }
     }
@@ -73,27 +63,25 @@ export default class JointMouse extends mouseEvent {
         this.grabbedObjectA,
         this.grabbedAnchorAId,
         this.grabbedObjectB,
-        this.grabbedAnchorBId
+        this.grabbedAnchorBId,
       );
 
       switch (registry.jointEventType) {
-        case "NONE":
+        case 'NONE':
           return;
-        case "FORCE":
+        case 'FORCE':
           registry.engine.joints.push(new ForceJoint(jointConnection, 5000));
           break;
-        case "SPRING":
+        case 'SPRING':
           registry.engine.joints.push(new SpringJoint(jointConnection, 10, 50));
           break;
-        case "REVERSE":
-          registry.engine.joints.push(
-            new ReverseJoint(jointConnection, 100, 400)
-          );
+        case 'REVERSE':
+          registry.engine.joints.push(new ReverseJoint(jointConnection, 100, 400));
           break;
-        case "FIXED":
+        case 'FIXED':
           registry.engine.joints.push(new FixedJoint(jointConnection));
           break;
-        case "HINGE":
+        case 'HINGE':
           registry.engine.joints.push(new HingeJoint(jointConnection));
           break;
       }

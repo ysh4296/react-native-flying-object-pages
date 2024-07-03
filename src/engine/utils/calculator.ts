@@ -1,4 +1,4 @@
-import Vector, { subVector } from "@engine/lib/vector";
+import Vector, { subVector } from '@engine/lib/vector';
 
 export default class Calculator {
   private static instance: Calculator;
@@ -22,14 +22,12 @@ export default class Calculator {
       let next = this.getIndex(i + 1, length);
 
       let xterm1 = vertices[i].x + vertices[next].x;
-      let xterm2 =
-        vertices[i].x * vertices[next].y - vertices[next].x * vertices[i].y;
+      let xterm2 = vertices[i].x * vertices[next].y - vertices[next].x * vertices[i].y;
 
       centroid.x += xterm1 * xterm2;
 
       let yterm1 = vertices[i].y + vertices[next].y;
-      let yterm2 =
-        vertices[i].x * vertices[next].y - vertices[next].x * vertices[i].y;
+      let yterm2 = vertices[i].x * vertices[next].y - vertices[next].x * vertices[i].y;
 
       centroid.y += yterm1 * yterm2;
     }
@@ -58,10 +56,8 @@ export default class Calculator {
     let result = new Vector({ x: 0, y: 0 });
 
     let direction = subVector(target, position);
-    result.x =
-      direction.x * Math.cos(radians) - direction.y * Math.sin(radians);
-    result.y =
-      direction.x * Math.sin(radians) + direction.y * Math.cos(radians);
+    result.x = direction.x * Math.cos(radians) - direction.y * Math.sin(radians);
+    result.y = direction.x * Math.sin(radians) + direction.y * Math.cos(radians);
     result.add(position);
     return result;
   }

@@ -1,5 +1,5 @@
-import RigidBody from "@engine/lib/rigidbody";
-import JointConnection from "./jointConnection";
+import RigidBody from '@engine/lib/rigidbody';
+import JointConnection from './jointConnection';
 
 export default class Joint {
   jointConnection: JointConnection;
@@ -16,9 +16,7 @@ export default class Joint {
     this.anchorBId = jointConnection.anchorBId;
 
     if (new.target === Joint) {
-      throw new TypeError(
-        "cannot construct abstract instance directly of class Joint"
-      );
+      throw new TypeError('cannot construct abstract instance directly of class Joint');
     }
   }
 

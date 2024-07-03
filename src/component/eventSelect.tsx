@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { getEventLabel, getEventList } from "@engine/utils/eventLabelConverter";
+import { useState } from 'react';
+import { getEventLabel, getEventList } from '@engine/utils/eventLabelConverter';
 
 type EventSelectProps = {
   eventName: EventName;
@@ -9,7 +9,7 @@ type EventSelectProps = {
 const EventSelect = (props: EventSelectProps) => {
   const { eventName, setEventType } = props;
 
-  const [label, setLabel] = useState<EventType>("NONE");
+  const [label, setLabel] = useState<EventType>('NONE');
 
   return (
     <>

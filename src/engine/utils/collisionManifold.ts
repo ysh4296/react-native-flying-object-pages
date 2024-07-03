@@ -1,6 +1,6 @@
-import RigidBody from "@engine/lib/rigidbody";
-import Vector, { addVector, scaleVector, subVector } from "@engine/lib/vector";
-import Draw from "./draw";
+import RigidBody from '@engine/lib/rigidbody';
+import Vector, { addVector, scaleVector, subVector } from '@engine/lib/vector';
+import Draw from './draw';
 
 export default class CollisionManifold {
   depth: number;
@@ -19,7 +19,7 @@ export default class CollisionManifold {
   flip() {
     if (this.flipNormalEnabled) {
       this.normal = scaleVector(this.normal, -1);
-      console.log("Flip");
+      console.log('Flip');
     }
   }
 
@@ -34,25 +34,13 @@ export default class CollisionManifold {
       this.flip();
     }
 
-    let minRestitution = Math.min(
-      objectA.matter.restitution,
-      objectB.matter.restitution
-    );
+    let minRestitution = Math.min(objectA.matter.restitution, objectB.matter.restitution);
 
-    let minFriction = Math.min(
-      objectA.matter.friction,
-      objectB.matter.friction
-    );
+    let minFriction = Math.min(objectA.matter.friction, objectB.matter.friction);
 
-    let penetrationPointToCentroidA = subVector(
-      this.penetrationPoint,
-      objectA.shape.centroid
-    );
+    let penetrationPointToCentroidA = subVector(this.penetrationPoint, objectA.shape.centroid);
 
-    let penetrationPointToCentroidB = subVector(
-      this.penetrationPoint,
-      objectB.shape.centroid
-    );
+    let penetrationPointToCentroidB = subVector(this.penetrationPoint, objectB.shape.centroid);
 
     let angularVelocityA = new Vector({
       x: -1 * objectA.angularVelocity * penetrationPointToCentroidA.y,
@@ -80,50 +68,34 @@ export default class CollisionManifold {
       (objectA.matter.restitution + objectB.matter.restitution);
 
     if (!minRestitution) {
-      collisionRestitution = Math.min(
-        objectA.matter.restitution,
-        objectB.matter.restitution
-      );
+      collisionRestitution = Math.min(objectA.matter.restitution, objectB.matter.restitution);
     }
 
-    let crossRestitutionVectorA = penetrationPointToCentroidA.cross(
-      this.normal
-    );
-    let crossRestitutionVectorB = penetrationPointToCentroidB.cross(
-      this.normal
-    );
+    let crossRestitutionVectorA = penetrationPointToCentroidA.cross(this.normal);
+    let crossRestitutionVectorB = penetrationPointToCentroidB.cross(this.normal);
 
     let crossSum =
-      crossRestitutionVectorA *
-        crossRestitutionVectorA *
-        objectA.inertiaInverse +
-      crossRestitutionVectorB *
-        crossRestitutionVectorB *
-        objectB.inertiaInverse;
+      crossRestitutionVectorA * crossRestitutionVectorA * objectA.inertiaInverse +
+      crossRestitutionVectorB * crossRestitutionVectorB * objectB.inertiaInverse;
 
     let j = -(1 + collisionRestitution) * velocityDotCollision;
     j /= massInverseSum + crossSum;
 
     let impulseCollision = scaleVector(this.normal, j);
-    let impulseVectorA = scaleVector(
-      impulseCollision,
-      -1 * objectA.massInverse
-    );
+    let impulseVectorA = scaleVector(impulseCollision, -1 * objectA.massInverse);
     let impulseVectorB = scaleVector(impulseCollision, objectB.massInverse);
 
     objectA.velocity = addVector(objectA.velocity, impulseVectorA);
     objectB.velocity = addVector(objectB.velocity, impulseVectorB);
 
-    objectA.angularVelocity +=
-      -crossRestitutionVectorA * j * objectA.inertiaInverse;
-    objectB.angularVelocity +=
-      crossRestitutionVectorB * j * objectB.inertiaInverse;
+    objectA.angularVelocity += -crossRestitutionVectorA * j * objectA.inertiaInverse;
+    objectB.angularVelocity += crossRestitutionVectorB * j * objectB.inertiaInverse;
 
     // 마찰력 연산
 
     let velocityNormalDirection = scaleVector(
       this.normal,
-      relativeVelocity.getDotProduct(this.normal)
+      relativeVelocity.getDotProduct(this.normal),
     );
     let tangent = subVector(relativeVelocity, velocityNormalDirection);
     tangent = scaleVector(tangent, -1);
@@ -133,10 +105,7 @@ export default class CollisionManifold {
       (objectA.matter.friction + objectB.matter.friction);
 
     if (!minFriction) {
-      collisionFriction = Math.min(
-        objectA.matter.friction,
-        objectB.matter.friction
-      );
+      collisionFriction = Math.min(objectA.matter.friction, objectB.matter.friction);
     }
 
     if (Math.abs(tangent.x) > 0.00001 || Math.abs(tangent.y) > 0.00001) {
@@ -157,8 +126,7 @@ export default class CollisionManifold {
 
     let velocityDotFriction = relativeVelocity.getDotProduct(tangent);
 
-    let frictionalImpulse =
-      -(1 + collisionFriction) * velocityDotFriction * minFriction;
+    let frictionalImpulse = -(1 + collisionFriction) * velocityDotFriction * minFriction;
     frictionalImpulse /= massInverseSum + crossTangentSum;
 
     if (frictionalImpulse > j) {
@@ -169,26 +137,19 @@ export default class CollisionManifold {
 
     objectA.velocity = subVector(
       objectA.velocity,
-      scaleVector(frictionalImpulseVector, objectA.massInverse)
+      scaleVector(frictionalImpulseVector, objectA.massInverse),
     );
     objectB.velocity = addVector(
       objectB.velocity,
-      scaleVector(frictionalImpulseVector, objectB.massInverse)
+      scaleVector(frictionalImpulseVector, objectB.massInverse),
     );
 
-    objectA.angularVelocity +=
-      -crossFrictionVectorA * frictionalImpulse * objectA.inertiaInverse;
-    objectB.angularVelocity +=
-      crossFrictionVectorB * frictionalImpulse * objectB.inertiaInverse;
+    objectA.angularVelocity += -crossFrictionVectorA * frictionalImpulse * objectA.inertiaInverse;
+    objectB.angularVelocity += crossFrictionVectorB * frictionalImpulse * objectB.inertiaInverse;
   }
 
-  positionalCorrection(
-    objectA: RigidBody,
-    objectB: RigidBody,
-    correctDelta: number
-  ) {
-    let correction =
-      (this.depth / (objectA.massInverse + objectB.massInverse)) * correctDelta;
+  positionalCorrection(objectA: RigidBody, objectB: RigidBody, correctDelta: number) {
+    let correction = (this.depth / (objectA.massInverse + objectB.massInverse)) * correctDelta;
 
     let correctVector = scaleVector(this.normal, correction);
     let correctMoveA = scaleVector(correctVector, objectA.massInverse * -1);
@@ -204,10 +165,10 @@ export default class CollisionManifold {
   draw() {
     const headPosition = addVector(
       this.penetrationPoint,
-      scaleVector(this.normal, this.depth * -1)
+      scaleVector(this.normal, this.depth * -1),
     );
-    this.drawUtils.drawArrow(headPosition, this.penetrationPoint, "blue");
+    this.drawUtils.drawArrow(headPosition, this.penetrationPoint, 'blue');
 
-    this.drawUtils.drawPoint(this.penetrationPoint, 3, "gray");
+    this.drawUtils.drawPoint(this.penetrationPoint, 3, 'gray');
   }
 }

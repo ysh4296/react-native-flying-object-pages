@@ -1,16 +1,12 @@
-import { scaleVector, subVector } from "@engine/lib/vector";
-import Joint from "./joint";
-import JointConnection from "./jointConnection";
+import { scaleVector, subVector } from '@engine/lib/vector';
+import Joint from './joint';
+import JointConnection from './jointConnection';
 
 export default class ReverseJoint extends Joint {
   strength: number;
   maxLength: number;
 
-  constructor(
-    connection: JointConnection,
-    strength: number,
-    maxLength: number
-  ) {
+  constructor(connection: JointConnection, strength: number, maxLength: number) {
     super(connection);
     this.strength = strength;
     this.maxLength = maxLength;
@@ -26,10 +22,7 @@ export default class ReverseJoint extends Joint {
     const force = Math.max(0, this.maxLength - distance);
 
     direction.normalize();
-    this.objectA.addForceAtPoint(
-      anchorAPos,
-      scaleVector(direction, this.strength * force * 0.5)
-    );
+    this.objectA.addForceAtPoint(anchorAPos, scaleVector(direction, this.strength * force * 0.5));
   }
 
   updateConnectionB() {
@@ -41,9 +34,6 @@ export default class ReverseJoint extends Joint {
     const distance = direction.length();
     const force = Math.max(0, this.maxLength - distance);
     direction.normalize();
-    this.objectB.addForceAtPoint(
-      anchorBPos,
-      scaleVector(direction, this.strength * force * 0.5)
-    );
+    this.objectB.addForceAtPoint(anchorBPos, scaleVector(direction, this.strength * force * 0.5));
   }
 }
