@@ -88,6 +88,7 @@ export default class Shape {
       this.anchorPoints.set(id, rotatedAnchor);
     }
 
+    /** 전향력은 편집단계에서는 저장하지 말아야한다. */
     this.orientation += radian;
   }
 

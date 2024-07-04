@@ -26,7 +26,6 @@ export default class FixedJoint extends Joint {
     this.relationOrientation =
       this.objectB.getShape().orientation - this.objectA.getShape().orientation;
     // @add add joint to moving object
-    this.objectB.getShape().orientation - this.objectA.getShape().orientation;
     this.jointIteration = 20;
   }
 
