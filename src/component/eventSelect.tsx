@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getEventLabel, getEventList } from '@engine/utils/eventLabelConverter';
+import { Button, Text } from '@chakra-ui/react';
 
 type EventSelectProps = {
   eventName: EventName;
@@ -13,10 +14,10 @@ const EventSelect = (props: EventSelectProps) => {
 
   return (
     <>
-      <p>{eventName}</p>
+      <Text>{eventName}</Text>
       {getEventLabel(label)}
       {getEventList(eventName).map((event) => (
-        <button
+        <Button
           key={`${label} ${event}`}
           onClick={() => {
             setLabel(event);
@@ -24,7 +25,7 @@ const EventSelect = (props: EventSelectProps) => {
           }}
         >
           {getEventLabel(event)}
-        </button>
+        </Button>
       ))}
     </>
   );
