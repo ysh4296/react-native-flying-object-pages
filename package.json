@@ -12,6 +12,10 @@
     "test": "next lint && prettier --write . && next build"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "framer-motion": "^11.2.12",
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",
@@ -26,6 +30,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "husky": "^8.0.0",
+    "prettier": "^3.3.2",
     "typescript": "^5"
   }
 }

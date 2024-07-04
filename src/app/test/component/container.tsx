@@ -1,3 +1,5 @@
+'use client';
+
 import EventSelect from '@component/eventSelect';
 import { useEffect } from 'react';
 import main, { registry } from '../../../engine/lib/main';
