@@ -1,7 +1,17 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:prettier/recommended"],
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:prettier/recommended",
+    "plugin:storybook/recommended"
+  ],
   "rules": {
-    "no-unused-vars": ["error", { "args": "none", "ignoreRestSiblings": true }],
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "none",
+        "ignoreRestSiblings": true
+      }
+    ],
     "prettier/prettier": "error"
   },
   "overrides": [
