@@ -21,8 +21,8 @@ export const ButtonStyle: ComponentStyleConfig = {
   variants: {
     outline: {
       border: '2px solid',
-      borderColor: ['green.100', 'yellow.200', 'orange.300', 'red.400'],
-      color: ['green.100', 'yellow.200', 'orange.300', 'red.400'],
+      borderColor: ['purple.400', 'green.400', 'cyan.400'],
+      color: ['purple.400', 'green.400', 'cyan.400'],
     },
     solid: {
       bg: 'purple.500',
@@ -30,7 +30,6 @@ export const ButtonStyle: ComponentStyleConfig = {
     },
   },
   defaultProps: {
-    size: 'md',
     variant: 'outline',
   },
 };
