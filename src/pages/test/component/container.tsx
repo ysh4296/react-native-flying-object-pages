@@ -14,13 +14,13 @@ const Container = () => {
       <p>physics Engine</p>
       <canvas id="myCanvas" width="1200" height="700" />
       <EventSelect
-        eventName="Mouse"
+        eventName="MOUSE"
         setEventType={(mouseType) => {
           registry.mouseEventType = mouseType;
         }}
       />
       <EventSelect
-        eventName="Joint"
+        eventName="JOINT"
         setEventType={(jointType) => {
           registry.jointEventType = jointType;
         }}

@@ -23,7 +23,8 @@ export default class FixedJoint extends Joint {
     this.objectBRestitution = this.objectB.matter.restitution;
     this.objectAFriction = this.objectA.matter.friction;
     this.objectBFriction = this.objectB.matter.friction;
-    this.relationOrientation = 0;
+    this.relationOrientation =
+      this.objectB.getShape().orientation - this.objectA.getShape().orientation;
     // @add add joint to moving object
     this.objectB.getShape().orientation - this.objectA.getShape().orientation;
     this.jointIteration = 20;

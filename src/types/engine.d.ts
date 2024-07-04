@@ -1,4 +1,4 @@
-type EventName = 'Mouse' | 'Joint';
+type EventName = 'MOUSE' | 'JOINT';
 
 type MouseType = 'NONE' | 'DRAG' | 'JOINT';
 

@@ -43,6 +43,14 @@ const main = (document: Document) => {
       registry.engine.onMouseUp(e);
     });
 
+    // canvas.addEventListener('mouseout', (e: MouseEvent) => {
+    //   if (registry.mouseEventType === 'GRAB') registry.engine.onMouseUp(e);
+    // });
+
+    canvas.addEventListener('mouseout', (e: MouseEvent) => {
+      if (registry.mouseEventType === 'DRAG') registry.engine.onMouseUp(e);
+    });
+
     window.addEventListener('keydown', (e: KeyboardEvent) => {
       registry.engine.onKeyboardPressed(e);
     });

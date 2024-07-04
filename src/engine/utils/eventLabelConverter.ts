@@ -23,9 +23,9 @@ export const getEventLabel = (eventType?: EventType) => {
 
 export const getEventList = (eventName?: EventName): EventType[] => {
   switch (eventName) {
-    case 'Mouse':
+    case 'MOUSE':
       return ['NONE', 'DRAG', 'JOINT'];
-    case 'Joint':
+    case 'JOINT':
       return ['NONE', 'FORCE', 'SPRING', 'REVERSE', 'FIXED', 'HINGE'];
     default:
       return [];
