@@ -16,7 +16,8 @@
     "baseUrl": "./src",
     "paths": {
       "@engine/*": ["./engine/*"],
-      "@component/*": ["./component/*"]
+      "@component/*": ["./component/*"],
+      "@theme/*": ["./theme/*"]
     },
     "plugins": [
       {
