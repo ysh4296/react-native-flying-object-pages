@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import type { Meta, StoryContext, StoryObj } from '@storybook/react';
+import { fn, userEvent, within, expect } from '@storybook/test';
 import { Button } from './Button';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
@@ -48,5 +48,25 @@ export const Small: Story = {
   args: {
     size: 'small',
     label: 'Button',
+  },
+};
+
+export const TestButton: Story = {
+  args: {
+    primary: true,
+    label: 'Button',
+  },
+  play: async (context: StoryContext) => {
+    const { canvasElement } = context;
+    const canvas = within(canvasElement);
+
+    // 👇 Simulate interactions typing with the component
+    // await userEvent.type(canvas.getByTestId('email'), 'email@provider.com');
+
+    // await userEvent.type(canvas.getByTestId('password'), 'a-random-password');
+
+    await userEvent.click(canvas.getByTestId('custom-button'));
+
+    await expect(canvas.getByText('Button')).toBeInTheDocument();
   },
 };
