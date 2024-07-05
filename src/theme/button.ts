@@ -1,4 +1,5 @@
 import { ComponentStyleConfig } from '@chakra-ui/react';
+import { colors } from './colors';
 
 export const ButtonStyle: ComponentStyleConfig = {
   baseStyle: {
@@ -21,8 +22,8 @@ export const ButtonStyle: ComponentStyleConfig = {
   variants: {
     outline: {
       border: '2px solid',
-      borderColor: ['purple.400', 'green.400', 'cyan.400'],
-      color: ['purple.400', 'green.400', 'cyan.400'],
+      borderColor: [colors.error[600], colors.error[700], colors.error[800]],
+      color: [colors.primary[500], colors.primary[600], colors.primary[800]],
     },
     solid: {
       bg: 'purple.500',
