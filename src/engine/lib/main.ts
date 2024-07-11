@@ -22,9 +22,11 @@ const main = (document: Document) => {
     const loop = () => {
       let targetTime = performance.now();
       let deltaTime = (targetTime - currentTime) / 1000;
+      registry.engine.setZoom();
       registry.engine.clear();
       registry.engine.update(deltaTime);
       registry.engine.draw();
+      registry.engine.restoreZoom();
       window.requestAnimationFrame(loop);
       currentTime = targetTime;
     };
@@ -49,6 +51,10 @@ const main = (document: Document) => {
 
     canvas.addEventListener('mouseout', (e: MouseEvent) => {
       if (registry.mouseEventType === 'DRAG') registry.engine.onMouseUp(e);
+    });
+
+    canvas.addEventListener('wheel', (e: WheelEvent) => {
+      registry.engine.onWheel(e);
     });
 
     window.addEventListener('keydown', (e: KeyboardEvent) => {

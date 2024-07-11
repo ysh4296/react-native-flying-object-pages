@@ -38,6 +38,7 @@ export default class Engine {
   GrabMouseEvent: GrabMouse;
   JointMouseEvent: JointMouse;
   joints: Joint[];
+  camera: CameraType;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -50,6 +51,11 @@ export default class Engine {
     this.collision = Collision.getInstance();
     this.world = world;
     this.iteration = 10;
+    this.camera = {
+      x: 0,
+      y: 0,
+      scale: 1,
+    };
     this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, 'black');
     this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, 'black');
     this.testCircle3 = new Circle(new Vector({ x: 200, y: 250 }), 50, 'black');
@@ -198,7 +204,22 @@ export default class Engine {
 
   clear = () => {
     this.ctx.fillStyle = 'white';
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.ctx.clearRect(
+      -this.camera.x / this.camera.scale,
+      -this.camera.y / this.camera.scale,
+      this.canvas.width / this.camera.scale,
+      this.canvas.height / this.camera.scale,
+    );
+  };
+
+  setZoom = () => {
+    this.ctx.save();
+    this.ctx.setTransform(this.camera.scale, 0, 0, this.camera.scale, this.camera.x, this.camera.y);
+  };
+
+  restoreZoom = () => {
+    this.ctx.restore();
   };
 
   createTempPyramid() {
@@ -257,6 +278,32 @@ export default class Engine {
         this.JointMouseEvent.mouseUp(e, this.canvas, this);
         break;
     }
+  }
+
+  onWheel(e: WheelEvent) {
+    e.preventDefault();
+
+    if (e.ctrlKey) {
+      const zoomFactor = 0.1;
+      const mouseX = e.offsetX;
+      const mouseY = e.offsetY;
+
+      const wheel = e.deltaY < 0 ? 1 : -1;
+      const zoom = Math.exp(wheel * zoomFactor);
+
+      const newScale = this.camera.scale * zoom;
+
+      // 마우스 위치를 기준으로 줌
+      this.camera.x = mouseX - (mouseX - this.camera.x) * (newScale / this.camera.scale);
+      this.camera.y = mouseY - (mouseY - this.camera.y) * (newScale / this.camera.scale);
+
+      this.camera.scale = newScale;
+    } else {
+      const moveFactor = 1 / this.camera.scale;
+      this.camera.x -= e.deltaX * moveFactor;
+      this.camera.y -= e.deltaY * moveFactor;
+    }
+    console.log('onWheel', this.camera);
   }
 
   onKeyboardPressed = (e: KeyboardEvent) => {
