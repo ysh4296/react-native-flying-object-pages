@@ -65,10 +65,18 @@ export default class Draw {
     this.drawLine(headPosition, rightArrowPoint, color);
   };
 
-  drawRect(start: Vector, size: Vector, color: string) {
+  drawRect(position: Vector, size: Vector, color: string) {
     this.ctx.strokeStyle = color;
     this.ctx.beginPath();
-    this.ctx.rect(start.x, start.y, size.x, size.y);
+    this.ctx.rect(position.x - size.x / 2, position.y - size.y / 2, size.x, size.y);
     this.ctx.stroke();
+  }
+
+  drawCircle(position: Vector, radius: number, color: string) {
+    this.ctx.beginPath();
+    this.ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
+    this.ctx.strokeStyle = color;
+    this.ctx.stroke();
+    this.ctx.closePath();
   }
 }

@@ -1,10 +1,8 @@
-import Circle from './circle';
 import Draw from '@engine/utils/draw';
 import Rectangle from './rectangle';
-import Vector, { scaleVector } from './vector';
+import Vector, { addVector, scaleVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
-import Polygon from './polygon';
 import RigidBody from './rigidbody';
 import SpatialGrid from '@engine/optimization/spatialGrid';
 import HashGrid from '@engine/optimization/hashGrid';
@@ -12,6 +10,7 @@ import GrabMouse from '@engine/event/grabMouse';
 import Joint from '@engine/joints/joint';
 import { registry } from './main';
 import JointMouse from '@engine/event/jointMouse';
+import CreateMouse from '@engine/event/createMouse';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -19,17 +18,10 @@ export default class Engine {
   ctx: CanvasRenderingContext2D;
   drawUtils: Draw;
   calculatorUtils: Calculator;
-  testCircle1: Circle;
-  testCircle2: Circle;
-  testCircle3: Circle;
-  testRectangle1: Polygon;
-  testRectangle2: Rectangle;
-  testRectangle3: Rectangle;
   top: Rectangle;
   bottom: Rectangle;
   left: Rectangle;
   right: Rectangle;
-  triangle1: Polygon;
   collision: Collision;
   rigidBodies: RigidBody[];
   gravity: Vector;
@@ -37,8 +29,10 @@ export default class Engine {
   grid: SpatialGrid;
   GrabMouseEvent: GrabMouse;
   JointMouseEvent: JointMouse;
+  CreateMouseEvent: CreateMouse;
   joints: Joint[];
   camera: CameraType;
+  pause: boolean;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -47,6 +41,7 @@ export default class Engine {
     this.joints = [];
     this.GrabMouseEvent = new GrabMouse();
     this.JointMouseEvent = new JointMouse();
+    this.CreateMouseEvent = new CreateMouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
     this.world = world;
@@ -56,20 +51,7 @@ export default class Engine {
       y: 0,
       scale: 1,
     };
-    this.testCircle1 = new Circle(new Vector({ x: 150, y: 100 }), 50, 'black');
-    this.testCircle2 = new Circle(new Vector({ x: 100, y: 300 }), 50, 'black');
-    this.testCircle3 = new Circle(new Vector({ x: 200, y: 250 }), 50, 'black');
-    this.triangle1 = new Polygon(
-      [
-        new Vector({ x: 150, y: 150 }),
-        new Vector({ x: 100, y: 100 }),
-        new Vector({ x: 200, y: 100 }),
-      ],
-      'black',
-    );
-    this.testRectangle2 = new Rectangle(new Vector({ x: 250, y: 275 }), 200, 200, 'black');
-    this.testRectangle1 = new Rectangle(new Vector({ x: 250, y: 150 }), 200, 200, 'black');
-    this.testRectangle3 = new Rectangle(new Vector({ x: 620, y: 400 }), 200, 200, 'black');
+    this.pause = true;
     this.top = new Rectangle(
       new Vector({ x: this.world.x / 2 - 10, y: 10 }),
       this.world.x - 100,
@@ -94,46 +76,16 @@ export default class Engine {
       this.world.y - 100,
       'red',
     );
-
-    // let rect = new Rectangle(new Vector({ x: 400, y: 200 }), 200, 100, "blue");
-    // let anchorRectId = rect.createAnchor(new Vector({ x: 75, y: 0 }));
-
-    // let rect2 = new Rectangle(new Vector({ x: 600, y: 200 }), 300, 25, "blue");
-    // let anchorRect2Id = rect2.createAnchor(new Vector({ x: -125, y: 0 }));
-
     this.gravity = new Vector({ x: 0, y: 700 });
     this.rigidBodies = [];
-    this.rigidBodies.push(new RigidBody(this.triangle1, 1));
-    this.rigidBodies.push(new RigidBody(this.testRectangle1, 1));
-    this.rigidBodies.push(new RigidBody(this.testCircle1, 1));
-    this.rigidBodies.push(new RigidBody(this.testCircle2, 1));
-    this.rigidBodies.push(new RigidBody(this.testRectangle3, 1));
-    this.rigidBodies.push(new RigidBody(this.testCircle3, 1));
-    this.rigidBodies.push(new RigidBody(this.testRectangle2, 1));
-    // this.createTempPyramid();
-    // this.rigidBodies.push(new RigidBody(rect, 1));
-    // this.rigidBodies.push(new RigidBody(rect2, 1));
 
     this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
     this.rigidBodies.push(new RigidBody(this.left, 0));
     this.rigidBodies.push(new RigidBody(this.right, 0));
-    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[1]);
-    // this.rigidBodies[1].addNonCollisionObject(this.rigidBodies[0]);
-    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[2]);
-    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[3]);
-    // this.rigidBodies[0].addNonCollisionObject(this.rigidBodies[4]);
-
     this.grid = new HashGrid(15);
     this.grid.initialize(this.world, this.rigidBodies);
-    // let jointConnection2 = new JointConnection(
-    //   this.rigidBodies[0],
-    //   anchorRectId,
-    //   this.rigidBodies[1],
-    //   anchorRect2Id
-    // );
-
-    // this.joints.push(new FixedJoint(jointConnection2));
+    this.grid.refreshGrid();
   }
 
   handleJoints() {
@@ -141,26 +93,34 @@ export default class Engine {
       //console.log(this.joints[i].jointConnection.anchorA);
       this.joints[i].updateConnectionA();
       this.joints[i].updateConnectionB();
-      this.joints[i].draw();
     }
   }
 
   update = (deltaTime: number) => {
+    this.grid.draw();
     let fpsText = Math.round(1 / deltaTime) + ' FPS';
     this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, 'black', fpsText);
 
     this.grid.refreshGrid();
     this.handleJoints();
 
-    if (this.GrabMouseEvent.grabbedObject) {
-      this.GrabMouseEvent.followMouse();
-      this.drawUtils.drawPoint(this.GrabMouseEvent.mousePosition, 5, 'red');
-      let anchorPosition = this.GrabMouseEvent.grabbedObject
-        .getShape()
-        .anchorPoints.get(this.GrabMouseEvent.grabbedAnchorId);
-      if (anchorPosition) {
-        this.drawUtils.drawLine(this.GrabMouseEvent.mousePosition, anchorPosition, 'black');
-      }
+    switch (registry.mouseEventType) {
+      case 'DRAG':
+        if (this.GrabMouseEvent.grabbedObject) {
+          this.GrabMouseEvent.followMouse();
+          this.drawUtils.drawPoint(this.GrabMouseEvent.mousePosition, 5, 'red');
+          let anchorPosition = this.GrabMouseEvent.grabbedObject
+            .getShape()
+            .anchorPoints.get(this.GrabMouseEvent.grabbedAnchorId);
+          if (anchorPosition) {
+            this.drawUtils.drawLine(this.GrabMouseEvent.mousePosition, anchorPosition, 'black');
+          }
+        }
+        break;
+      case 'JOINT':
+        break;
+      case 'CREATE':
+        break;
     }
 
     for (let it = 0; it < this.iteration; it++) {
@@ -195,10 +155,39 @@ export default class Engine {
     }
   };
 
+  updateEdit = () => {
+    // edit mode
+    switch (registry.mouseEventType) {
+      case 'DRAG':
+        break;
+      case 'JOINT':
+        break;
+      case 'CREATE':
+        if (!this.CreateMouseEvent.isEdit) break;
+        const start = this.CreateMouseEvent.start;
+        const end = this.CreateMouseEvent.mousePosition;
+        const width = Math.abs(start.x - end.x);
+        const height = Math.abs(start.y - end.y);
+        const position = addVector(start, end);
+        position.scale(0.5);
+        if (registry.createEventType === 'RECTANGLE') {
+          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
+        }
+        if (registry.createEventType === 'CIRCLE') {
+          this.drawUtils.drawCircle(position, Math.min(width, height) / 2, 'green');
+        }
+        break;
+    }
+    this.grid.refreshGrid();
+  };
+
   draw = () => {
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].getShape().draw();
       this.rigidBodies[i].shape.calculateBoundingBox();
+    }
+    for (let i = 0; i < this.joints.length; i++) {
+      this.joints[i].draw();
     }
   };
 
@@ -254,6 +243,9 @@ export default class Engine {
       case 'JOINT':
         this.JointMouseEvent.mouseMove(e, this.canvas, this);
         break;
+      case 'CREATE':
+        this.CreateMouseEvent.mouseMove(e, this.canvas, this);
+        break;
     }
   }
 
@@ -266,6 +258,9 @@ export default class Engine {
       case 'JOINT':
         this.JointMouseEvent.mouseDown(e, this.canvas, this);
         break;
+      case 'CREATE':
+        this.CreateMouseEvent.mouseDown(e, this.canvas, this);
+        break;
     }
   }
 
@@ -276,6 +271,9 @@ export default class Engine {
         break;
       case 'JOINT':
         this.JointMouseEvent.mouseUp(e, this.canvas, this);
+        break;
+      case 'CREATE':
+        this.CreateMouseEvent.mouseUp(e, this.canvas, this);
         break;
     }
   }
@@ -303,7 +301,6 @@ export default class Engine {
       this.camera.x -= e.deltaX * moveFactor;
       this.camera.y -= e.deltaY * moveFactor;
     }
-    console.log('onWheel', this.camera);
   }
 
   onKeyboardPressed = (e: KeyboardEvent) => {

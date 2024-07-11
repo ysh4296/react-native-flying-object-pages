@@ -2,10 +2,11 @@ import Draw from '@engine/utils/draw';
 import Engine from './engine';
 import Vector from './vector';
 
-export const registry: any = {
+export const registry: registryType = {
   engine: null as Engine | null,
   mouseEventType: 'NONE',
   jointEventType: 'NONE',
+  createEventType: 'NONE',
 };
 
 const main = (document: Document) => {
@@ -24,7 +25,11 @@ const main = (document: Document) => {
       let deltaTime = (targetTime - currentTime) / 1000;
       registry.engine.setZoom();
       registry.engine.clear();
-      registry.engine.update(deltaTime);
+      if (registry.engine.pause) {
+        registry.engine.updateEdit();
+      } else {
+        registry.engine.update(deltaTime);
+      }
       registry.engine.draw();
       registry.engine.restoreZoom();
       window.requestAnimationFrame(loop);
@@ -44,10 +49,6 @@ const main = (document: Document) => {
     canvas.addEventListener('mouseup', (e: MouseEvent) => {
       registry.engine.onMouseUp(e);
     });
-
-    // canvas.addEventListener('mouseout', (e: MouseEvent) => {
-    //   if (registry.mouseEventType === 'GRAB') registry.engine.onMouseUp(e);
-    // });
 
     canvas.addEventListener('mouseout', (e: MouseEvent) => {
       if (registry.mouseEventType === 'DRAG') registry.engine.onMouseUp(e);

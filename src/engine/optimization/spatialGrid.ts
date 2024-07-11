@@ -141,8 +141,8 @@ export default class SpatialGrid {
     for (let i = 0; i < this.cellCntX; i++) {
       for (let j = 0; j < this.cellCntY; j++) {
         let position = new Vector({
-          x: i * this.cellSize + 5,
-          y: j * this.cellSize + 5,
+          x: (i - 0.5) * this.cellSize + 5,
+          y: (j - 0.5) * this.cellSize + 5,
         });
 
         this.drawUtils.drawRect(

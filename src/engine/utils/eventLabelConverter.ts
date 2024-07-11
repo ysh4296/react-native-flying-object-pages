@@ -6,6 +6,8 @@ export const getEventLabel = (eventType?: EventType) => {
       return 'drag';
     case 'JOINT':
       return 'joint';
+    case 'CREATE':
+      return 'create';
     case 'FORCE':
       return 'force';
     case 'SPRING':
@@ -16,6 +18,10 @@ export const getEventLabel = (eventType?: EventType) => {
       return 'fixed';
     case 'HINGE':
       return 'hinge';
+    case 'CIRCLE':
+      return 'circle';
+    case 'RECTANGLE':
+      return 'rectangle';
     default:
       return 'no data';
   }
@@ -24,9 +30,11 @@ export const getEventLabel = (eventType?: EventType) => {
 export const getEventList = (eventName?: EventName): EventType[] => {
   switch (eventName) {
     case 'MOUSE':
-      return ['NONE', 'DRAG', 'JOINT'];
+      return ['NONE', 'DRAG', 'JOINT', 'CREATE'];
     case 'JOINT':
       return ['NONE', 'FORCE', 'SPRING', 'REVERSE', 'FIXED', 'HINGE'];
+    case 'CREATE':
+      return ['NONE', 'CIRCLE', 'RECTANGLE'];
     default:
       return [];
   }
