@@ -13,12 +13,18 @@ const main = (document: Document) => {
   const canvas: HTMLCanvasElement = document.getElementById('myCanvas') as HTMLCanvasElement;
   canvas.style.backgroundColor = '#eee';
   const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
   let currentTime = 0;
 
   if (ctx) {
     Draw.createInstance(ctx);
-    registry.engine = new Engine(canvas, ctx, new Vector({ x: 1200, y: 700 }));
+    registry.engine = new Engine(
+      canvas,
+      ctx,
+      new Vector({ x: window.innerWidth, y: window.innerHeight }),
+    );
     currentTime = performance.now();
     const loop = () => {
       let targetTime = performance.now();
@@ -61,6 +67,15 @@ const main = (document: Document) => {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
       registry.engine.onKeyboardPressed(e);
     });
+
+    window.addEventListener(
+      'resize',
+      () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      },
+      false,
+    );
   }
 };
 

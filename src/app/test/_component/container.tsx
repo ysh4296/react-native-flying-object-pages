@@ -15,7 +15,7 @@ const Container = () => {
   return (
     <>
       <p>physics Engine</p>
-      <canvas id="myCanvas" width="1200" height="700" />
+      <canvas id="myCanvas" />
       <EventSelect
         eventName="MOUSE"
         setEventType={(mouseType) => {

@@ -203,6 +203,9 @@ export default class Engine {
   };
 
   setZoom = () => {
+    const dpr = window.devicePixelRatio || 1;
+    this.ctx.scale(dpr, dpr);
+
     this.ctx.save();
     this.ctx.setTransform(this.camera.scale, 0, 0, this.camera.scale, this.camera.x, this.camera.y);
   };
