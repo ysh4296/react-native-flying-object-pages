@@ -1,3 +1,4 @@
+import { registry } from '@engine/lib/main';
 import Vector, { addVector, scaleVector, subVector } from '@engine/lib/vector';
 
 export default class Draw {
@@ -35,6 +36,7 @@ export default class Draw {
   };
 
   drawLine = (startPosition: Vector, endPosition: Vector, color: string) => {
+    this.ctx.lineWidth = 1 / registry.engine.camera.scale;
     this.ctx.beginPath();
     this.ctx.moveTo(startPosition.x, startPosition.y);
     this.ctx.lineTo(endPosition.x, endPosition.y);
@@ -66,17 +68,40 @@ export default class Draw {
   };
 
   drawRect(position: Vector, size: Vector, color: string) {
+    this.ctx.save();
     this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = 1 / registry.engine.camera.scale;
     this.ctx.beginPath();
     this.ctx.rect(position.x - size.x / 2, position.y - size.y / 2, size.x, size.y);
     this.ctx.stroke();
+    this.ctx.restore();
+  }
+
+  fillRect(position: Vector, size: Vector, color: string, rotation = 0) {
+    this.ctx.save(); // 현재 상태 저장
+
+    // 캔버스 좌표계를 이동하고 회전
+    this.ctx.translate(position.x, position.y);
+    this.ctx.rotate(rotation);
+
+    this.ctx.fillStyle = color;
+
+    // 사각형의 중심을 기준으로 그리기
+    this.ctx.rect(-size.x / 2, -size.y / 2, size.x, size.y);
+
+    this.ctx.fill();
+
+    this.ctx.restore(); // 이전 상태로 복원
   }
 
   drawCircle(position: Vector, radius: number, color: string) {
+    this.ctx.lineWidth = registry.engine.camera.scale;
     this.ctx.beginPath();
     this.ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
     this.ctx.strokeStyle = color;
+    this.ctx.fillStyle = color;
     this.ctx.stroke();
+    this.ctx.fill();
     this.ctx.closePath();
   }
 }

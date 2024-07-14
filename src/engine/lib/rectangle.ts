@@ -24,4 +24,14 @@ export default class Rectangle extends Polygon {
   calculateInertia(mass: number) {
     return (mass * (this.width * this.width + this.height * this.height)) / 12;
   }
+
+  draw() {
+    super.draw();
+    this.drawUtils.fillRect(
+      this.position,
+      new Vector({ x: this.width, y: this.height }),
+      'gray',
+      this.orientation,
+    );
+  }
 }
