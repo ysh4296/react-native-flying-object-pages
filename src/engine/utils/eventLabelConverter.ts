@@ -22,6 +22,10 @@ export const getEventLabel = (eventType?: EventType) => {
       return 'circle';
     case 'RECTANGLE':
       return 'rectangle';
+    case 'WATERBLOCK':
+      return 'waterblock';
+    case 'BACONBLOCK':
+      return 'baconblock';
     default:
       return 'no data';
   }
@@ -34,7 +38,7 @@ export const getEventList = (eventName?: EventName): EventType[] => {
     case 'JOINT':
       return ['NONE', 'FORCE', 'SPRING', 'REVERSE', 'FIXED', 'HINGE'];
     case 'CREATE':
-      return ['NONE', 'CIRCLE', 'RECTANGLE'];
+      return ['NONE', 'CIRCLE', 'RECTANGLE', 'WATERBLOCK', 'BACONBLOCK'];
     default:
       return [];
   }

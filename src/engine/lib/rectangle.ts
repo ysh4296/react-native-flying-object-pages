@@ -30,7 +30,7 @@ export default class Rectangle extends Polygon {
     this.drawUtils.fillRect(
       this.position,
       new Vector({ x: this.width, y: this.height }),
-      'gray',
+      this.color,
       this.orientation,
     );
   }

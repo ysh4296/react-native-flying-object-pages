@@ -12,12 +12,13 @@ export default class FixedJoint extends Joint {
   relationOrientation: number;
   jointIteration: number;
 
-  constructor(connection: JointConnection) {
+  constructor(connection: JointConnection, jointIteration = 20) {
     super(connection);
     this.initialLength = subVector(
       this.getAnchorAPos() as Vector,
       this.getAnchorBPos() as Vector,
     ).length();
+    this.objectA.addNonCollisionObject(this.objectB);
 
     this.objectARestitution = this.objectA.matter.restitution;
     this.objectBRestitution = this.objectB.matter.restitution;
@@ -26,7 +27,7 @@ export default class FixedJoint extends Joint {
     this.relationOrientation =
       this.objectB.getShape().orientation - this.objectA.getShape().orientation;
     // @add add joint to moving object
-    this.jointIteration = 20;
+    this.jointIteration = jointIteration;
   }
 
   updateConnectionA() {

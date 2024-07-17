@@ -77,19 +77,22 @@ export default class Draw {
     this.ctx.restore();
   }
 
-  fillRect(position: Vector, size: Vector, color: string, rotation = 0) {
+  fillRect(position: Vector, size: Vector, color: string, rotation = 0, translation?: Vector) {
     this.ctx.save(); // 현재 상태 저장
+    this.ctx.beginPath();
 
     // 캔버스 좌표계를 이동하고 회전
     this.ctx.translate(position.x, position.y);
     this.ctx.rotate(rotation);
-
-    this.ctx.fillStyle = color;
-
+    if (translation) {
+      this.ctx.translate(translation.x, translation.y);
+    }
     // 사각형의 중심을 기준으로 그리기
     this.ctx.rect(-size.x / 2, -size.y / 2, size.x, size.y);
-
+    this.ctx.fillStyle = color;
     this.ctx.fill();
+
+    this.ctx.closePath();
 
     this.ctx.restore(); // 이전 상태로 복원
   }

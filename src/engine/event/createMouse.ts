@@ -1,3 +1,5 @@
+import BaconBlock from '@engine/lib/block/baconBlock';
+import WaterBlock from '@engine/lib/block/waterBlock';
 import Circle from '@engine/lib/circle';
 import Engine from '@engine/lib/engine';
 import getMousePosition from '@engine/lib/getMousePosition';
@@ -50,6 +52,13 @@ export default class CreateMouse {
         new RigidBody(new Circle(center, Math.min(width, height) / 2, 'green'), 1),
       );
     }
+    if (registry.createEventType === 'WATERBLOCK') {
+      registry.engine.rigidBodies.push(new WaterBlock(center, width, height, 'blue'));
+    }
+    if (registry.createEventType === 'BACONBLOCK') {
+      registry.engine.rigidBodies.push(new BaconBlock(center, width, height, 'blue'));
+    }
+    // console.log(registry.engine.rigidBodies);
     this.isEdit = false;
   }
 }

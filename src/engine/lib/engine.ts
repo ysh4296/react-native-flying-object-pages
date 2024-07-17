@@ -11,6 +11,7 @@ import Joint from '@engine/joints/joint';
 import { registry } from './main';
 import JointMouse from '@engine/event/jointMouse';
 import CreateMouse from '@engine/event/createMouse';
+import getMousePosition from './getMousePosition';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -100,6 +101,11 @@ export default class Engine {
     this.grid.draw();
     let fpsText = Math.round(1 / deltaTime) + ' FPS';
     this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, 'black', fpsText);
+    // for (let i = 0; i < this.rigidBodies.length; i++) {
+    //   if (this.rigidBodies[i] instanceof WaterBlock) {
+    //     this.rigidBodies[i].active();
+    //   }
+    // }
 
     this.grid.refreshGrid();
     this.handleJoints();
@@ -145,7 +151,7 @@ export default class Engine {
             if (result) {
               result.resolveCollision(objectA, objectB);
               result.positionalCorrection(objectA, objectB, 0.3);
-              result.draw();
+              // result.draw();
             }
             objectA.shape.boundingBox.collision = true;
             objectB.shape.boundingBox.collision = true;
@@ -183,12 +189,15 @@ export default class Engine {
 
   draw = () => {
     for (let i = 0; i < this.rigidBodies.length; i++) {
+      this.rigidBodies[i].drawEffect();
+    }
+    for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].getShape().draw();
       this.rigidBodies[i].shape.calculateBoundingBox();
     }
-    for (let i = 0; i < this.joints.length; i++) {
-      this.joints[i].draw();
-    }
+    // for (let i = 0; i < this.joints.length; i++) {
+    //   this.joints[i].draw();
+    // }
   };
 
   clear = () => {
@@ -249,6 +258,12 @@ export default class Engine {
       case 'CREATE':
         this.CreateMouseEvent.mouseMove(e, this.canvas, this);
         break;
+    }
+    const mousePosition = getMousePosition(this.canvas, e);
+    for (let i = 0; i < this.rigidBodies.length; i++) {
+      if (this.rigidBodies[i].shape.isInside(mousePosition)) {
+        this.rigidBodies[i].active();
+      }
     }
   }
 
