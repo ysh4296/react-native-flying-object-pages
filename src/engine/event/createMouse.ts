@@ -1,4 +1,5 @@
 import BaconBlock from '@engine/lib/block/baconBlock';
+import Escalator from '@engine/lib/block/mover/escalator';
 import WaterBlock from '@engine/lib/block/waterBlock';
 import Circle from '@engine/lib/circle';
 import Engine from '@engine/lib/engine';
@@ -57,6 +58,11 @@ export default class CreateMouse {
     }
     if (registry.createEventType === 'BACONBLOCK') {
       registry.engine.rigidBodies.push(new BaconBlock(center, width, height, 'blue'));
+    }
+    if (registry.createEventType === 'ESCALATOR') {
+      registry.engine.rigidBodies.push(
+        new Escalator(center, width, height, 'purple', new Vector({ x: 1000, y: 0 })),
+      );
     }
     // console.log(registry.engine.rigidBodies);
     this.isEdit = false;

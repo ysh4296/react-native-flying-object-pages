@@ -12,6 +12,7 @@ import { registry } from './main';
 import JointMouse from '@engine/event/jointMouse';
 import CreateMouse from '@engine/event/createMouse';
 import getMousePosition from './getMousePosition';
+import Escalator from './block/mover/escalator';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -152,6 +153,21 @@ export default class Engine {
               result.resolveCollision(objectA, objectB);
               result.positionalCorrection(objectA, objectB, 0.3);
               // result.draw();
+              if (objectB instanceof Escalator) {
+                /** objectA moves */
+                if (objectA.isKinematic) continue;
+                const accelationDirection = this.calculatorUtils.rotateAroundPoint(
+                  objectB.direction,
+                  new Vector({ x: 0, y: 0 }),
+                  objectB.shape.orientation,
+                );
+                objectA.addForce(
+                  scaleVector(
+                    new Vector({ x: accelationDirection.x, y: accelationDirection.y }),
+                    this.rigidBodies[i].mass,
+                  ),
+                );
+              }
             }
             objectA.shape.boundingBox.collision = true;
             objectB.shape.boundingBox.collision = true;

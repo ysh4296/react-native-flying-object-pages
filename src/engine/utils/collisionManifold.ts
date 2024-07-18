@@ -19,7 +19,6 @@ export default class CollisionManifold {
   flip() {
     if (this.flipNormalEnabled) {
       this.normal = scaleVector(this.normal, -1);
-      console.log('Flip');
     }
   }
 
