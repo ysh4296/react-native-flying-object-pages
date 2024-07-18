@@ -3,6 +3,7 @@ import Engine from './engine';
 import Vector from './vector';
 
 export const registry: registryType = {
+  id: 0,
   engine: null as Engine | null,
   mouseEventType: 'NONE',
   jointEventType: 'NONE',

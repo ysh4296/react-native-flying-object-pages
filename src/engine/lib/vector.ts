@@ -1,3 +1,5 @@
+import { registry } from './main';
+
 export default class Vector {
   x: number;
   y: number;
@@ -55,6 +57,20 @@ export default class Vector {
   log = () => {
     console.log(this);
   };
+
+  /** the Vector is out from map */
+  isOut() {
+    let result = false;
+    if (
+      this.x < 0 ||
+      this.x > registry.engine.world.x ||
+      this.y < 0 ||
+      this.y > registry.engine.world.y
+    ) {
+      result = true;
+    }
+    return result;
+  }
 }
 
 export const addVector = (vector1: Vector, vector2: Vector): Vector => {

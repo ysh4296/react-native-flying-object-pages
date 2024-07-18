@@ -131,7 +131,6 @@ export default class Bread extends Food {
       if (this.counter < this.maxCounter) this.counter++;
     }
     /** cooling down */
-    console.log(this.temprature);
     if (this.temprature > 0) this.temprature -= 0.06;
   }
 }

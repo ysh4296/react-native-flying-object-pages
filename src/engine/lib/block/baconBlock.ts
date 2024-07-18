@@ -40,8 +40,10 @@ export default class BaconBlock extends RigidBody {
 
       for (let i = 1; i < this.baconLength; i++) {
         const jointConnection = new JointConnection(
+          registry.engine.rigidBodies[initIndex + i - 1].id,
           registry.engine.rigidBodies[initIndex + i - 1],
           1,
+          registry.engine.rigidBodies[initIndex + i].id,
           registry.engine.rigidBodies[initIndex + i],
           0,
         );

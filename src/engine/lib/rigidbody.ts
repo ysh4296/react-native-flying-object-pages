@@ -3,6 +3,7 @@ import Shape from './shape';
 import Vector, { addVector, scaleVector, subVector } from './vector';
 
 export default class RigidBody {
+  id: number;
   shape: Shape;
   mass: number;
   massInverse: number;
@@ -19,6 +20,7 @@ export default class RigidBody {
 
   constructor(shape: Shape, mass: number) {
     this.shape = shape;
+    this.id = this.shape.calculatorUtils.generateObjectId();
     this.shape.calculateBoundingBox();
     this.mass = mass;
     if (this.mass > 0) {

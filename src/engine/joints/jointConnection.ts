@@ -2,6 +2,8 @@ import RigidBody from '@engine/lib/rigidbody';
 import Draw from '@engine/utils/draw';
 
 export default class JointConnection {
+  objectAId: number;
+  objectBId: number;
   objectA: RigidBody;
   objectB: RigidBody;
   anchorAId: number;
@@ -9,7 +11,16 @@ export default class JointConnection {
   color: string;
   drawUtils: Draw;
 
-  constructor(objectA: RigidBody, anchorAId: number, objectB: RigidBody, anchorBId: number) {
+  constructor(
+    objectAId: number,
+    objectA: RigidBody,
+    anchorAId: number,
+    objectBId: number,
+    objectB: RigidBody,
+    anchorBId: number,
+  ) {
+    this.objectAId = objectAId;
+    this.objectBId = objectBId;
     this.objectA = objectA;
     this.anchorAId = anchorAId;
     this.objectB = objectB;

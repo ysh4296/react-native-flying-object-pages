@@ -1,3 +1,4 @@
+import { registry } from '@engine/lib/main';
 import Vector, { subVector } from '@engine/lib/vector';
 
 export default class Calculator {
@@ -150,5 +151,13 @@ export default class Calculator {
     const aHex = toHex(Math.round(rgba[3] * 255));
 
     return `#${rHex}${gHex}${bHex}${aHex}`;
+  }
+
+  /**
+   * every object has their own id
+   * @returns number id
+   */
+  generateObjectId() {
+    return registry.id++;
   }
 }

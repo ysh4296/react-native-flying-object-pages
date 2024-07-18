@@ -23,6 +23,7 @@ type CameraType = {
 };
 
 type registryType = {
+  id: number;
   engine: Engine | null;
   mouseEventType: MouseType;
   jointEventType: JointType;

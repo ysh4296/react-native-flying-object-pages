@@ -1,3 +1,6 @@
+import FixedJoint from '@engine/joints/fixedJoint';
+import Joint from '@engine/joints/joint';
+import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
 import Rectangle from '@engine/lib/rectangle';
 import Vector from '@engine/lib/vector';
@@ -68,9 +71,13 @@ export default class Bacon extends Food {
     }
     if (this.counter > 500) {
       this.matter = new Matter(0.2, 0.8);
+      const filteredJoints = registry.engine.joints.filter(
+        (item: Joint) =>
+          item.jointConnection.objectAId === this.id || item.jointConnection.objectBId == this.id,
+      );
+      filteredJoints.forEach((result: FixedJoint) => (result.jointIteration = 20));
     }
     /** cooling down */
-    console.log(this.temprature);
     if (this.temprature > 0) this.temprature -= 0.06;
   }
 }

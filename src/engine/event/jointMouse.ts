@@ -12,15 +12,19 @@ import FixedJoint from '@engine/joints/fixedJoint';
 import HingeJoint from '@engine/joints/hingeJoint';
 
 export default class JointMouse extends mouseEvent {
+  grabbedObjectAId: number;
   grabbedAnchorAId: number;
   grabbedObjectA: RigidBody | undefined;
+  grabbedObjectBId: number;
   grabbedAnchorBId: number;
   grabbedObjectB: RigidBody | undefined;
 
   constructor() {
     super();
+    this.grabbedObjectAId = 0;
     this.grabbedAnchorAId = 0;
     this.grabbedObjectA = undefined;
+    this.grabbedObjectBId = 0;
     this.grabbedAnchorBId = 0;
     this.grabbedObjectB = undefined;
   }
@@ -34,6 +38,7 @@ export default class JointMouse extends mouseEvent {
       if (mouseInside) {
         this.isGrab = true;
         this.grabbedObjectA = objects[i];
+        this.grabbedObjectAId = objects[i].id;
         // makes anchor and add to object
         let anchorPosition = subVector(this.mousePosition, objects[i].shape.centroid);
         this.grabbedAnchorAId = this.grabbedObjectA.getShape().createAnchor(anchorPosition);
@@ -51,6 +56,7 @@ export default class JointMouse extends mouseEvent {
       if (mouseInside) {
         this.isGrab = true;
         this.grabbedObjectB = objects[i];
+        this.grabbedObjectBId = objects[i].id;
         // makes anchor and add to object
         let anchorPosition = subVector(this.mousePosition, objects[i].shape.centroid);
         this.grabbedAnchorBId = this.grabbedObjectB.getShape().createAnchor(anchorPosition);
@@ -60,8 +66,10 @@ export default class JointMouse extends mouseEvent {
 
     if (this.grabbedObjectA && this.grabbedObjectB) {
       let jointConnection = new JointConnection(
+        this.grabbedObjectAId,
         this.grabbedObjectA,
         this.grabbedAnchorAId,
+        this.grabbedObjectBId,
         this.grabbedObjectB,
         this.grabbedAnchorBId,
       );

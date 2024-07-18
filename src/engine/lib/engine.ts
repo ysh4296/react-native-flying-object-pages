@@ -182,7 +182,17 @@ export default class Engine {
       }
     }
 
+    /** erase outted objects */
     for (let i = 0; i < this.rigidBodies.length; i++) {
+      if (this.rigidBodies[i].shape.centroid.isOut()) {
+        this.joints = this.joints.filter(
+          (item) =>
+            item.jointConnection.objectAId !== this.rigidBodies[i].id &&
+            item.jointConnection.objectBId !== this.rigidBodies[i].id,
+        );
+        this.rigidBodies.splice(i, 1);
+        continue;
+      }
       if (this.rigidBodies[i] instanceof Food) {
         this.rigidBodies[i].active();
       }
