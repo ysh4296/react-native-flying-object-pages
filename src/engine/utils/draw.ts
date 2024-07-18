@@ -77,7 +77,13 @@ export default class Draw {
     this.ctx.restore();
   }
 
-  fillRect(position: Vector, size: Vector, color: string, rotation = 0, translation?: Vector) {
+  fillRect(
+    position: Vector,
+    size: Vector,
+    color: string | CanvasGradient,
+    rotation = 0,
+    translation?: Vector,
+  ) {
     this.ctx.save(); // 현재 상태 저장
     this.ctx.beginPath();
 

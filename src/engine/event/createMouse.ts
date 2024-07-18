@@ -1,4 +1,5 @@
 import BaconBlock from '@engine/lib/block/baconBlock';
+import BreadBlock from '@engine/lib/block/breadBlock';
 import Escalator from '@engine/lib/block/mover/escalator';
 import WaterBlock from '@engine/lib/block/waterBlock';
 import Circle from '@engine/lib/circle';
@@ -58,6 +59,9 @@ export default class CreateMouse {
     }
     if (registry.createEventType === 'BACONBLOCK') {
       registry.engine.rigidBodies.push(new BaconBlock(center, width, height, 'blue'));
+    }
+    if (registry.createEventType === 'BREADBLOCK') {
+      registry.engine.rigidBodies.push(new BreadBlock(center, width, height, 'blue'));
     }
     if (registry.createEventType === 'ESCALATOR') {
       registry.engine.rigidBodies.push(

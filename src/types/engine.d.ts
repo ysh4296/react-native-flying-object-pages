@@ -4,7 +4,14 @@ type MouseType = 'NONE' | 'DRAG' | 'JOINT' | 'CREATE';
 
 type JointType = 'NONE' | 'FORCE' | 'SPRING' | 'REVERSE' | 'FIXED' | 'HINGE';
 
-type CreateType = 'NONE' | 'RECTANGLE' | 'CIRCLE' | 'WATERBLOCK' | 'BACONBLOCK' | 'ESCALATOR';
+type CreateType =
+  | 'NONE'
+  | 'RECTANGLE'
+  | 'CIRCLE'
+  | 'WATERBLOCK'
+  | 'BACONBLOCK'
+  | 'BREADBLOCK'
+  | 'ESCALATOR';
 
 type EventType = MouseType | JointType | createType;
 

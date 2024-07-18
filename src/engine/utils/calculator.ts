@@ -83,4 +83,8 @@ export default class Calculator {
     }
     return value;
   }
+
+  degreesToRadians(degrees: number) {
+    return degrees * (Math.PI / 180);
+  }
 }
