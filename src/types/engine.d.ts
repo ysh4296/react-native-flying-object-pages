@@ -11,7 +11,8 @@ type CreateType =
   | 'WATERBLOCK'
   | 'BACONBLOCK'
   | 'BREADBLOCK'
-  | 'ESCALATOR';
+  | 'ESCALATOR'
+  | 'GRILL';
 
 type EventType = MouseType | JointType | createType;
 

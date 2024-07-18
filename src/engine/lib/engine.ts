@@ -13,6 +13,8 @@ import JointMouse from '@engine/event/jointMouse';
 import CreateMouse from '@engine/event/createMouse';
 import getMousePosition from './getMousePosition';
 import Escalator from './block/mover/escalator';
+import Grill from './block/mover/grill';
+import Food from './food/food';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -168,11 +170,21 @@ export default class Engine {
                   ),
                 );
               }
+              if (objectB instanceof Grill && objectA instanceof Food) {
+                /** objectA cooked */
+                objectA.temprature = Math.min(100, objectB.temprature / 6000 + objectA.temprature);
+              }
             }
             objectA.shape.boundingBox.collision = true;
             objectB.shape.boundingBox.collision = true;
           }
         }
+      }
+    }
+
+    for (let i = 0; i < this.rigidBodies.length; i++) {
+      if (this.rigidBodies[i] instanceof Food) {
+        this.rigidBodies[i].active();
       }
     }
   };

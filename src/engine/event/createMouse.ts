@@ -1,6 +1,7 @@
 import BaconBlock from '@engine/lib/block/baconBlock';
 import BreadBlock from '@engine/lib/block/breadBlock';
 import Escalator from '@engine/lib/block/mover/escalator';
+import Grill from '@engine/lib/block/mover/grill';
 import WaterBlock from '@engine/lib/block/waterBlock';
 import Circle from '@engine/lib/circle';
 import Engine from '@engine/lib/engine';
@@ -67,6 +68,9 @@ export default class CreateMouse {
       registry.engine.rigidBodies.push(
         new Escalator(center, width, height, 'purple', new Vector({ x: 1000, y: 0 })),
       );
+    }
+    if (registry.createEventType === 'GRILL') {
+      registry.engine.rigidBodies.push(new Grill(center, width, height, 'red'));
     }
     // console.log(registry.engine.rigidBodies);
     this.isEdit = false;

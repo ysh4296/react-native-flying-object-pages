@@ -87,4 +87,68 @@ export default class Calculator {
   degreesToRadians(degrees: number) {
     return degrees * (Math.PI / 180);
   }
+
+  /**
+   * 두 RGBA 색상 값 사이의 중간 색상을 계산하는 함수
+   * @param {Array} color1 - 첫 번째 색상, [R, G, B, A]
+   * @param {Array} color2 - 두 번째 색상, [R, G, B, A]
+   * @param {number} ratio - 중간 색상의 비율 (0에서 1 사이의 값)
+   * @returns {Array} - 중간 색상, [R, G, B, A]
+   */
+  interpolateColor(color1: number[], color2: number[], ratio: number) {
+    // 비율이 0보다 작거나 1보다 큰 경우 적절한 범위로 조정
+    ratio = Math.min(Math.max(ratio, 0), 1);
+
+    const r = Math.round(color1[0] + ratio * (color2[0] - color1[0]));
+    const g = Math.round(color1[1] + ratio * (color2[1] - color1[1]));
+    const b = Math.round(color1[2] + ratio * (color2[2] - color1[2]));
+    const a = color1[3] + ratio * (color2[3] - color1[3]);
+
+    return [r, g, b, a];
+  }
+
+  /**
+   * HEX 색상 값을 RGBA 색상 값으로 변환하는 함수
+   * @param {string} hex - HEX 색상 값 (예: #RRGGBB 또는 #RRGGBBAA)
+   * @returns {Array} - RGBA 색상 값, [R, G, B, A]
+   */
+  hexToRgba(hex: string) {
+    // HEX 색상 값을 정리
+    let normalizedHex = hex.replace('#', '');
+
+    // HEX 길이가 6자리인 경우 (RRGGBB)
+    if (normalizedHex.length === 6) {
+      normalizedHex += 'FF'; // 불투명도 추가
+    }
+
+    // R, G, B, A 값을 추출
+    const r = parseInt(normalizedHex.slice(0, 2), 16);
+    const g = parseInt(normalizedHex.slice(2, 4), 16);
+    const b = parseInt(normalizedHex.slice(4, 6), 16);
+    const a = parseInt(normalizedHex.slice(6, 8), 16) / 255;
+
+    return [r, g, b, a];
+  }
+
+  /**
+   * RGBA 색상 값을 HEX 색상 값으로 변환하는 함수
+   * @param {number} r - 빨강 값 (0-255)
+   * @param {number} g - 초록 값 (0-255)
+   * @param {number} b - 파랑 값 (0-255)
+   * @param {number} a - 알파 값 (0-1)
+   * @returns {string} - HEX 색상 값 (예: #RRGGBBAA)
+   */
+  rgbaToHex(rgba: number[]) {
+    const toHex = (value: number) => {
+      const hex = value.toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+
+    const rHex = toHex(rgba[0]);
+    const gHex = toHex(rgba[1]);
+    const bHex = toHex(rgba[2]);
+    const aHex = toHex(Math.round(rgba[3] * 255));
+
+    return `#${rHex}${gHex}${bHex}${aHex}`;
+  }
 }
