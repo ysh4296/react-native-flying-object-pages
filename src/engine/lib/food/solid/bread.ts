@@ -14,12 +14,20 @@ export default class Bread extends Food {
     this.maxTemprature = 100;
     this.counter = 0;
     this.maxCounter = 2000;
+    const breadColor = ['#eec07b'];
+    const cookedColor = ['#6d3200'];
     this.shape.draw = () => {
       /** normal bread */
       this.shape.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: 120, y: 20 }),
-        '#eec07b',
+        this.shape.calculatorUtils.rgbaToHex(
+          this.shape.calculatorUtils.interpolateColor(
+            this.shape.calculatorUtils.hexToRgba(breadColor[0]),
+            this.shape.calculatorUtils.hexToRgba(cookedColor[0]),
+            this.counter / this.maxCounter,
+          ),
+        ),
         this.getShape().orientation,
       );
 
@@ -27,7 +35,7 @@ export default class Bread extends Food {
       if (this.counter >= 0) {
         let linearGradient = this.shape.drawUtils.ctx.createLinearGradient(0, -10, 0, 0);
         console.log(this.counter / this.maxCounter);
-        linearGradient.addColorStop(0, '#6d3200');
+        linearGradient.addColorStop(0, '#422308');
         linearGradient.addColorStop(this.counter / this.maxCounter, 'rgba(0, 0, 0, 0)');
         // linearGradient.addColorStop(this.counter / this.maxCounter, '#eec07b');
         linearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -44,7 +52,7 @@ export default class Bread extends Food {
 
         linearGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
         linearGradient.addColorStop(1 - this.counter / this.maxCounter, 'rgba(0, 0, 0, 0)');
-        linearGradient.addColorStop(1, '#6d3200');
+        linearGradient.addColorStop(1, '#422308');
 
         this.shape.drawUtils.fillRect(
           this.shape.centroid,
@@ -55,36 +63,36 @@ export default class Bread extends Food {
         );
       }
 
-      let linearGradient: CanvasGradient = this.shape.drawUtils.ctx.createLinearGradient(
-        0,
-        0,
-        5,
-        0,
-      );
+      //   let linearGradient: CanvasGradient = this.shape.drawUtils.ctx.createLinearGradient(
+      //     0,
+      //     0,
+      //     5,
+      //     0,
+      //   );
 
-      linearGradient.addColorStop(0, '#6D3200');
-      linearGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
-      linearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
-      this.shape.drawUtils.fillRect(
-        this.shape.centroid,
-        new Vector({ x: 5, y: 20 }),
-        linearGradient,
-        this.getShape().orientation,
-        new Vector({ x: -57.5, y: 0 }),
-      );
+      //   linearGradient.addColorStop(0, '#6D3200');
+      //   linearGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
+      //   linearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
+      //   this.shape.drawUtils.fillRect(
+      //     this.shape.centroid,
+      //     new Vector({ x: 5, y: 20 }),
+      //     linearGradient,
+      //     this.getShape().orientation,
+      //     new Vector({ x: -57.5, y: 0 }),
+      //   );
 
-      linearGradient = this.shape.drawUtils.ctx.createLinearGradient(-5, 0, 0, 0);
+      //   linearGradient = this.shape.drawUtils.ctx.createLinearGradient(-5, 0, 0, 0);
 
-      linearGradient.addColorStop(0, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
-      linearGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
-      linearGradient.addColorStop(1, '#6D3200');
-      this.shape.drawUtils.fillRect(
-        this.shape.centroid,
-        new Vector({ x: 5, y: 20 }),
-        linearGradient,
-        this.getShape().orientation,
-        new Vector({ x: 57.5, y: 0 }),
-      );
+      //   linearGradient.addColorStop(0, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
+      //   linearGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)'); // 파랑, 투명
+      //   linearGradient.addColorStop(1, '#6D3200');
+      //   this.shape.drawUtils.fillRect(
+      //     this.shape.centroid,
+      //     new Vector({ x: 5, y: 20 }),
+      //     linearGradient,
+      //     this.getShape().orientation,
+      //     new Vector({ x: 57.5, y: 0 }),
+      //   );
       //   linearGradient = this.shape.drawUtils.ctx.createLinearGradient(0, 0, 20, 0);
 
       //   linearGradient.addColorStop(0, '#eec07b');
