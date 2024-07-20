@@ -1,3 +1,4 @@
+import { registry } from '@engine/lib/main';
 import { create } from 'zustand';
 
 type mouseStoreType = {
@@ -7,7 +8,13 @@ type mouseStoreType = {
 
 const useMouseStore = create<mouseStoreType>((set) => ({
   mouseEventType: 'NONE',
-  setMouseEventType: (eventType: MouseType) => set({ mouseEventType: eventType }),
+  setMouseEventType: (eventType: MouseType) => {
+    /** state used in canvas */
+    registry.mouseEventType = eventType;
+
+    /** state used for react app */
+    set({ mouseEventType: eventType });
+  },
 }));
 
 export default useMouseStore;

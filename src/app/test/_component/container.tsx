@@ -3,14 +3,17 @@
 import { Button, Text } from '@chakra-ui/react';
 import EventSelect from '@component/eventSelect';
 import { useEffect } from 'react';
+import useMouseStore from 'store/mouseStore';
 import main, { registry } from '../../../engine/lib/main';
 
 const Container = () => {
+  const { setMouseEventType } = useMouseStore();
+
   useEffect(() => {
     if (document) {
-      main(document);
+      main(document, setMouseEventType);
     }
-  }, []);
+  }, [setMouseEventType]);
 
   return (
     <>
@@ -19,7 +22,7 @@ const Container = () => {
       <EventSelect
         eventName="MOUSE"
         setEventType={(mouseType) => {
-          registry.mouseEventType = mouseType as MouseType;
+          registry.setMouseEventType(mouseType as MouseType);
         }}
       />
       <EventSelect

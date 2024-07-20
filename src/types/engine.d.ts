@@ -29,6 +29,7 @@ type defaultRegistryType = {
   createdId: number;
   selectedObjectId: number;
   mouseEventType: MouseType;
+  setMouseEventType: (mouseType: MouseType) => void;
   jointEventType: JointType;
   createEventType: CreateType;
   animationOffset: number;

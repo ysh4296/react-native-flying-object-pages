@@ -2,6 +2,9 @@ import Draw from '@engine/utils/draw';
 import Engine from './engine';
 import Vector from './vector';
 
+/**
+ * to use Engine as class Type the type hasbeen added seperatly from default Registry type
+ */
 export const registry: defaultRegistryType & { engine: Engine } = {
   createdId: 0,
   selectedObjectId: -1,
@@ -10,9 +13,10 @@ export const registry: defaultRegistryType & { engine: Engine } = {
   jointEventType: 'NONE',
   createEventType: 'NONE',
   animationOffset: 0,
+  setMouseEventType: (mouseType: MouseType) => {},
 };
 
-const main = (document: Document) => {
+const main = (document: Document, setMouseEventType: (mouseType: MouseType) => void) => {
   const canvas: HTMLCanvasElement = document.getElementById('myCanvas') as HTMLCanvasElement;
   canvas.style.backgroundColor = '#eee';
   const ctx = canvas.getContext('2d');
@@ -29,6 +33,9 @@ const main = (document: Document) => {
       new Vector({ x: window.innerWidth, y: window.innerHeight }),
     );
     currentTime = performance.now();
+    registry.setMouseEventType = (mouseType) => {
+      setMouseEventType(mouseType);
+    };
     const loop = () => {
       /** update animationOffset */
       registry.animationOffset = (registry.animationOffset + 1) % 60;

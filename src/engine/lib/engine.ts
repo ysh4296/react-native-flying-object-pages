@@ -17,6 +17,7 @@ import Grill from './block/mover/grill';
 import Food from './food/food';
 import EditMouse from '@engine/event/editMouse';
 import Spring from './block/mover/spring';
+import { assertUnreachableChecker } from '@utils/typeChecker';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -331,6 +332,10 @@ export default class Engine {
       case 'EDIT':
         this.EditMouseEvent.mouseMove(e, this.canvas, this);
         break;
+      case 'NONE':
+        break;
+      default:
+        return assertUnreachableChecker(registry.mouseEventType);
     }
     const mousePosition = getMousePosition(this.canvas, e);
     for (let i = 0; i < this.rigidBodies.length; i++) {
@@ -360,9 +365,12 @@ export default class Engine {
         for (let i = 0; i < this.rigidBodies.length; i++) {
           if (this.rigidBodies[i].shape.isInside(mousePosition)) {
             this.rigidBodies[i].select();
-            registry.mouseEventType = 'EDIT';
+            registry.setMouseEventType('EDIT');
           }
         }
+        break;
+      default:
+        return assertUnreachableChecker(registry.mouseEventType);
     }
   }
 
@@ -380,6 +388,10 @@ export default class Engine {
       case 'EDIT':
         this.EditMouseEvent.mouseUp(e, this.canvas, this);
         break;
+      case 'NONE':
+        break;
+      default:
+        return assertUnreachableChecker(registry.mouseEventType);
     }
   }
 

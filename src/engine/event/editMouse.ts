@@ -96,7 +96,7 @@ export default class EditMouse {
     }
 
     this.editType = 'NONE';
-    registry.mouseEventType = 'NONE';
+    registry.setMouseEventType('NONE');
   }
 
   mouseUp(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
