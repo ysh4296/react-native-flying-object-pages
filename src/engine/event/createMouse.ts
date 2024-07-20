@@ -71,7 +71,7 @@ export default class CreateMouse {
         break;
       case 'ESCALATOR':
         registry.engine.rigidBodies.push(
-          new Escalator(center, width, height, 'purple', new Vector({ x: 1000, y: 0 })),
+          new Escalator(center, width, height, 'purple', new Vector({ x: 1, y: 0 }), 50),
         );
         break;
       case 'SPRING':

@@ -163,17 +163,12 @@ export default class Engine {
               if (objectB instanceof Escalator) {
                 /** objectA moves */
                 if (objectA.isKinematic) continue;
-                const accelationDirection = this.calculatorUtils.rotateAroundPoint(
-                  objectB.direction,
-                  new Vector({ x: 0, y: 0 }),
-                  objectB.shape.orientation,
-                );
-                objectA.addForce(
-                  scaleVector(
-                    new Vector({ x: accelationDirection.x, y: accelationDirection.y }),
-                    this.rigidBodies[i].mass,
-                  ),
-                );
+                if (
+                  objectA.velocity.length() <
+                  scaleVector(objectB.direction, objectB.escalatorConstant).length()
+                ) {
+                  objectA.addVelocity(scaleVector(objectB.direction, objectB.escalatorConstant));
+                }
               }
 
               if (objectB instanceof Spring) {
