@@ -3,16 +3,14 @@ import Shape from './shape';
 import Vector, { subVector } from './vector';
 
 export default class Circle extends Shape {
-  position: Vector;
   radius: number;
   drawUtils: Draw;
 
   constructor(position: Vector, radius: number, color: string) {
     super([new Vector(position), new Vector({ x: position.x + radius, y: position.y })], color);
-    this.position = position;
     this.radius = radius;
     this.drawUtils = Draw.getInstance();
-    super.setCentroid(this.position);
+    super.setCentroid(position);
   }
 
   calculateInertia(mass: number) {
@@ -21,18 +19,18 @@ export default class Circle extends Shape {
 
   calculateBoundingBox() {
     this.boundingBox.topLeft = new Vector({
-      x: this.position.x - this.radius,
-      y: this.position.y - this.radius,
+      x: this.centroid.x - this.radius,
+      y: this.centroid.y - this.radius,
     });
     this.boundingBox.bottomRight = new Vector({
-      x: this.position.x + this.radius,
-      y: this.position.y + this.radius,
+      x: this.centroid.x + this.radius,
+      y: this.centroid.y + this.radius,
     });
   }
 
   draw() {
     super.draw();
-    this.drawUtils.strokePoint(this.position, this.radius, this.color);
+    this.drawUtils.strokePoint(this.centroid, this.radius, this.color);
   }
 
   isInside(position: Vector) {

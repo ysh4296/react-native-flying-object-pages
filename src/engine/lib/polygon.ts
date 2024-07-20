@@ -39,8 +39,8 @@ export default class Polygon extends Shape {
     }
   }
 
-  rotate(radian: number) {
-    super.rotate(radian);
+  rotate(radian: number, spindle: Vector = this.centroid) {
+    super.rotate(radian, spindle);
     this.normals = this.calculatorUtils.calcNormals(this.vertices);
   }
 }

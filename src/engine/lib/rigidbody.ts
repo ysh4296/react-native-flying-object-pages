@@ -1,3 +1,4 @@
+import { registry } from './main';
 import Matter from './matter';
 import Shape from './shape';
 import Vector, { addVector, scaleVector, subVector } from './vector';
@@ -191,4 +192,8 @@ export default class RigidBody {
   drawEffect() {}
 
   active() {}
+
+  select() {
+    registry.engine.EditMouseEvent.setSelectBox(this);
+  }
 }

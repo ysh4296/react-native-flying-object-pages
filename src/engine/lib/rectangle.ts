@@ -2,7 +2,6 @@ import Polygon from './polygon';
 import Vector from './vector';
 
 export default class Rectangle extends Polygon {
-  position: Vector;
   width: number;
   height: number;
   constructor(position: Vector, width: number, height: number, color: string) {
@@ -15,8 +14,7 @@ export default class Rectangle extends Polygon {
       ],
       color,
     );
-    this.position = position;
-    super.setCentroid(this.position);
+    super.setCentroid(position);
     this.width = width;
     this.height = height;
   }
@@ -28,7 +26,7 @@ export default class Rectangle extends Polygon {
   draw() {
     super.draw();
     this.drawUtils.fillRect(
-      this.position,
+      this.centroid,
       new Vector({ x: this.width, y: this.height }),
       this.color,
       this.orientation,

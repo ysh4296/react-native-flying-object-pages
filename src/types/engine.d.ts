@@ -1,6 +1,6 @@
 type EventName = 'MOUSE' | 'JOINT' | 'CREATE';
 
-type MouseType = 'NONE' | 'DRAG' | 'JOINT' | 'CREATE';
+type MouseType = 'NONE' | 'DRAG' | 'JOINT' | 'CREATE' | 'EDIT';
 
 type JointType = 'NONE' | 'FORCE' | 'SPRING' | 'REVERSE' | 'FIXED' | 'HINGE';
 
@@ -23,9 +23,11 @@ type CameraType = {
 };
 
 type registryType = {
-  id: number;
+  createdId: number;
+  selectedObjectId: number;
   engine: Engine | null;
   mouseEventType: MouseType;
   jointEventType: JointType;
   createEventType: CreateType;
+  animationOffset: number;
 };

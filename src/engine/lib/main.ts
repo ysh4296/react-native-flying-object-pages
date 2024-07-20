@@ -3,11 +3,13 @@ import Engine from './engine';
 import Vector from './vector';
 
 export const registry: registryType = {
-  id: 0,
+  createdId: 0,
+  selectedObjectId: -1,
   engine: null as Engine | null,
   mouseEventType: 'NONE',
   jointEventType: 'NONE',
   createEventType: 'NONE',
+  animationOffset: 0,
 };
 
 const main = (document: Document) => {
@@ -28,8 +30,12 @@ const main = (document: Document) => {
     );
     currentTime = performance.now();
     const loop = () => {
+      /** update animationOffset */
+      registry.animationOffset = (registry.animationOffset + 1) % 60;
+
       let targetTime = performance.now();
       let deltaTime = (targetTime - currentTime) / 1000;
+
       registry.engine.setZoom();
       registry.engine.clear();
       if (registry.engine.pause) {
@@ -38,6 +44,10 @@ const main = (document: Document) => {
         registry.engine.update(deltaTime);
       }
       registry.engine.draw();
+      if (registry.mouseEventType === 'EDIT') {
+        /** Draw edit helper for editing Selected Object*/
+        registry.engine.drawSelect();
+      }
       registry.engine.restoreZoom();
       window.requestAnimationFrame(loop);
       currentTime = targetTime;

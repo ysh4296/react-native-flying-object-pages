@@ -70,12 +70,16 @@ export default class Bacon extends Food {
       if (this.counter < this.maxCounter) this.counter++;
     }
     if (this.counter > 500) {
+      /** cooked */
       this.matter = new Matter(0.2, 0.8);
       const filteredJoints = registry.engine.joints.filter(
         (item: Joint) =>
           item.jointConnection.objectAId === this.id || item.jointConnection.objectBId == this.id,
       );
-      filteredJoints.forEach((result: FixedJoint) => (result.jointIteration = 20));
+      filteredJoints.forEach((result: FixedJoint) => {
+        result.jointIteration = 20;
+        result.jointCorrection = 0.3;
+      });
     }
     /** cooling down */
     if (this.temprature > 0) this.temprature -= 0.06;

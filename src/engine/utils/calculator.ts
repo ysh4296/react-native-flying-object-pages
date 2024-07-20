@@ -1,5 +1,5 @@
 import { registry } from '@engine/lib/main';
-import Vector, { subVector } from '@engine/lib/vector';
+import Vector, { subVector, crossVector } from '@engine/lib/vector';
 
 export default class Calculator {
   private static instance: Calculator;
@@ -154,10 +154,35 @@ export default class Calculator {
   }
 
   /**
+   * 두 벡터 사이의 각도를 라디안으로 계산하는 함수
+   * @param {Array} vectorA - 첫 번째 벡터, [x, y]
+   * @param {Array} vectorB - 두 번째 벡터, [x, y]
+   * @returns {number} - 라디안으로 표현된 각도
+   */
+  getAngleBetweenVectors(vectorA: Vector, vectorB: Vector) {
+    // 벡터의 내적 계산
+    const dotProduct = vectorA.getDotProduct(vectorB);
+    const crossProduct = crossVector(vectorA, vectorB);
+
+    // 벡터의 크기 계산
+    const magnitudeA = vectorA.length();
+    const magnitudeB = vectorB.length();
+
+    let cosineTheta = dotProduct / (magnitudeA * magnitudeB);
+    cosineTheta = Math.min(Math.max(cosineTheta, -1), 1);
+    // 두 벡터 사이의 각도 계산
+    let angle = Math.acos(cosineTheta);
+
+    if (crossProduct < 0) angle *= -1;
+
+    return angle;
+  }
+
+  /**
    * every object has their own id
    * @returns number id
    */
   generateObjectId() {
-    return registry.id++;
+    return registry.createdId++;
   }
 }

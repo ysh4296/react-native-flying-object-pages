@@ -34,7 +34,6 @@ export default class Bread extends Food {
       /** cooked bread */
       if (this.counter >= 0) {
         let linearGradient = this.shape.drawUtils.ctx.createLinearGradient(0, -10, 0, 0);
-        console.log(this.counter / this.maxCounter);
         linearGradient.addColorStop(0, '#422308');
         linearGradient.addColorStop(this.counter / this.maxCounter, 'rgba(0, 0, 0, 0)');
         // linearGradient.addColorStop(this.counter / this.maxCounter, '#eec07b');

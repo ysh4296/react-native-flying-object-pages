@@ -74,22 +74,33 @@ export default class Shape {
     }
   }
 
-  rotate(radian: number) {
+  rotate(radian: number, spindle: Vector = this.centroid) {
+    /** Vertices rotation */
     for (let i = 0; i < this.vertices.length; i++) {
       let rotatedVertice = this.calculatorUtils.rotateAroundPoint(
         this.vertices[i],
-        this.centroid,
+        spindle,
         radian,
       );
       this.vertices[i] = rotatedVertice;
     }
+
+    /** Anchor points rotation */
     for (const [id, anchor] of this.anchorPoints.entries()) {
-      let rotatedAnchor = this.calculatorUtils.rotateAroundPoint(anchor, this.centroid, radian);
+      let rotatedAnchor = this.calculatorUtils.rotateAroundPoint(anchor, spindle, radian);
       this.anchorPoints.set(id, rotatedAnchor);
     }
 
+    /** Centroid point rotation */
+    let rotatedCentroid = this.calculatorUtils.rotateAroundPoint(this.centroid, spindle, radian);
+
+    // console.log(spindle, rotatedCentroid);
+
+    this.centroid = rotatedCentroid;
+
     /** 전향력은 편집단계에서는 저장하지 말아야한다. */
     this.orientation += radian;
+    this.orientation %= Math.PI * 2;
   }
 
   calculateInertia(mass: number) {

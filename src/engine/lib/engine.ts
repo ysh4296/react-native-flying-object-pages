@@ -15,6 +15,7 @@ import getMousePosition from './getMousePosition';
 import Escalator from './block/mover/escalator';
 import Grill from './block/mover/grill';
 import Food from './food/food';
+import EditMouse from '@engine/event/editMouse';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -34,6 +35,7 @@ export default class Engine {
   GrabMouseEvent: GrabMouse;
   JointMouseEvent: JointMouse;
   CreateMouseEvent: CreateMouse;
+  EditMouseEvent: EditMouse;
   joints: Joint[];
   camera: CameraType;
   pause: boolean;
@@ -46,6 +48,7 @@ export default class Engine {
     this.GrabMouseEvent = new GrabMouse();
     this.JointMouseEvent = new JointMouse();
     this.CreateMouseEvent = new CreateMouse();
+    this.EditMouseEvent = new EditMouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
     this.world = world;
@@ -83,10 +86,10 @@ export default class Engine {
     this.gravity = new Vector({ x: 0, y: 700 });
     this.rigidBodies = [];
 
-    this.rigidBodies.push(new RigidBody(this.top, 0));
+    // this.rigidBodies.push(new RigidBody(this.top, 0));
     this.rigidBodies.push(new RigidBody(this.bottom, 0));
-    this.rigidBodies.push(new RigidBody(this.left, 0));
-    this.rigidBodies.push(new RigidBody(this.right, 0));
+    // this.rigidBodies.push(new RigidBody(this.left, 0));
+    // this.rigidBodies.push(new RigidBody(this.right, 0));
     this.grid = new HashGrid(15);
     this.grid.initialize(this.world, this.rigidBodies);
     this.grid.refreshGrid();
@@ -217,6 +220,18 @@ export default class Engine {
         if (registry.createEventType === 'RECTANGLE') {
           this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
         }
+        if (registry.createEventType === 'BACONBLOCK') {
+          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
+        }
+        if (registry.createEventType === 'BREADBLOCK') {
+          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
+        }
+        if (registry.createEventType === 'ESCALATOR') {
+          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
+        }
+        if (registry.createEventType === 'GRILL') {
+          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
+        }
         if (registry.createEventType === 'CIRCLE') {
           this.drawUtils.drawCircle(position, Math.min(width, height) / 2, 'green');
         }
@@ -225,7 +240,7 @@ export default class Engine {
     this.grid.refreshGrid();
   };
 
-  draw = () => {
+  draw() {
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].drawEffect();
     }
@@ -236,9 +251,13 @@ export default class Engine {
     // for (let i = 0; i < this.joints.length; i++) {
     //   this.joints[i].draw();
     // }
-  };
+  }
 
-  clear = () => {
+  drawSelect() {
+    this.EditMouseEvent.drawSelect();
+  }
+
+  clear() {
     this.ctx.fillStyle = 'white';
 
     this.ctx.clearRect(
@@ -247,7 +266,7 @@ export default class Engine {
       this.canvas.width / this.camera.scale,
       this.canvas.height / this.camera.scale,
     );
-  };
+  }
 
   setZoom = () => {
     const dpr = window.devicePixelRatio || 1;
@@ -296,6 +315,9 @@ export default class Engine {
       case 'CREATE':
         this.CreateMouseEvent.mouseMove(e, this.canvas, this);
         break;
+      case 'EDIT':
+        this.EditMouseEvent.mouseMove(e, this.canvas, this);
+        break;
     }
     const mousePosition = getMousePosition(this.canvas, e);
     for (let i = 0; i < this.rigidBodies.length; i++) {
@@ -317,6 +339,17 @@ export default class Engine {
       case 'CREATE':
         this.CreateMouseEvent.mouseDown(e, this.canvas, this);
         break;
+      case 'EDIT':
+        this.EditMouseEvent.mouseDown(e, this.canvas, this);
+        break;
+      case 'NONE':
+        const mousePosition = getMousePosition(this.canvas, e);
+        for (let i = 0; i < this.rigidBodies.length; i++) {
+          if (this.rigidBodies[i].shape.isInside(mousePosition)) {
+            this.rigidBodies[i].select();
+            registry.mouseEventType = 'EDIT';
+          }
+        }
     }
   }
 
@@ -330,6 +363,9 @@ export default class Engine {
         break;
       case 'CREATE':
         this.CreateMouseEvent.mouseUp(e, this.canvas, this);
+        break;
+      case 'EDIT':
+        this.EditMouseEvent.mouseUp(e, this.canvas, this);
         break;
     }
   }

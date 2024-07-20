@@ -58,7 +58,7 @@ export default class Vector {
     console.log(this);
   };
 
-  /** the Vector is out from map */
+  /** the Vector is out from world */
   isOut() {
     let result = false;
     if (
@@ -81,4 +81,21 @@ export const subVector = (vector1: Vector, vector2: Vector): Vector => {
 };
 export const scaleVector = (vector1: Vector, scale: number): Vector => {
   return new Vector({ x: vector1.x * scale, y: vector1.y * scale });
+};
+
+export const crossVector = (vector1: Vector, vector2: Vector): number => {
+  return vector1.x * vector2.y - vector1.y * vector2.x;
+};
+
+/**
+ * rotate Vector1 by {x:0,y:0}
+ * @param vector1
+ * @param radians
+ * @returns rotated Vector
+ */
+export const rotateVector = (vector1: Vector, radians: number): Vector => {
+  let result = new Vector({ x: 0, y: 0 });
+  result.x = vector1.x * Math.cos(radians) - vector1.y * Math.sin(radians);
+  result.y = vector1.x * Math.sin(radians) + vector1.y * Math.cos(radians);
+  return result;
 };

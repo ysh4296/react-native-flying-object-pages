@@ -12,10 +12,10 @@ export default class BaconBlock extends RigidBody {
   constructor(position: Vector, width: number, height: number, color: string) {
     super(new Rectangle(new Vector({ x: position.x, y: position.y }), width, height, color), 0);
     this.counter = 0;
-    this.baconLength = 6;
+    this.baconLength = 3;
     this.shape.draw = () => {
       this.shape.drawUtils.fillRect(
-        new Vector({ x: position.x, y: position.y }),
+        this.shape.centroid,
         new Vector({ x: width, y: height }),
         color,
         this.getShape().orientation,
@@ -24,20 +24,20 @@ export default class BaconBlock extends RigidBody {
   }
 
   active() {
-    if (this.counter < 1) {
-      this.counter++;
+    this.counter++;
+    if (this.counter > 60) {
+      this.counter = 0;
       const initIndex = registry.engine.rigidBodies.length;
       for (let i = 0; i < this.baconLength; i++) {
         registry.engine.rigidBodies.push(
-          new Bacon(subVector(this.shape.centroid, new Vector({ x: 10 * i, y: 0 }))),
+          new Bacon(subVector(this.shape.centroid, new Vector({ x: 20 * i, y: 0 }))),
         );
       }
 
       for (let i = 0; i < this.baconLength; i++) {
-        registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: 5, y: 0 }));
-        registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: -5, y: 0 }));
+        registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: 10, y: 0 }));
+        registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: -10, y: 0 }));
       }
-
       for (let i = 1; i < this.baconLength; i++) {
         const jointConnection = new JointConnection(
           registry.engine.rigidBodies[initIndex + i - 1].id,
@@ -47,7 +47,7 @@ export default class BaconBlock extends RigidBody {
           registry.engine.rigidBodies[initIndex + i],
           0,
         );
-        registry.engine.joints.push(new FixedJoint(jointConnection, 5));
+        registry.engine.joints.push(new FixedJoint(jointConnection, 10, 0.8));
       }
     }
   }

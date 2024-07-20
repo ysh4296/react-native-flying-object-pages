@@ -27,6 +27,7 @@ export default class Escalator extends RigidBody {
         this.shape.centroid,
         new Vector({ x: width, y: height }),
         'gray',
+        this.shape.orientation,
       );
       this.shape.drawUtils.drawArrow(
         addVector(

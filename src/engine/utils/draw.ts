@@ -67,11 +67,14 @@ export default class Draw {
     this.drawLine(headPosition, rightArrowPoint, color);
   };
 
-  drawRect(position: Vector, size: Vector, color: string) {
+  drawRect(position: Vector, size: Vector, color: string, translation?: Vector) {
     this.ctx.save();
+    this.ctx.beginPath();
     this.ctx.strokeStyle = color;
     this.ctx.lineWidth = 1 / registry.engine.camera.scale;
-    this.ctx.beginPath();
+    if (translation) {
+      this.ctx.translate(translation.x, translation.y);
+    }
     this.ctx.rect(position.x - size.x / 2, position.y - size.y / 2, size.x, size.y);
     this.ctx.stroke();
     this.ctx.restore();
@@ -103,14 +106,32 @@ export default class Draw {
     this.ctx.restore(); // 이전 상태로 복원
   }
 
-  drawCircle(position: Vector, radius: number, color: string) {
-    this.ctx.lineWidth = registry.engine.camera.scale;
+  drawCircle(position: Vector, radius: number, color: string, rotation = 0) {
     this.ctx.beginPath();
+    this.ctx.lineWidth = registry.engine.camera.scale;
+    this.ctx.rotate(rotation);
     this.ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
     this.ctx.strokeStyle = color;
     this.ctx.fillStyle = color;
     this.ctx.stroke();
     this.ctx.fill();
+    this.ctx.closePath();
+  }
+
+  drawDottedLine(
+    startPosition: Vector,
+    endPosition: Vector,
+    color: string,
+    animationOffset?: number,
+  ) {
+    this.ctx.beginPath();
+    this.ctx.lineWidth = 5;
+    this.ctx.setLineDash([4, 2]);
+    if (animationOffset) this.ctx.lineDashOffset = animationOffset;
+    this.ctx.moveTo(startPosition.x, startPosition.y);
+    this.ctx.lineTo(endPosition.x, endPosition.y);
+    this.ctx.strokeStyle = color;
+    this.ctx.stroke();
     this.ctx.closePath();
   }
 }

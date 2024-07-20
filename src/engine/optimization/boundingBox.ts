@@ -9,7 +9,7 @@ export default class BoundingBox {
 
   constructor() {
     this.topLeft = new Vector({ x: 0, y: 0 });
-    this.bottomRight = new Vector({ x: 100, y: 100 });
+    this.bottomRight = new Vector({ x: 0, y: 0 });
     this.collision = false;
     this.drawUtils = Draw.getInstance();
   }

@@ -11,8 +11,9 @@ export default class FixedJoint extends Joint {
   objectBFriction: number;
   relationOrientation: number;
   jointIteration: number;
+  jointCorrection: number;
 
-  constructor(connection: JointConnection, jointIteration = 20) {
+  constructor(connection: JointConnection, jointIteration = 20, jointCorrection = 0.3) {
     super(connection);
     this.initialLength = subVector(
       this.getAnchorAPos() as Vector,
@@ -28,10 +29,12 @@ export default class FixedJoint extends Joint {
       this.objectB.getShape().orientation - this.objectA.getShape().orientation;
     // @add add joint to moving object
     this.jointIteration = jointIteration;
+    this.jointCorrection = jointCorrection;
   }
 
   updateConnectionA() {
     this.clearMaterial();
+    let fixedOrientation = 0;
 
     for (let i = 0; i < this.jointIteration; i++) {
       const anchorAPos = this.getAnchorAPos();
@@ -54,22 +57,22 @@ export default class FixedJoint extends Joint {
         contact.normal.scale(-1);
       }
 
+      contact.positionalCorrection(this.objectB, this.objectA, this.jointCorrection);
       contact.resolveCollision(this.objectB, this.objectA);
-      contact.positionalCorrection(this.objectB, this.objectA, 0.3);
 
       if (this.objectB.isKinematic) continue;
 
       const currentOrientationDiff =
         this.objectB.getShape().orientation - this.objectA.getShape().orientation;
-      const fixedOrientation = this.relationOrientation - currentOrientationDiff;
-
-      this.objectB.angularVelocity += fixedOrientation;
+      fixedOrientation += currentOrientationDiff;
     }
+    this.objectB.angularVelocity += (this.relationOrientation - fixedOrientation) % (Math.PI * 2);
     this.restoreMatrial();
   }
 
   updateConnectionB() {
     this.clearMaterial();
+    let fixedOrientation = 0;
 
     for (let i = 0; i < this.jointIteration; i++) {
       const anchorAPos = this.getAnchorAPos();
@@ -92,17 +95,17 @@ export default class FixedJoint extends Joint {
 
       contact.flipNormalEnabled = false;
 
-      contact.positionalCorrection(this.objectA, this.objectB, 0.3);
+      contact.positionalCorrection(this.objectA, this.objectB, this.jointCorrection);
       contact.resolveCollision(this.objectA, this.objectB);
 
       if (this.objectA.isKinematic) continue;
 
       const currentOrientationDiff =
         this.objectA.getShape().orientation - this.objectB.getShape().orientation;
-      const fixedOrientation = this.relationOrientation - currentOrientationDiff;
-
-      this.objectA.angularVelocity += fixedOrientation;
+      fixedOrientation += currentOrientationDiff;
     }
+
+    this.objectA.angularVelocity += (this.relationOrientation - fixedOrientation) % (Math.PI * 2);
     this.restoreMatrial();
   }
 
