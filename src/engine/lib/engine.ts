@@ -16,6 +16,7 @@ import Escalator from './block/mover/escalator';
 import Grill from './block/mover/grill';
 import Food from './food/food';
 import EditMouse from '@engine/event/editMouse';
+import Spring from './block/mover/spring';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -173,6 +174,15 @@ export default class Engine {
                   ),
                 );
               }
+
+              if (objectB instanceof Spring) {
+                /** objectA moves */
+                if (objectA.isKinematic) continue;
+                if (objectB.counter === 0) {
+                  objectA.addVelocity(scaleVector(objectB.direction, objectB.springConstant));
+                }
+              }
+
               if (objectB instanceof Grill && objectA instanceof Food) {
                 /** objectA cooked */
                 objectA.temprature = Math.min(100, objectB.temprature / 6000 + objectA.temprature);
@@ -197,6 +207,9 @@ export default class Engine {
         continue;
       }
       if (this.rigidBodies[i] instanceof Food) {
+        this.rigidBodies[i].active();
+      }
+      if (this.rigidBodies[i] instanceof Spring) {
         this.rigidBodies[i].active();
       }
     }

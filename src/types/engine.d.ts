@@ -1,20 +1,23 @@
 type EventName = 'MOUSE' | 'JOINT' | 'CREATE';
 
-type MouseType = 'NONE' | 'DRAG' | 'JOINT' | 'CREATE' | 'EDIT';
+type NoneType = 'NONE';
 
-type JointType = 'NONE' | 'FORCE' | 'SPRING' | 'REVERSE' | 'FIXED' | 'HINGE';
+type MouseType = NoneType | 'DRAG' | 'JOINT' | 'CREATE' | 'EDIT';
+
+type JointType = NoneType | 'FORCE' | 'SPRING' | 'REVERSE' | 'FIXED' | 'HINGE';
 
 type CreateType =
-  | 'NONE'
+  | NoneType
   | 'RECTANGLE'
   | 'CIRCLE'
   | 'WATERBLOCK'
   | 'BACONBLOCK'
   | 'BREADBLOCK'
   | 'ESCALATOR'
+  | 'SPRING'
   | 'GRILL';
 
-type EventType = MouseType | JointType | createType;
+type EventType = NoneType | MouseType | JointType | CreateType;
 
 type CameraType = {
   x: number;
@@ -22,10 +25,9 @@ type CameraType = {
   scale: number;
 };
 
-type registryType = {
+type defaultRegistryType = {
   createdId: number;
   selectedObjectId: number;
-  engine: Engine | null;
   mouseEventType: MouseType;
   jointEventType: JointType;
   createEventType: CreateType;

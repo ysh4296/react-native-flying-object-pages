@@ -1,4 +1,6 @@
-export const getEventLabel = (eventType?: EventType) => {
+import { assertUnreachableChecker } from '@utils/typeChecker';
+
+export const getEventLabel = (eventType: EventType): string => {
   switch (eventType) {
     case 'NONE':
       return 'none';
@@ -12,8 +14,6 @@ export const getEventLabel = (eventType?: EventType) => {
       return 'edit';
     case 'FORCE':
       return 'force';
-    case 'SPRING':
-      return 'spring';
     case 'REVERSE':
       return 'reverse';
     case 'FIXED':
@@ -32,14 +32,16 @@ export const getEventLabel = (eventType?: EventType) => {
       return 'breadblock';
     case 'ESCALATOR':
       return 'escalator';
+    case 'SPRING':
+      return 'spring';
     case 'GRILL':
       return 'grill';
     default:
-      return 'no data';
+      return assertUnreachableChecker(eventType);
   }
 };
 
-export const getEventList = (eventName?: EventName): EventType[] => {
+export const getEventList = (eventName: EventName): EventType[] => {
   switch (eventName) {
     case 'MOUSE':
       return ['NONE', 'DRAG', 'JOINT', 'CREATE', 'EDIT'];
@@ -54,9 +56,10 @@ export const getEventList = (eventName?: EventName): EventType[] => {
         'BACONBLOCK',
         'BREADBLOCK',
         'ESCALATOR',
+        'SPRING',
         'GRILL',
       ];
     default:
-      return [];
+      return assertUnreachableChecker(eventName);
   }
 };

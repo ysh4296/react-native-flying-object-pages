@@ -76,9 +76,11 @@ export default class Bacon extends Food {
         (item: Joint) =>
           item.jointConnection.objectAId === this.id || item.jointConnection.objectBId == this.id,
       );
-      filteredJoints.forEach((result: FixedJoint) => {
-        result.jointIteration = 20;
-        result.jointCorrection = 0.3;
+      filteredJoints.forEach((result) => {
+        if (result instanceof FixedJoint) {
+          result.jointIteration = 20;
+          result.jointCorrection = 0.3;
+        }
       });
     }
     /** cooling down */

@@ -2,6 +2,7 @@ import BaconBlock from '@engine/lib/block/baconBlock';
 import BreadBlock from '@engine/lib/block/breadBlock';
 import Escalator from '@engine/lib/block/mover/escalator';
 import Grill from '@engine/lib/block/mover/grill';
+import Spring from '@engine/lib/block/mover/spring';
 import WaterBlock from '@engine/lib/block/waterBlock';
 import Circle from '@engine/lib/circle';
 import Engine from '@engine/lib/engine';
@@ -10,6 +11,7 @@ import { registry } from '@engine/lib/main';
 import Rectangle from '@engine/lib/rectangle';
 import RigidBody from '@engine/lib/rigidbody';
 import Vector from '@engine/lib/vector';
+import { assertUnreachableChecker } from '@utils/typeChecker';
 
 export default class CreateMouse {
   start: Vector;
@@ -45,34 +47,42 @@ export default class CreateMouse {
       y: (this.start.y + this.end.y) / 2,
     });
 
-    if (registry.createEventType === 'RECTANGLE') {
-      registry.engine.rigidBodies.push(
-        new RigidBody(new Rectangle(center, width, height, 'green'), 1),
-      );
+    switch (registry.createEventType) {
+      case 'NONE':
+        break;
+      case 'RECTANGLE':
+        registry.engine.rigidBodies.push(
+          new RigidBody(new Rectangle(center, width, height, 'green'), 1),
+        );
+        break;
+      case 'WATERBLOCK':
+        registry.engine.rigidBodies.push(new WaterBlock(center, width, height, 'blue'));
+        break;
+      case 'CIRCLE':
+        registry.engine.rigidBodies.push(
+          new RigidBody(new Circle(center, Math.min(width, height) / 2, 'green'), 1),
+        );
+        break;
+      case 'BACONBLOCK':
+        registry.engine.rigidBodies.push(new BaconBlock(center, width, height, 'blue'));
+        break;
+      case 'BREADBLOCK':
+        registry.engine.rigidBodies.push(new BreadBlock(center, width, height, 'blue'));
+        break;
+      case 'ESCALATOR':
+        registry.engine.rigidBodies.push(
+          new Escalator(center, width, height, 'purple', new Vector({ x: 1000, y: 0 })),
+        );
+        break;
+      case 'SPRING':
+        registry.engine.rigidBodies.push(new Spring(center, width, height, 'red'));
+        break;
+      case 'GRILL':
+        registry.engine.rigidBodies.push(new Grill(center, width, height, 'red'));
+        break;
+      default:
+        assertUnreachableChecker(registry.createEventType);
     }
-    if (registry.createEventType === 'CIRCLE') {
-      registry.engine.rigidBodies.push(
-        new RigidBody(new Circle(center, Math.min(width, height) / 2, 'green'), 1),
-      );
-    }
-    if (registry.createEventType === 'WATERBLOCK') {
-      registry.engine.rigidBodies.push(new WaterBlock(center, width, height, 'blue'));
-    }
-    if (registry.createEventType === 'BACONBLOCK') {
-      registry.engine.rigidBodies.push(new BaconBlock(center, width, height, 'blue'));
-    }
-    if (registry.createEventType === 'BREADBLOCK') {
-      registry.engine.rigidBodies.push(new BreadBlock(center, width, height, 'blue'));
-    }
-    if (registry.createEventType === 'ESCALATOR') {
-      registry.engine.rigidBodies.push(
-        new Escalator(center, width, height, 'purple', new Vector({ x: 1000, y: 0 })),
-      );
-    }
-    if (registry.createEventType === 'GRILL') {
-      registry.engine.rigidBodies.push(new Grill(center, width, height, 'red'));
-    }
-    // console.log(registry.engine.rigidBodies);
     this.isEdit = false;
   }
 }
