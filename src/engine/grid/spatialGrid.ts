@@ -1,29 +1,15 @@
 import RigidBody from '@engine/lib/rigidbody';
 import Vector from '@engine/lib/vector';
-import Calculator from '@engine/utils/calculator';
-import Draw from '@engine/utils/draw';
+import Grid from './grid';
 
-export default class SpatialGrid {
-  world: Vector;
-  cellSize: number;
-  cells: RigidBody[][];
-  cellCntX: number;
-  cellCntY: number;
+export default class SpatialGrid extends Grid {
   objects: RigidBody[];
   objectsToCells: number[][];
-  drawUtils: Draw;
-  calculatorUtils: Calculator;
 
   constructor(cellSize: number) {
-    this.world = new Vector({ x: 0, y: 0 });
-    this.cellSize = cellSize;
-    this.cells = [];
-    this.cellCntX = 0;
-    this.cellCntY = 0;
+    super(cellSize);
     this.objects = [];
     this.objectsToCells = [];
-    this.drawUtils = Draw.getInstance();
-    this.calculatorUtils = Calculator.getInstance();
   }
 
   initialize(world: Vector, objects: RigidBody[]) {

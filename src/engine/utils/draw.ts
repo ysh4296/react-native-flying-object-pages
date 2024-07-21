@@ -124,6 +124,7 @@ export default class Draw {
     color: string,
     animationOffset?: number,
   ) {
+    this.ctx.save(); // 현재 상태 저장
     this.ctx.beginPath();
     this.ctx.lineWidth = 5;
     this.ctx.setLineDash([4, 2]);
@@ -133,5 +134,6 @@ export default class Draw {
     this.ctx.strokeStyle = color;
     this.ctx.stroke();
     this.ctx.closePath();
+    this.ctx.restore(); // 이전 상태로 복원
   }
 }

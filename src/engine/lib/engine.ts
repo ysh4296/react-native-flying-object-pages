@@ -1,11 +1,10 @@
 import Draw from '@engine/utils/draw';
 import Rectangle from './rectangle';
-import Vector, { addVector, scaleVector } from './vector';
+import Vector, { addVector, rotateVector, scaleVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
 import RigidBody from './rigidbody';
-import SpatialGrid from '@engine/optimization/spatialGrid';
-import HashGrid from '@engine/optimization/hashGrid';
+import HashGrid from '@engine/grid/hashGrid';
 import GrabMouse from '@engine/event/grabMouse';
 import Joint from '@engine/joints/joint';
 import { registry } from './main';
@@ -18,6 +17,7 @@ import Food from './food/food';
 import EditMouse from '@engine/event/editMouse';
 import Spring from './block/mover/spring';
 import { assertUnreachableChecker } from '@utils/typeChecker';
+import Grid from '@engine/grid/grid';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -33,7 +33,7 @@ export default class Engine {
   rigidBodies: RigidBody[];
   gravity: Vector;
   iteration: number;
-  grid: SpatialGrid;
+  grid: HashGrid;
   GrabMouseEvent: GrabMouse;
   JointMouseEvent: JointMouse;
   CreateMouseEvent: CreateMouse;
@@ -41,6 +41,7 @@ export default class Engine {
   joints: Joint[];
   camera: CameraType;
   pause: boolean;
+  GameBoard: Grid; // gameboard to assign circuit & blocks
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -95,6 +96,8 @@ export default class Engine {
     this.grid = new HashGrid(15);
     this.grid.initialize(this.world, this.rigidBodies);
     this.grid.refreshGrid();
+    this.GameBoard = new Grid(100);
+    this.GameBoard.initialize(this.world, []);
   }
 
   handleJoints() {
@@ -106,7 +109,6 @@ export default class Engine {
   }
 
   update = (deltaTime: number) => {
-    this.grid.draw();
     let fpsText = Math.round(1 / deltaTime) + ' FPS';
     this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, 'black', fpsText);
     // for (let i = 0; i < this.rigidBodies.length; i++) {
@@ -163,11 +165,14 @@ export default class Engine {
               if (objectB instanceof Escalator) {
                 /** objectA moves */
                 if (objectA.isKinematic) continue;
-                if (
-                  objectA.velocity.length() <
-                  scaleVector(objectB.direction, objectB.escalatorConstant).length()
-                ) {
-                  objectA.addVelocity(scaleVector(objectB.direction, objectB.escalatorConstant));
+                const moveDirection = rotateVector(
+                  result.normal,
+                  this.calculatorUtils.degreesToRadians(-90 * objectB.direction.x),
+                );
+
+                console.log(result.normal, moveDirection);
+                if (objectA.velocity.length() < objectB.escalatorConstant) {
+                  objectA.addVelocity(scaleVector(moveDirection, objectB.escalatorConstant));
                 }
               }
 
@@ -250,6 +255,7 @@ export default class Engine {
   };
 
   draw() {
+    if (this.pause) this.GameBoard.draw();
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].drawEffect();
     }

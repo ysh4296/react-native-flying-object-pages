@@ -21,12 +21,13 @@ export default class Escalator extends RigidBody {
     this.matter = new Matter(0, 1);
     this.direction = direction;
     this.escalatorConstant = escalatorConstant;
-    const accelationDirection = this.shape.calculatorUtils.rotateAroundPoint(
-      this.direction,
-      new Vector({ x: 0, y: 0 }),
-      this.shape.orientation,
-    );
     this.shape.draw = () => {
+      const accelationDirection = this.shape.calculatorUtils.rotateAroundPoint(
+        this.direction,
+        new Vector({ x: 0, y: 0 }),
+        this.shape.orientation,
+      );
+
       this.shape.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: width, y: height }),
@@ -48,14 +49,14 @@ export default class Escalator extends RigidBody {
           this.shape.vertices[i - 1],
           this.shape.vertices[i],
           'black',
-          -registry.animationOffset * 0.1,
+          -registry.animationOffset * this.direction.x * 0.1,
         );
       }
       registry.engine.drawUtils.drawDottedLine(
         this.shape.vertices[this.shape.vertices.length - 1],
         this.shape.vertices[0],
         'black',
-        -registry.animationOffset * 0.1,
+        -registry.animationOffset * this.direction.x * 0.1,
       );
     };
   }

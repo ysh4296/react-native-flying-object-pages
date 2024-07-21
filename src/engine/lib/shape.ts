@@ -1,6 +1,6 @@
 import Calculator from '@engine/utils/calculator';
 import Draw from '@engine/utils/draw';
-import BoundingBox from '@engine/optimization/boundingBox';
+import BoundingBox from '@engine/grid/boundingBox';
 import Vector, { addVector, subVector } from './vector';
 
 export default class Shape {
