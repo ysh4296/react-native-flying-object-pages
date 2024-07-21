@@ -34,6 +34,7 @@ export default class CreateMouse {
     let mousePosition: Vector = getMousePosition(canvas, e);
     this.mousePosition = mousePosition;
 
+    if (this.mousePosition.isOut()) return;
     this.target.shape.move(
       subVector(
         engine.GameBoard.cellIdToCenteroid(
