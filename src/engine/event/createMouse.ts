@@ -156,6 +156,20 @@ export default class CreateMouse {
 
   drawCreate() {
     if (this.target.shape.centroid.x === 0 && this.target.shape.centroid.y === 0) return;
+
     this.target.shape.draw();
+
+    /** blur item */
+    registry.engine.drawUtils.fillRect(
+      new Vector({
+        x: +this.target.shape.centroid.x,
+        y: +this.target.shape.centroid.y,
+      }),
+      new Vector({
+        x: registry.engine.GameBoard.cellSize,
+        y: registry.engine.GameBoard.cellSize,
+      }),
+      'rgba(255,255,255,0.6)',
+    );
   }
 }
