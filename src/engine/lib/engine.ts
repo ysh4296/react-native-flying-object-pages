@@ -110,7 +110,15 @@ export default class Engine {
 
   update = (deltaTime: number) => {
     let fpsText = Math.round(1 / deltaTime) + ' FPS';
-    this.drawUtils.drawText(new Vector({ x: 10, y: 20 }), 20, 'black', fpsText);
+    this.drawUtils.drawText(
+      new Vector({
+        x: (-this.camera.x + 10) / this.camera.scale,
+        y: (-this.camera.y + this.canvas.height - 100) / this.camera.scale,
+      }),
+      20 / this.camera.scale,
+      'black',
+      fpsText,
+    );
     // for (let i = 0; i < this.rigidBodies.length; i++) {
     //   if (this.rigidBodies[i] instanceof WaterBlock) {
     //     this.rigidBodies[i].active();

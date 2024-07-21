@@ -28,8 +28,16 @@ const Container = () => {
 
   return (
     <>
-      <p>physics Engine</p>
-      <canvas id="myCanvas" />
+      <canvas
+        id="myCanvas"
+        style={{
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          zIndex: -999,
+        }}
+      />
+      <Text>physics Engine</Text>
       <EventSelect
         eventName="MOUSE"
         setEventType={(mouseType) => {

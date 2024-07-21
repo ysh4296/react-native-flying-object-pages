@@ -154,6 +154,7 @@ export default class CreateMouse {
   }
 
   drawCreate() {
+    if (this.target.shape.centroid.x === 0 && this.target.shape.centroid.y === 0) return;
     this.target.shape.draw();
   }
 }
