@@ -50,6 +50,13 @@ export default class Grid {
     return x + y * this.cellCntX;
   }
 
+  cellIdToCenteroid(cellId: number) {
+    return new Vector({
+      x: this.cellSize * ((cellId % this.cellCntX) + 0.5),
+      y: this.cellSize * (((cellId / this.cellCntX) | 0) + 0.5),
+    });
+  }
+
   draw() {
     for (let i = 0; i < this.cellCntX; i++) {
       for (let j = 0; j < this.cellCntY; j++) {

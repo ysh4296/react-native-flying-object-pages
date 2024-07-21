@@ -11,7 +11,7 @@ export default class BreadBlock extends RigidBody {
     this.counter = 0;
     this.shape.draw = () => {
       this.shape.drawUtils.fillRect(
-        new Vector({ x: position.x, y: position.y }),
+        new Vector({ x: this.shape.centroid.x, y: this.shape.centroid.y }),
         new Vector({ x: width, y: height }),
         color,
         this.getShape().orientation,

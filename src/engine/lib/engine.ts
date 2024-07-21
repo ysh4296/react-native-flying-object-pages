@@ -170,7 +170,6 @@ export default class Engine {
                   this.calculatorUtils.degreesToRadians(-90 * objectB.direction.x),
                 );
 
-                console.log(result.normal, moveDirection);
                 if (objectA.velocity.length() < objectB.escalatorConstant) {
                   objectA.addVelocity(scaleVector(moveDirection, objectB.escalatorConstant));
                 }
@@ -255,6 +254,7 @@ export default class Engine {
   };
 
   draw() {
+    if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
     if (this.pause) this.GameBoard.draw();
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].drawEffect();

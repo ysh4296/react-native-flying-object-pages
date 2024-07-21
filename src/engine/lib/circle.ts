@@ -7,7 +7,10 @@ export default class Circle extends Shape {
   drawUtils: Draw;
 
   constructor(position: Vector, radius: number, color: string) {
-    super([new Vector(position), new Vector({ x: position.x + radius, y: position.y })], color);
+    super(
+      [new Vector({ ...position }), new Vector({ x: position.x + radius, y: position.y })],
+      color,
+    );
     this.radius = radius;
     this.drawUtils = Draw.getInstance();
     super.setCentroid(position);
