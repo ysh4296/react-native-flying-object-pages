@@ -58,6 +58,11 @@ export default class Vector {
     console.log(this);
   };
 
+  draw(position: Vector = new Vector({ x: 0, y: 0 })) {
+    const headPosition = addVector(position, scaleVector(this, 100));
+    registry.engine.drawUtils.drawArrow(headPosition, position, 'blue');
+  }
+
   /** the Vector is out from world */
   isOut() {
     let result = false;
@@ -98,4 +103,17 @@ export const rotateVector = (vector1: Vector, radians: number): Vector => {
   result.x = vector1.x * Math.cos(radians) - vector1.y * Math.sin(radians);
   result.y = vector1.x * Math.sin(radians) + vector1.y * Math.cos(radians);
   return result;
+};
+
+/**
+ * Project vector u onto vector v
+ * @param u The vector to be projected
+ * @param v The vector to project onto
+ * @returns The projection vector
+ */
+export const projectVector = (u: Vector, v: Vector): Vector => {
+  const dotProduct = u.getDotProduct(v);
+  const lengthSquare = v.lengthSquare();
+  const scale = dotProduct / lengthSquare;
+  return scaleVector(v, scale);
 };

@@ -126,9 +126,9 @@ export default class Draw {
   ) {
     this.ctx.save(); // 현재 상태 저장
     this.ctx.beginPath();
-    this.ctx.lineWidth = 5;
-    this.ctx.setLineDash([4, 2]);
-    if (animationOffset) this.ctx.lineDashOffset = animationOffset;
+    this.ctx.lineWidth = 2;
+    this.ctx.setLineDash([8, 4]);
+    if (animationOffset) this.ctx.lineDashOffset = animationOffset * 2;
     this.ctx.moveTo(startPosition.x, startPosition.y);
     this.ctx.lineTo(endPosition.x, endPosition.y);
     this.ctx.strokeStyle = color;

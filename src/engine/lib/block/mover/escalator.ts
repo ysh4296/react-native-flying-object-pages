@@ -14,11 +14,11 @@ export default class Escalator extends RigidBody {
     height: number,
     color: string,
     direction: Vector = new Vector({ x: 1, y: 0 }),
-    escalatorConstant = 10,
+    escalatorConstant = 1,
   ) {
-    super(new Rectangle(new Vector({ x: position.x, y: position.y }), width, height, color), 0);
+    super(new Rectangle(new Vector({ x: position.x, y: position.y }), width, height, color), 0.05);
     this.counter = 0;
-    this.matter = new Matter(0, 1);
+    this.matter = new Matter(0, 0.3);
     this.direction = direction;
     this.escalatorConstant = escalatorConstant;
     this.shape.draw = () => {

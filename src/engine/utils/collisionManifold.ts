@@ -8,12 +8,15 @@ export default class CollisionManifold {
   penetrationPoint: Vector;
   drawUtils: Draw;
   flipNormalEnabled: boolean;
+  frictionalImpulse: number;
+
   constructor(depth: number, normal: Vector, penetrationPoint: Vector) {
     this.depth = depth;
     this.normal = normal;
     this.penetrationPoint = penetrationPoint;
     this.drawUtils = Draw.getInstance();
     this.flipNormalEnabled = true;
+    this.frictionalImpulse = 0;
   }
 
   flip() {
@@ -125,14 +128,14 @@ export default class CollisionManifold {
 
     let velocityDotFriction = relativeVelocity.getDotProduct(tangent);
 
-    let frictionalImpulse = -(1 + collisionFriction) * velocityDotFriction * minFriction;
-    frictionalImpulse /= massInverseSum + crossTangentSum;
+    this.frictionalImpulse = -(1 + collisionFriction) * velocityDotFriction * minFriction;
+    this.frictionalImpulse /= massInverseSum + crossTangentSum;
 
-    if (frictionalImpulse > j) {
-      frictionalImpulse = j;
+    if (this.frictionalImpulse > j) {
+      this.frictionalImpulse = j;
     }
 
-    let frictionalImpulseVector = scaleVector(tangent, frictionalImpulse);
+    let frictionalImpulseVector = scaleVector(tangent, this.frictionalImpulse);
 
     objectA.velocity = subVector(
       objectA.velocity,
@@ -143,8 +146,10 @@ export default class CollisionManifold {
       scaleVector(frictionalImpulseVector, objectB.massInverse),
     );
 
-    objectA.angularVelocity += -crossFrictionVectorA * frictionalImpulse * objectA.inertiaInverse;
-    objectB.angularVelocity += crossFrictionVectorB * frictionalImpulse * objectB.inertiaInverse;
+    objectA.angularVelocity +=
+      -crossFrictionVectorA * this.frictionalImpulse * objectA.inertiaInverse;
+    objectB.angularVelocity +=
+      crossFrictionVectorB * this.frictionalImpulse * objectB.inertiaInverse;
   }
 
   positionalCorrection(objectA: RigidBody, objectB: RigidBody, correctDelta: number) {
@@ -164,7 +169,7 @@ export default class CollisionManifold {
   draw() {
     const headPosition = addVector(
       this.penetrationPoint,
-      scaleVector(this.normal, this.depth * -1),
+      scaleVector(this.normal, this.depth * -1000),
     );
     this.drawUtils.drawArrow(headPosition, this.penetrationPoint, 'blue');
 

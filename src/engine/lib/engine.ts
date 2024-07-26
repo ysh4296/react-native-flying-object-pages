@@ -1,6 +1,6 @@
 import Draw from '@engine/utils/draw';
 import Rectangle from './rectangle';
-import Vector, { addVector, rotateVector, scaleVector } from './vector';
+import Vector, { addVector, projectVector, rotateVector, scaleVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
 import RigidBody from './rigidbody';
@@ -18,6 +18,8 @@ import EditMouse from '@engine/event/editMouse';
 import Spring from './block/mover/spring';
 import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
+import BreadBlock from './block/breadBlock';
+import BaconBlock from './block/baconBlock';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -40,7 +42,6 @@ export default class Engine {
   EditMouseEvent: EditMouse;
   joints: Joint[];
   camera: CameraType;
-  pause: boolean;
   GameBoard: Grid; // gameboard to assign circuit & blocks
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
@@ -61,7 +62,6 @@ export default class Engine {
       y: 0,
       scale: 1,
     };
-    this.pause = true;
     this.top = new Rectangle(
       new Vector({ x: this.world.x / 2 - 10, y: 10 }),
       this.world.x - 100,
@@ -89,8 +89,10 @@ export default class Engine {
     this.gravity = new Vector({ x: 0, y: 700 });
     this.rigidBodies = [];
 
+    const bottom = new RigidBody(this.bottom, 0);
+    // bottom.matter = { friction: 0, restitution: 0 };
     // this.rigidBodies.push(new RigidBody(this.top, 0));
-    this.rigidBodies.push(new RigidBody(this.bottom, 0));
+    this.rigidBodies.push(bottom);
     // this.rigidBodies.push(new RigidBody(this.left, 0));
     // this.rigidBodies.push(new RigidBody(this.right, 0));
     this.grid = new HashGrid(15);
@@ -110,6 +112,7 @@ export default class Engine {
 
   update = (deltaTime: number) => {
     let fpsText = Math.round(1 / deltaTime) + ' FPS';
+    deltaTime = 1 / 60;
     this.drawUtils.drawText(
       new Vector({
         x: (-this.camera.x + 10) / this.camera.scale,
@@ -178,8 +181,29 @@ export default class Engine {
                   this.calculatorUtils.degreesToRadians(-90 * objectB.direction.x),
                 );
 
-                if (objectA.velocity.length() < objectB.escalatorConstant) {
-                  objectA.addVelocity(scaleVector(moveDirection, objectB.escalatorConstant));
+                const minFriction = Math.min(objectA.matter.friction, objectB.matter.friction);
+                if (
+                  projectVector(objectA.velocity, moveDirection).length() <
+                  objectB.escalatorConstant
+                ) {
+                  objectA.addForce(
+                    scaleVector(
+                      moveDirection,
+                      objectB.escalatorConstant * minFriction * objectA.massInverse,
+                    ),
+                  );
+                }
+                if (
+                  projectVector(objectB.velocity, moveDirection).length() <
+                  objectB.escalatorConstant
+                ) {
+                  objectB.addForce(
+                    scaleVector(
+                      scaleVector(moveDirection, -1),
+                      // rotateVector(moveDirection, this.calculatorUtils.degreesToRadians(180)),
+                      objectB.escalatorConstant * minFriction * objectB.massInverse,
+                    ),
+                  );
                 }
               }
 
@@ -218,6 +242,12 @@ export default class Engine {
         this.rigidBodies[i].active();
       }
       if (this.rigidBodies[i] instanceof Spring) {
+        this.rigidBodies[i].active();
+      }
+      if (this.rigidBodies[i] instanceof BreadBlock) {
+        this.rigidBodies[i].active();
+      }
+      if (this.rigidBodies[i] instanceof BaconBlock) {
         this.rigidBodies[i].active();
       }
     }
@@ -263,7 +293,7 @@ export default class Engine {
 
   draw() {
     if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
-    if (this.pause) this.GameBoard.draw();
+    if (registry.gamePhase === 'pause') this.GameBoard.draw();
     for (let i = 0; i < this.rigidBodies.length; i++) {
       this.rigidBodies[i].drawEffect();
     }
@@ -271,9 +301,9 @@ export default class Engine {
       this.rigidBodies[i].getShape().draw();
       this.rigidBodies[i].shape.calculateBoundingBox();
     }
-    // for (let i = 0; i < this.joints.length; i++) {
-    //   this.joints[i].draw();
-    // }
+    for (let i = 0; i < this.joints.length; i++) {
+      this.joints[i].draw();
+    }
   }
 
   drawSelect() {

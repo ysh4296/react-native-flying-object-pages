@@ -25,7 +25,7 @@ export default class BaconBlock extends RigidBody {
 
   active() {
     this.counter++;
-    if (this.counter > 60) {
+    if (this.counter > 180) {
       this.counter = 0;
       const initIndex = registry.engine.rigidBodies.length;
       for (let i = 0; i < this.baconLength; i++) {

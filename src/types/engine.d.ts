@@ -33,4 +33,7 @@ type defaultRegistryType = {
   jointEventType: JointType;
   createEventType: CreateType;
   animationOffset: number;
+  gamePhase: GamePhase;
 };
+
+type GamePhase = 'play' | 'pause';

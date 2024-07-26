@@ -14,11 +14,13 @@ import RigidBody from '@engine/lib/rigidbody';
 import Vector from '@engine/lib/vector';
 import { assertUnreachableChecker } from '@utils/typeChecker';
 import { useEffect } from 'react';
+import useGamePhaseStore from 'store/gamePhase';
 import useMouseStore from 'store/mouseStore';
 import main, { registry } from '../../../engine/lib/main';
 
 const Container = () => {
   const { setMouseEventType } = useMouseStore();
+  const { gamePhase, setGamePhase } = useGamePhaseStore();
 
   useEffect(() => {
     if (document) {
@@ -133,10 +135,11 @@ const Container = () => {
       <Text>play</Text>
       <Button
         onClick={() => {
-          registry.engine.pause = !registry.engine?.pause;
+          if (gamePhase === 'pause') setGamePhase('play');
+          else setGamePhase('pause');
         }}
       >
-        {registry.engine?.pause ? 'pause' : 'play'}
+        {gamePhase}
       </Button>
     </>
   );

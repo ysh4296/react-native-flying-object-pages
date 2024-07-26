@@ -13,7 +13,8 @@ export const registry: defaultRegistryType & { engine: Engine } = {
   jointEventType: 'NONE',
   createEventType: 'NONE',
   animationOffset: 0,
-  setMouseEventType: (mouseType: MouseType) => {},
+  setMouseEventType: () => {},
+  gamePhase: 'pause',
 };
 
 const main = (document: Document, setMouseEventType: (mouseType: MouseType) => void) => {
@@ -45,7 +46,7 @@ const main = (document: Document, setMouseEventType: (mouseType: MouseType) => v
 
       registry.engine.setZoom();
       registry.engine.clear();
-      if (registry.engine.pause) {
+      if (registry.gamePhase === 'pause') {
         registry.engine.updateEdit();
       } else {
         registry.engine.update(deltaTime);

@@ -43,8 +43,6 @@ export default class CreateMouse {
         this.target.shape.centroid,
       ),
     );
-
-    console.log(this.target.shape);
   }
 
   mouseDown(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {

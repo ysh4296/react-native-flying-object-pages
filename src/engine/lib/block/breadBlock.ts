@@ -20,11 +20,13 @@ export default class BreadBlock extends RigidBody {
   }
 
   active() {
-    if (this.counter < 1) {
-      this.counter++;
+    this.counter++;
+    if (this.counter > 180) {
       registry.engine.rigidBodies.push(
         new Bread(subVector(this.shape.centroid, new Vector({ x: 0, y: 0 }))),
       );
+      this.counter = 0;
+      return;
     }
   }
 }
