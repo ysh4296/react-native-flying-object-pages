@@ -1,6 +1,6 @@
 import Draw from '@engine/utils/draw';
 import Rectangle from './rectangle';
-import Vector, { addVector, projectVector, rotateVector, scaleVector } from './vector';
+import Vector, { addVector, scaleVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
 import RigidBody from './rigidbody';
@@ -11,7 +11,6 @@ import { registry } from './main';
 import JointMouse from '@engine/event/jointMouse';
 import CreateMouse from '@engine/event/createMouse';
 import getMousePosition from './getMousePosition';
-import Escalator from './block/mover/escalator';
 import Grill from './block/mover/grill';
 import Food from './food/food';
 import EditMouse from '@engine/event/editMouse';
@@ -20,6 +19,7 @@ import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
 import BreadBlock from './block/breadBlock';
 import BaconBlock from './block/baconBlock';
+import Wheel from './block/mover/wheel';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -173,39 +173,40 @@ export default class Engine {
               result.resolveCollision(objectA, objectB);
               result.positionalCorrection(objectA, objectB, 0.3);
               // result.draw();
-              if (objectB instanceof Escalator) {
-                /** objectA moves */
-                if (objectA.isKinematic) continue;
-                const moveDirection = rotateVector(
-                  result.normal,
-                  this.calculatorUtils.degreesToRadians(-90 * objectB.direction.x),
-                );
+              /** escalator logic changed! */
+              // if (objectB instanceof Escalator) {
+              //   /** objectA moves */
+              //   if (objectA.isKinematic) continue;
+              //   const moveDirection = rotateVector(
+              //     result.normal,
+              //     this.calculatorUtils.degreesToRadians(-90 * objectB.direction.x),
+              //   );
 
-                const minFriction = Math.min(objectA.matter.friction, objectB.matter.friction);
-                if (
-                  projectVector(objectA.velocity, moveDirection).length() <
-                  objectB.escalatorConstant
-                ) {
-                  objectA.addForce(
-                    scaleVector(
-                      moveDirection,
-                      objectB.escalatorConstant * minFriction * objectA.massInverse,
-                    ),
-                  );
-                }
-                if (
-                  projectVector(objectB.velocity, moveDirection).length() <
-                  objectB.escalatorConstant
-                ) {
-                  objectB.addForce(
-                    scaleVector(
-                      scaleVector(moveDirection, -1),
-                      // rotateVector(moveDirection, this.calculatorUtils.degreesToRadians(180)),
-                      objectB.escalatorConstant * minFriction * objectB.massInverse,
-                    ),
-                  );
-                }
-              }
+              //   const minFriction = Math.min(objectA.matter.friction, objectB.matter.friction);
+              //   if (
+              //     projectVector(objectA.velocity, moveDirection).length() <
+              //     objectB.escalatorConstant
+              //   ) {
+              //     objectA.addForce(
+              //       scaleVector(
+              //         moveDirection,
+              //         objectB.escalatorConstant * minFriction * objectA.massInverse,
+              //       ),
+              //     );
+              //   }
+              //   if (
+              //     projectVector(objectB.velocity, moveDirection).length() <
+              //     objectB.escalatorConstant
+              //   ) {
+              //     objectB.addForce(
+              //       scaleVector(
+              //         scaleVector(moveDirection, -1),
+              //         // rotateVector(moveDirection, this.calculatorUtils.degreesToRadians(180)),
+              //         objectB.escalatorConstant * minFriction * objectB.massInverse,
+              //       ),
+              //     );
+              //   }
+              // }
 
               if (objectB instanceof Spring) {
                 /** objectA moves */
@@ -250,6 +251,9 @@ export default class Engine {
       if (this.rigidBodies[i] instanceof BaconBlock) {
         this.rigidBodies[i].active();
       }
+      if (this.rigidBodies[i] instanceof Wheel) {
+        this.rigidBodies[i].active();
+      }
     }
   };
 
@@ -277,9 +281,9 @@ export default class Engine {
         if (registry.createEventType === 'BREADBLOCK') {
           this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
         }
-        if (registry.createEventType === 'ESCALATOR') {
-          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
-        }
+        // if (registry.createEventType === 'ESCALATOR') {
+        //   this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
+        // }
         if (registry.createEventType === 'GRILL') {
           this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
         }

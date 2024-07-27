@@ -1,6 +1,6 @@
 import BaconBlock from '@engine/lib/block/baconBlock';
 import BreadBlock from '@engine/lib/block/breadBlock';
-import Escalator from '@engine/lib/block/mover/escalator';
+// import Escalator from '@engine/lib/block/mover/escalator';
 import Grill from '@engine/lib/block/mover/grill';
 import Spring from '@engine/lib/block/mover/spring';
 import WaterBlock from '@engine/lib/block/waterBlock';
@@ -12,6 +12,7 @@ import Rectangle from '@engine/lib/rectangle';
 import RigidBody from '@engine/lib/rigidbody';
 import Vector, { subVector } from '@engine/lib/vector';
 import { assertUnreachableChecker } from '@utils/typeChecker';
+import Escalators from '@engine/lib/component/escalator';
 
 export default class CreateMouse {
   start: Vector;
@@ -19,15 +20,19 @@ export default class CreateMouse {
   mousePosition: Vector;
   isEdit: boolean;
   target: RigidBody;
+  // for some special creation / ex) escalator
+  additionalTarget: Vector;
+  additionalTargetSelected: boolean;
 
   constructor() {
     this.start = new Vector({ x: 0, y: 0 });
     this.end = new Vector({ x: 0, y: 0 });
 
     this.target = new RigidBody(new Circle(new Vector({ x: 0, y: 0 }), 5, 'black'), 0);
-
     this.mousePosition = new Vector({ x: 0, y: 0 });
     this.isEdit = false;
+    this.additionalTargetSelected = false;
+    this.additionalTarget = new Vector({ x: 0, y: 0 });
   }
 
   mouseMove(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
@@ -114,18 +119,18 @@ export default class CreateMouse {
           ),
         );
         break;
-      case 'ESCALATOR':
-        registry.engine.rigidBodies.push(
-          new Escalator(
-            new Vector(this.target.shape.centroid),
-            engine.GameBoard.cellSize,
-            engine.GameBoard.cellSize,
-            'purple',
-            new Vector({ x: 1, y: 0 }),
-            50,
-          ),
-        );
-        break;
+      // case 'ESCALATOR':
+      //   registry.engine.rigidBodies.push(
+      //     new Escalator(
+      //       new Vector(this.target.shape.centroid),
+      //       engine.GameBoard.cellSize,
+      //       engine.GameBoard.cellSize,
+      //       'purple',
+      //       new Vector({ x: 1, y: 0 }),
+      //       50,
+      //     ),
+      //   );
+      //   break;
       case 'SPRING':
         registry.engine.rigidBodies.push(
           new Spring(
@@ -145,6 +150,16 @@ export default class CreateMouse {
             'red',
           ),
         );
+        break;
+      case 'WHEEL':
+        if (this.additionalTargetSelected) {
+          const creator = new Escalators(this.additionalTarget, this.target.shape.centroid);
+          creator.addEscalator();
+          this.additionalTargetSelected = false;
+          break;
+        }
+        this.additionalTarget = new Vector({ ...this.target.shape.centroid });
+        this.additionalTargetSelected = true;
         break;
       default:
         assertUnreachableChecker(registry.createEventType);

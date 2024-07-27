@@ -10,8 +10,9 @@ export default class HingeJoint extends Joint {
   objectAFriction: number;
   objectBFriction: number;
   jointIteration: number;
+  jointCorrection: number;
 
-  constructor(connection: JointConnection) {
+  constructor(connection: JointConnection, jointIteration = 20, jointCorrection = 0.3) {
     super(connection);
     this.initialLength = subVector(
       this.getAnchorAPos() as Vector,
@@ -22,7 +23,8 @@ export default class HingeJoint extends Joint {
     this.objectBRestitution = this.objectB.matter.restitution;
     this.objectAFriction = this.objectA.matter.friction;
     this.objectBFriction = this.objectB.matter.friction;
-    this.jointIteration = 20;
+    this.jointIteration = jointIteration;
+    this.jointCorrection = jointCorrection;
   }
 
   updateConnectionA() {
@@ -48,10 +50,9 @@ export default class HingeJoint extends Joint {
         contact.depth = this.initialLength - distance;
         contact.normal.scale(-1);
       }
-      contact.flipNormalEnabled = false;
 
+      contact.positionalCorrection(this.objectB, this.objectA, this.jointCorrection);
       contact.resolveCollision(this.objectB, this.objectA);
-      contact.positionalCorrection(this.objectB, this.objectA, 0.3);
     }
     this.restoreMatrial();
   }
@@ -63,21 +64,24 @@ export default class HingeJoint extends Joint {
       const anchorAPos = this.getAnchorAPos();
       const anchorBPos = this.getAnchorBPos();
       if (!anchorAPos || !anchorBPos) return;
-      const direction = subVector(anchorBPos, anchorAPos);
+      const direction = subVector(anchorAPos, anchorBPos);
       const distance = direction.length();
       if (distance < 0.0000001) {
         break;
       }
       direction.normalize();
       let normalDirection = direction.getCopy();
-      let contact = new CollisionManifold(0, normalDirection, anchorBPos);
+      let contact = new CollisionManifold(0, normalDirection, anchorAPos);
       if (distance > this.initialLength) {
         contact.depth = distance - this.initialLength;
       } else {
         contact.depth = this.initialLength - distance;
         contact.normal.scale(-1);
       }
-      contact.positionalCorrection(this.objectA, this.objectB, 0.3);
+
+      contact.flipNormalEnabled = false;
+
+      contact.positionalCorrection(this.objectA, this.objectB, this.jointCorrection);
       contact.resolveCollision(this.objectA, this.objectB);
     }
     this.restoreMatrial();

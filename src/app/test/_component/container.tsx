@@ -4,9 +4,9 @@ import { Button, Text } from '@chakra-ui/react';
 import EventSelect from '@component/eventSelect';
 import BaconBlock from '@engine/lib/block/baconBlock';
 import BreadBlock from '@engine/lib/block/breadBlock';
-import Escalator from '@engine/lib/block/mover/escalator';
 import Grill from '@engine/lib/block/mover/grill';
 import Spring from '@engine/lib/block/mover/spring';
+import Wheel from '@engine/lib/block/mover/wheel';
 import WaterBlock from '@engine/lib/block/waterBlock';
 import Circle from '@engine/lib/circle';
 import Rectangle from '@engine/lib/rectangle';
@@ -101,16 +101,16 @@ const Container = () => {
                 'blue',
               );
               break;
-            case 'ESCALATOR':
-              registry.engine.CreateMouseEvent.target = new Escalator(
-                new Vector({ x: 0, y: 0 }),
-                registry.engine.GameBoard.cellSize,
-                registry.engine.GameBoard.cellSize,
-                'purple',
-                new Vector({ x: 1, y: 0 }),
-                50,
-              );
-              break;
+            // case 'ESCALATOR':
+            //   registry.engine.CreateMouseEvent.target = new Escalator(
+            //     new Vector({ x: 0, y: 0 }),
+            //     registry.engine.GameBoard.cellSize,
+            //     registry.engine.GameBoard.cellSize,
+            //     'purple',
+            //     new Vector({ x: 1, y: 0 }),
+            //     50,
+            //   );
+            //   break;
             case 'SPRING':
               registry.engine.CreateMouseEvent.target = new Spring(
                 new Vector({ x: 0, y: 0 }),
@@ -124,6 +124,13 @@ const Container = () => {
                 new Vector({ x: 0, y: 0 }),
                 registry.engine.GameBoard.cellSize,
                 registry.engine.GameBoard.cellSize,
+                'red',
+              );
+              break;
+            case 'WHEEL':
+              registry.engine.CreateMouseEvent.target = new Wheel(
+                new Vector({ x: 0, y: 0 }),
+                registry.engine.GameBoard.cellSize / 2,
                 'red',
               );
               break;

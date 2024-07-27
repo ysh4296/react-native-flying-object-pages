@@ -59,7 +59,7 @@ export default class Vector {
   };
 
   draw(position: Vector = new Vector({ x: 0, y: 0 })) {
-    const headPosition = addVector(position, scaleVector(this, 100));
+    const headPosition = position;
     registry.engine.drawUtils.drawArrow(headPosition, position, 'blue');
   }
 

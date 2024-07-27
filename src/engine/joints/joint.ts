@@ -1,4 +1,5 @@
 import RigidBody from '@engine/lib/rigidbody';
+import Vector from '@engine/lib/vector';
 import JointConnection from './jointConnection';
 
 export default class Joint {
@@ -20,12 +21,22 @@ export default class Joint {
     }
   }
 
-  getAnchorAPos() {
-    return this.objectA.getShape().anchorPoints.get(this.anchorAId);
+  getAnchorAPos(): Vector {
+    const result = this.objectA.getShape().anchorPoints.get(this.anchorAId);
+
+    if (!result) {
+      throw new Error('anchor point not found');
+    }
+    return result;
   }
 
-  getAnchorBPos() {
-    return this.objectB.getShape().anchorPoints.get(this.anchorBId);
+  getAnchorBPos(): Vector {
+    const result = this.objectB.getShape().anchorPoints.get(this.anchorBId);
+
+    if (!result) {
+      throw new Error('anchor point not found');
+    }
+    return result;
   }
 
   updateConnectionA() {}

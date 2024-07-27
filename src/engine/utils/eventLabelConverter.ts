@@ -30,12 +30,14 @@ export const getEventLabel = (eventType: EventType): string => {
       return 'baconblock';
     case 'BREADBLOCK':
       return 'breadblock';
-    case 'ESCALATOR':
-      return 'escalator';
+    // case 'ESCALATOR':
+    //   return 'escalator';
     case 'SPRING':
       return 'spring';
     case 'GRILL':
       return 'grill';
+    case 'WHEEL':
+      return 'wheel';
     default:
       return assertUnreachableChecker(eventType);
   }
@@ -55,9 +57,10 @@ export const getEventList = (eventName: EventName): EventType[] => {
         'WATERBLOCK',
         'BACONBLOCK',
         'BREADBLOCK',
-        'ESCALATOR',
+        // 'ESCALATOR',
         'SPRING',
         'GRILL',
+        'WHEEL',
       ];
     default:
       return assertUnreachableChecker(eventName);

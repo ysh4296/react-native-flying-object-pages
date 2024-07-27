@@ -4,7 +4,7 @@ import Vector, { addVector, scaleVector } from '@engine/lib/vector';
 import Rectangle from '../../rectangle';
 import RigidBody from '../../rigidbody';
 
-export default class Escalator extends RigidBody {
+export default class Rotator extends RigidBody {
   counter: number;
   direction: Vector;
   escalatorConstant: number;
