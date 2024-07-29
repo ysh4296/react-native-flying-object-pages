@@ -1,7 +1,5 @@
 import BaconBlock from '@engine/lib/block/baconBlock';
 import BreadBlock from '@engine/lib/block/breadBlock';
-// import Escalator from '@engine/lib/block/mover/escalator';
-import Grill from '@engine/lib/block/mover/grill';
 import Spring from '@engine/lib/block/mover/spring';
 import WaterBlock from '@engine/lib/block/waterBlock';
 import Circle from '@engine/lib/circle';
@@ -13,6 +11,8 @@ import RigidBody from '@engine/lib/rigidbody';
 import Vector, { subVector } from '@engine/lib/vector';
 import { assertUnreachableChecker } from '@utils/typeChecker';
 import Escalators from '@engine/lib/component/escalator';
+import Fan from '@engine/lib/component/fan';
+import Heater from '@engine/lib/component/heater';
 
 export default class CreateMouse {
   start: Vector;
@@ -141,25 +141,21 @@ export default class CreateMouse {
           ),
         );
         break;
-      case 'GRILL':
-        registry.engine.rigidBodies.push(
-          new Grill(
-            new Vector(this.target.shape.centroid),
-            registry.engine.GameBoard.cellSize,
-            registry.engine.GameBoard.cellSize,
-            'red',
-          ),
-        );
+      case 'HEATER':
+        new Heater(this.target.shape.centroid).addComponent();
         break;
       case 'WHEEL':
         if (this.additionalTargetSelected) {
           const creator = new Escalators(this.additionalTarget, this.target.shape.centroid);
-          creator.addEscalator();
+          creator.addComponent();
           this.additionalTargetSelected = false;
           break;
         }
         this.additionalTarget = new Vector({ ...this.target.shape.centroid });
         this.additionalTargetSelected = true;
+        break;
+      case 'FAN':
+        new Fan(new Vector(this.target.shape.centroid), (Math.PI / 2) * 3).addComponent();
         break;
       default:
         assertUnreachableChecker(registry.createEventType);

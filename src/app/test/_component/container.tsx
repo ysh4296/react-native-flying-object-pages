@@ -119,7 +119,7 @@ const Container = () => {
                 'purple',
               );
               break;
-            case 'GRILL':
+            case 'HEATER':
               registry.engine.CreateMouseEvent.target = new Grill(
                 new Vector({ x: 0, y: 0 }),
                 registry.engine.GameBoard.cellSize,
@@ -132,6 +132,17 @@ const Container = () => {
                 new Vector({ x: 0, y: 0 }),
                 registry.engine.GameBoard.cellSize / 2,
                 'red',
+              );
+              break;
+            case 'FAN':
+              registry.engine.CreateMouseEvent.target = new RigidBody(
+                new Rectangle(
+                  new Vector({ x: 0, y: 0 }),
+                  registry.engine.GameBoard.cellSize,
+                  registry.engine.GameBoard.cellSize,
+                  'black',
+                ),
+                1,
               );
               break;
             default:

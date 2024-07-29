@@ -4,8 +4,9 @@ import Plate from '../block/mover/plate';
 import Wheel from '../block/mover/wheel';
 import { registry } from '../main';
 import Vector, { rotateVector, subVector } from '../vector';
+import Component from './component';
 
-export default class Escalator {
+export default class Escalator extends Component {
   start: Wheel;
   end: Wheel;
   escalatorNumber: number;
@@ -13,6 +14,7 @@ export default class Escalator {
   rotation: number;
 
   constructor(startPosition: Vector, endPosition: Vector, escalatorNumber: number = 6) {
+    super();
     this.start = new Wheel(startPosition, registry.engine.GameBoard.cellSize / 2, 'red');
     this.end = new Wheel(endPosition, registry.engine.GameBoard.cellSize / 2, 'red');
     this.escalatorNumber = escalatorNumber;
@@ -23,7 +25,7 @@ export default class Escalator {
     );
   }
 
-  addEscalator() {
+  addComponent() {
     registry.engine.rigidBodies.push(this.start);
     registry.engine.rigidBodies.push(this.end);
 

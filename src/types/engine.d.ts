@@ -15,8 +15,9 @@ type CreateType =
   | 'BREADBLOCK'
   // | 'ESCALATOR'
   | 'SPRING'
-  | 'GRILL'
-  | 'WHEEL';
+  | 'HEATER'
+  | 'WHEEL'
+  | 'FAN';
 
 type EventType = NoneType | MouseType | JointType | CreateType;
 

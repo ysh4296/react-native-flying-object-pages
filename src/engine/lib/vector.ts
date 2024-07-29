@@ -50,6 +50,16 @@ export default class Vector {
     this.y *= scale;
   };
 
+  rotate = (radians: number, spindle: Vector = new Vector({ x: 0, y: 0 })) => {
+    let result = new Vector({ x: 0, y: 0 });
+    let direction = subVector(this, spindle);
+    result.x = direction.x * Math.cos(radians) - direction.y * Math.sin(radians);
+    result.y = direction.x * Math.sin(radians) + direction.y * Math.cos(radians);
+    result.add(spindle);
+    this.x = result.x;
+    this.y = result.y;
+  };
+
   cross = (target: Vector) => {
     return this.x * target.y - this.y * target.x;
   };

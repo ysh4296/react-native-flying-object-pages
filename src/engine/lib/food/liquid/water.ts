@@ -15,6 +15,6 @@ export default class Water extends RigidBody {
     this.shape.draw = () => {
       this.shape.drawUtils.drawCircle(this.shape.centroid, 15, '#87CEFA');
     };
-    this.matter = new Matter(0.8, 0);
+    this.matter = new Matter(0, 0);
   }
 }

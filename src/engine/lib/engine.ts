@@ -11,7 +11,6 @@ import { registry } from './main';
 import JointMouse from '@engine/event/jointMouse';
 import CreateMouse from '@engine/event/createMouse';
 import getMousePosition from './getMousePosition';
-import Grill from './block/mover/grill';
 import Food from './food/food';
 import EditMouse from '@engine/event/editMouse';
 import Spring from './block/mover/spring';
@@ -20,6 +19,7 @@ import Grid from '@engine/grid/grid';
 import BreadBlock from './block/breadBlock';
 import BaconBlock from './block/baconBlock';
 import Wheel from './block/mover/wheel';
+import Effect from './effect/effect';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -33,6 +33,7 @@ export default class Engine {
   right: Rectangle;
   collision: Collision;
   rigidBodies: RigidBody[];
+  effects: Effect[];
   gravity: Vector;
   iteration: number;
   grid: HashGrid;
@@ -88,6 +89,7 @@ export default class Engine {
     );
     this.gravity = new Vector({ x: 0, y: 700 });
     this.rigidBodies = [];
+    this.effects = [];
 
     const bottom = new RigidBody(this.bottom, 0);
     // bottom.matter = { friction: 0, restitution: 0 };
@@ -216,10 +218,10 @@ export default class Engine {
                 }
               }
 
-              if (objectB instanceof Grill && objectA instanceof Food) {
-                /** objectA cooked */
-                objectA.temprature = Math.min(100, objectB.temprature / 6000 + objectA.temprature);
-              }
+              // if (objectB instanceof Grill && objectA instanceof Food) {
+              //   /** objectA cooked */
+              //   objectA.temprature = Math.min(100, objectB.temprature / 6000 + objectA.temprature);
+              // }
             }
             objectA.shape.boundingBox.collision = true;
             objectB.shape.boundingBox.collision = true;
@@ -230,6 +232,15 @@ export default class Engine {
 
     /** erase outted objects */
     for (let i = 0; i < this.rigidBodies.length; i++) {
+      for (let j = 0; j < this.effects.length; j++) {
+        const object = this.rigidBodies[i];
+        const effect = this.effects[j];
+        if (object.isKinematic) break;
+        let result = this.collision.checkCollision(object.shape, effect.shape);
+        if (result) {
+          effect.applyEffect(object);
+        }
+      }
       if (this.rigidBodies[i].shape.centroid.isOut()) {
         this.joints = this.joints.filter(
           (item) =>
@@ -284,9 +295,6 @@ export default class Engine {
         // if (registry.createEventType === 'ESCALATOR') {
         //   this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
         // }
-        if (registry.createEventType === 'GRILL') {
-          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
-        }
         if (registry.createEventType === 'CIRCLE') {
           this.drawUtils.drawCircle(position, Math.min(width, height) / 2, 'green');
         }
@@ -307,6 +315,9 @@ export default class Engine {
     }
     for (let i = 0; i < this.joints.length; i++) {
       this.joints[i].draw();
+    }
+    for (let i = 0; i < this.effects.length; i++) {
+      this.effects[i].drawEffect();
     }
   }
 
