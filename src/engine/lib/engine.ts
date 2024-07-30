@@ -20,6 +20,7 @@ import BreadBlock from './block/breadBlock';
 import BaconBlock from './block/baconBlock';
 import Wheel from './block/mover/wheel';
 import Effect from './effect/effect';
+import Floater from './block/mover/floater';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -217,11 +218,6 @@ export default class Engine {
                   objectA.addVelocity(scaleVector(objectB.direction, objectB.springConstant));
                 }
               }
-
-              // if (objectB instanceof Grill && objectA instanceof Food) {
-              //   /** objectA cooked */
-              //   objectA.temprature = Math.min(100, objectB.temprature / 6000 + objectA.temprature);
-              // }
             }
             objectA.shape.boundingBox.collision = true;
             objectB.shape.boundingBox.collision = true;
@@ -263,6 +259,9 @@ export default class Engine {
         this.rigidBodies[i].active();
       }
       if (this.rigidBodies[i] instanceof Wheel) {
+        this.rigidBodies[i].active();
+      }
+      if (this.rigidBodies[i] instanceof Floater) {
         this.rigidBodies[i].active();
       }
     }
@@ -391,12 +390,12 @@ export default class Engine {
       default:
         return assertUnreachableChecker(registry.mouseEventType);
     }
-    const mousePosition = getMousePosition(this.canvas, e);
-    for (let i = 0; i < this.rigidBodies.length; i++) {
-      if (this.rigidBodies[i].shape.isInside(mousePosition)) {
-        this.rigidBodies[i].active();
-      }
-    }
+    // const mousePosition = getMousePosition(this.canvas, e);
+    // for (let i = 0; i < this.rigidBodies.length; i++) {
+    //   if (this.rigidBodies[i].shape.isInside(mousePosition)) {
+    //     this.rigidBodies[i].active();
+    //   }
+    // }
   }
 
   onMouseDown(e: MouseEvent) {

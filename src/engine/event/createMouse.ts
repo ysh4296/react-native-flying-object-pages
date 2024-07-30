@@ -13,6 +13,7 @@ import { assertUnreachableChecker } from '@utils/typeChecker';
 import Escalators from '@engine/lib/component/escalator';
 import Fan from '@engine/lib/component/fan';
 import Heater from '@engine/lib/component/heater';
+import Pressure from '@engine/lib/component/pressure';
 
 export default class CreateMouse {
   start: Vector;
@@ -119,18 +120,6 @@ export default class CreateMouse {
           ),
         );
         break;
-      // case 'ESCALATOR':
-      //   registry.engine.rigidBodies.push(
-      //     new Escalator(
-      //       new Vector(this.target.shape.centroid),
-      //       engine.GameBoard.cellSize,
-      //       engine.GameBoard.cellSize,
-      //       'purple',
-      //       new Vector({ x: 1, y: 0 }),
-      //       50,
-      //     ),
-      //   );
-      //   break;
       case 'SPRING':
         registry.engine.rigidBodies.push(
           new Spring(
@@ -155,7 +144,10 @@ export default class CreateMouse {
         this.additionalTargetSelected = true;
         break;
       case 'FAN':
-        new Fan(new Vector(this.target.shape.centroid), (Math.PI / 2) * 3).addComponent();
+        new Fan(new Vector(this.target.shape.centroid)).addComponent();
+        break;
+      case 'PRESSURE':
+        new Pressure(this.target.shape.centroid).addComponent();
         break;
       default:
         assertUnreachableChecker(registry.createEventType);

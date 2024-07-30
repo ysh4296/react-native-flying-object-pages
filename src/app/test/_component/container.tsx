@@ -145,6 +145,17 @@ const Container = () => {
                 1,
               );
               break;
+            case 'PRESSURE':
+              registry.engine.CreateMouseEvent.target = new RigidBody(
+                new Rectangle(
+                  new Vector({ x: 0, y: 0 }),
+                  registry.engine.GameBoard.cellSize,
+                  registry.engine.GameBoard.cellSize,
+                  'black',
+                ),
+                1,
+              );
+              break;
             default:
               assertUnreachableChecker(registry.createEventType);
           }

@@ -27,9 +27,6 @@ export default class CollisionManifold {
 
   resolveCollision(objectA: RigidBody, objectB: RigidBody) {
     // 부딧혔다면 상대속도를 통해 충돌을 해결한다.
-    if (objectA.isKinematic && objectB.isKinematic) {
-      return;
-    }
 
     let dir = subVector(objectB.shape.centroid, objectA.shape.centroid);
     if (dir.getDotProduct(this.normal) < 0) {
@@ -87,11 +84,14 @@ export default class CollisionManifold {
     let impulseVectorA = scaleVector(impulseCollision, -1 * objectA.massInverse);
     let impulseVectorB = scaleVector(impulseCollision, objectB.massInverse);
 
-    objectA.velocity = addVector(objectA.velocity, impulseVectorA);
-    objectB.velocity = addVector(objectB.velocity, impulseVectorB);
-
-    objectA.angularVelocity += -crossRestitutionVectorA * j * objectA.inertiaInverse;
-    objectB.angularVelocity += crossRestitutionVectorB * j * objectB.inertiaInverse;
+    if (!objectA.isKinematic) {
+      objectA.velocity = addVector(objectA.velocity, impulseVectorA);
+      objectA.angularVelocity += -crossRestitutionVectorA * j * objectA.inertiaInverse;
+    }
+    if (!objectB.isKinematic) {
+      objectB.velocity = addVector(objectB.velocity, impulseVectorB);
+      objectB.angularVelocity += crossRestitutionVectorB * j * objectB.inertiaInverse;
+    }
 
     // 마찰력 연산
 
@@ -137,19 +137,24 @@ export default class CollisionManifold {
 
     let frictionalImpulseVector = scaleVector(tangent, this.frictionalImpulse);
 
-    objectA.velocity = subVector(
-      objectA.velocity,
-      scaleVector(frictionalImpulseVector, objectA.massInverse),
-    );
-    objectB.velocity = addVector(
-      objectB.velocity,
-      scaleVector(frictionalImpulseVector, objectB.massInverse),
-    );
+    if (!objectA.isKinematic) {
+      objectA.velocity = subVector(
+        objectA.velocity,
+        scaleVector(frictionalImpulseVector, objectA.massInverse),
+      );
+      objectA.angularVelocity +=
+        -crossFrictionVectorA * this.frictionalImpulse * objectA.inertiaInverse;
+    }
 
-    objectA.angularVelocity +=
-      -crossFrictionVectorA * this.frictionalImpulse * objectA.inertiaInverse;
-    objectB.angularVelocity +=
-      crossFrictionVectorB * this.frictionalImpulse * objectB.inertiaInverse;
+    if (!objectB.isKinematic) {
+      objectB.velocity = addVector(
+        objectB.velocity,
+        scaleVector(frictionalImpulseVector, objectB.massInverse),
+      );
+
+      objectB.angularVelocity +=
+        crossFrictionVectorB * this.frictionalImpulse * objectB.inertiaInverse;
+    }
   }
 
   positionalCorrection(objectA: RigidBody, objectB: RigidBody, correctDelta: number) {
