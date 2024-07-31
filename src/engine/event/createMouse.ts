@@ -10,10 +10,11 @@ import Rectangle from '@engine/lib/rectangle';
 import RigidBody from '@engine/lib/rigidbody';
 import Vector, { subVector } from '@engine/lib/vector';
 import { assertUnreachableChecker } from '@utils/typeChecker';
-import Escalators from '@engine/lib/component/escalator';
 import Fan from '@engine/lib/component/fan';
 import Heater from '@engine/lib/component/heater';
 import Pressure from '@engine/lib/component/pressure';
+import Component from '@engine/lib/component/component';
+import Escalator from '@engine/lib/component/escalator';
 
 export default class CreateMouse {
   start: Vector;
@@ -61,12 +62,13 @@ export default class CreateMouse {
 
   mouseUp(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
     this.end = this.mousePosition;
-
+    let component;
     switch (registry.createEventType) {
       case 'NONE':
         break;
       case 'RECTANGLE':
-        registry.engine.rigidBodies.push(
+        component = new Component(new Vector(this.target.shape.centroid));
+        component.objects.push(
           new RigidBody(
             new Rectangle(
               new Vector(this.target.shape.centroid),
@@ -77,9 +79,11 @@ export default class CreateMouse {
             1,
           ),
         );
+        registry.engine.components.push(component);
         break;
       case 'WATERBLOCK':
-        registry.engine.rigidBodies.push(
+        component = new Component(new Vector(this.target.shape.centroid));
+        component.objects.push(
           new WaterBlock(
             new Vector(this.target.shape.centroid),
             registry.engine.GameBoard.cellSize,
@@ -87,21 +91,25 @@ export default class CreateMouse {
             'blue',
           ),
         );
+        registry.engine.components.push(component);
         break;
       case 'CIRCLE':
-        registry.engine.rigidBodies.push(
+        component = new Component(new Vector(this.target.shape.centroid));
+        component.objects.push(
           new RigidBody(
             new Circle(
               new Vector(this.target.shape.centroid),
-              registry.engine.GameBoard.cellSize,
+              registry.engine.GameBoard.cellSize / 2,
               'green',
             ),
             1,
           ),
         );
+        registry.engine.components.push(component);
         break;
       case 'BACONBLOCK':
-        registry.engine.rigidBodies.push(
+        component = new Component(new Vector(this.target.shape.centroid));
+        component.objects.push(
           new BaconBlock(
             new Vector(this.target.shape.centroid),
             registry.engine.GameBoard.cellSize,
@@ -109,9 +117,11 @@ export default class CreateMouse {
             'blue',
           ),
         );
+        registry.engine.components.push(component);
         break;
       case 'BREADBLOCK':
-        registry.engine.rigidBodies.push(
+        component = new Component(new Vector(this.target.shape.centroid));
+        component.objects.push(
           new BreadBlock(
             new Vector(this.target.shape.centroid),
             registry.engine.GameBoard.cellSize,
@@ -119,9 +129,11 @@ export default class CreateMouse {
             'blue',
           ),
         );
+        registry.engine.components.push(component);
         break;
       case 'SPRING':
-        registry.engine.rigidBodies.push(
+        component = new Component(new Vector(this.target.shape.centroid));
+        component.objects.push(
           new Spring(
             new Vector(this.target.shape.centroid),
             registry.engine.GameBoard.cellSize,
@@ -129,19 +141,22 @@ export default class CreateMouse {
             'purple',
           ),
         );
+        registry.engine.components.push(component);
         break;
       case 'HEATER':
         new Heater(this.target.shape.centroid).addComponent();
         break;
       case 'WHEEL':
-        if (this.additionalTargetSelected) {
-          const creator = new Escalators(this.additionalTarget, this.target.shape.centroid);
-          creator.addComponent();
-          this.additionalTargetSelected = false;
-          break;
-        }
-        this.additionalTarget = new Vector({ ...this.target.shape.centroid });
-        this.additionalTargetSelected = true;
+        new Escalator(new Vector(this.target.shape.centroid)).addComponent();
+
+        // if (this.additionalTargetSelected) {
+        //   const creator = new Escalators(this.additionalTarget, this.target.shape.centroid);
+        //   creator.addComponent();
+        //   this.additionalTargetSelected = false;
+        //   break;
+        // }
+        // this.additionalTarget = new Vector({ ...this.target.shape.centroid });
+        // this.additionalTargetSelected = true;
         break;
       case 'FAN':
         new Fan(new Vector(this.target.shape.centroid)).addComponent();

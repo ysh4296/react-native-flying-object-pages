@@ -7,7 +7,8 @@ import Vector from './vector';
  */
 export const registry: defaultRegistryType & { engine: Engine } = {
   createdId: 0,
-  selectedObjectId: -1,
+  createdObjects: new Set(),
+  selectedComponentId: -1,
   engine: null as unknown as Engine,
   mouseEventType: 'NONE',
   jointEventType: 'NONE',

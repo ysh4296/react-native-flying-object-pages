@@ -11,16 +11,11 @@ import { registry } from './main';
 import JointMouse from '@engine/event/jointMouse';
 import CreateMouse from '@engine/event/createMouse';
 import getMousePosition from './getMousePosition';
-import Food from './food/food';
 import EditMouse from '@engine/event/editMouse';
-import Spring from './block/mover/spring';
 import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
-import BreadBlock from './block/breadBlock';
-import BaconBlock from './block/baconBlock';
-import Wheel from './block/mover/wheel';
+import Component from './component/component';
 import Effect from './effect/effect';
-import Floater from './block/mover/floater';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -33,16 +28,15 @@ export default class Engine {
   left: Rectangle;
   right: Rectangle;
   collision: Collision;
-  rigidBodies: RigidBody[];
-  effects: Effect[];
   gravity: Vector;
+  components: Component[];
+  joints: Joint[];
   iteration: number;
   grid: HashGrid;
   GrabMouseEvent: GrabMouse;
   JointMouseEvent: JointMouse;
   CreateMouseEvent: CreateMouse;
   EditMouseEvent: EditMouse;
-  joints: Joint[];
   camera: CameraType;
   GameBoard: Grid; // gameboard to assign circuit & blocks
 
@@ -89,17 +83,17 @@ export default class Engine {
       'red',
     );
     this.gravity = new Vector({ x: 0, y: 700 });
-    this.rigidBodies = [];
-    this.effects = [];
-
+    this.components = [];
+    const component = new Component(this.bottom.centroid);
     const bottom = new RigidBody(this.bottom, 0);
+    component.objects.push(bottom);
     // bottom.matter = { friction: 0, restitution: 0 };
     // this.rigidBodies.push(new RigidBody(this.top, 0));
-    this.rigidBodies.push(bottom);
+    this.components.push(component);
     // this.rigidBodies.push(new RigidBody(this.left, 0));
     // this.rigidBodies.push(new RigidBody(this.right, 0));
     this.grid = new HashGrid(15);
-    this.grid.initialize(this.world, this.rigidBodies);
+    this.grid.initialize(this.world, [], this.components);
     this.grid.refreshGrid();
     this.GameBoard = new Grid(100);
     this.GameBoard.initialize(this.world, []);
@@ -107,7 +101,6 @@ export default class Engine {
 
   handleJoints() {
     for (let i = 0; i < this.joints.length; i++) {
-      //console.log(this.joints[i].jointConnection.anchorA);
       this.joints[i].updateConnectionA();
       this.joints[i].updateConnectionB();
     }
@@ -154,117 +147,142 @@ export default class Engine {
     }
 
     for (let it = 0; it < this.iteration; it++) {
-      for (let i = 0; i < this.rigidBodies.length; i++) {
-        this.rigidBodies[i].addForce(scaleVector(this.gravity, this.rigidBodies[i].mass));
-        this.rigidBodies[i].update(deltaTime / this.iteration);
-        this.rigidBodies[i].shape.boundingBox.collision = false;
-      }
+      this.components.forEach((component: Component) => {
+        for (let i = 0; i < component.objects.length; i++) {
+          let objectA = component.objects[i];
+          objectA.addForce(scaleVector(this.gravity, objectA.mass));
+          objectA.update(deltaTime / this.iteration);
+          objectA.shape.boundingBox.collision = false;
+        }
+      });
 
-      for (let i = 0; i < this.rigidBodies.length; i++) {
-        let objectA = this.rigidBodies[i];
-        let neighbors = this.grid.getNeighborObject(i, objectA);
-        for (let j = 0; j < neighbors.length; j++) {
-          let objectB = neighbors[j];
+      this.components.forEach((component: Component) => {
+        for (let i = 0; i < component.objects.length; i++) {
+          let objectA = component.objects[i];
+          const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
 
-          if (objectA.canCollision(objectB)) {
-            if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
-              // no collision
+          let neighbors = this.grid.getNeighborObject(objectCode, objectA);
+          for (let j = 0; j < neighbors.length; j++) {
+            let objectB = neighbors[j];
+            if (objectB instanceof Effect) {
               continue;
             }
-            let result = this.collision.checkCollision(objectA.shape, objectB.shape);
-            if (result) {
-              result.resolveCollision(objectA, objectB);
-              result.positionalCorrection(objectA, objectB, 0.3);
-              // result.draw();
-              /** escalator logic changed! */
-              // if (objectB instanceof Escalator) {
-              //   /** objectA moves */
-              //   if (objectA.isKinematic) continue;
-              //   const moveDirection = rotateVector(
-              //     result.normal,
-              //     this.calculatorUtils.degreesToRadians(-90 * objectB.direction.x),
-              //   );
-
-              //   const minFriction = Math.min(objectA.matter.friction, objectB.matter.friction);
-              //   if (
-              //     projectVector(objectA.velocity, moveDirection).length() <
-              //     objectB.escalatorConstant
-              //   ) {
-              //     objectA.addForce(
-              //       scaleVector(
-              //         moveDirection,
-              //         objectB.escalatorConstant * minFriction * objectA.massInverse,
-              //       ),
-              //     );
-              //   }
-              //   if (
-              //     projectVector(objectB.velocity, moveDirection).length() <
-              //     objectB.escalatorConstant
-              //   ) {
-              //     objectB.addForce(
-              //       scaleVector(
-              //         scaleVector(moveDirection, -1),
-              //         // rotateVector(moveDirection, this.calculatorUtils.degreesToRadians(180)),
-              //         objectB.escalatorConstant * minFriction * objectB.massInverse,
-              //       ),
-              //     );
-              //   }
-              // }
-
-              if (objectB instanceof Spring) {
-                /** objectA moves */
-                if (objectA.isKinematic) continue;
-                if (objectB.counter === 0) {
-                  objectA.addVelocity(scaleVector(objectB.direction, objectB.springConstant));
-                }
+            if (objectA.canCollision(objectB)) {
+              if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
+                // no collision
+                continue;
               }
+              let result = this.collision.checkCollision(objectA.shape, objectB.shape);
+              if (result) {
+                /** resolve collision */
+                result.resolveCollision(objectA, objectB);
+                result.positionalCorrection(objectA, objectB, 0.3);
+
+                // if (objectB instanceof Spring) {
+                //   /** objectA moves */
+                //   if (objectA.isKinematic) continue;
+                //   if (objectB.counter === 0) {
+                //     objectA.addVelocity(scaleVector(objectB.direction, objectB.springConstant));
+                //   }
+                // }
+              }
+              objectA.shape.boundingBox.collision = true;
+              objectB.shape.boundingBox.collision = true;
             }
-            objectA.shape.boundingBox.collision = true;
-            objectB.shape.boundingBox.collision = true;
+          }
+        }
+      });
+    }
+
+    this.components.forEach((component: Component) => {
+      for (let i = 0; i < component.objects.length; i++) {
+        let objectA = component.objects[i];
+        const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
+
+        let neighbors = this.grid.getNeighborObject(objectCode, objectA);
+        objectA.addForce(scaleVector(this.gravity, objectA.mass));
+        objectA.update(deltaTime / this.iteration);
+        objectA.shape.boundingBox.collision = false;
+        for (let j = 0; j < neighbors.length; j++) {
+          let effectB = neighbors[j];
+          if (effectB instanceof Effect) {
+            if (objectA.canCollision(effectB)) {
+              if (!objectA.shape.boundingBox.intersect(effectB.shape.boundingBox)) {
+                // no collision
+                continue;
+              }
+              let result = this.collision.checkCollision(objectA.shape, effectB.shape);
+              if (result) {
+                /** apply effect */
+                effectB.applyEffect(objectA);
+              }
+              objectA.shape.boundingBox.collision = true;
+              effectB.shape.boundingBox.collision = true;
+            }
           }
         }
       }
-    }
+    });
+
+    // for (let it = 0; it < this.iteration; it++) {
+    //   for (let i = 0; i < this.rigidBodies.length; i++) {
+    //     this.rigidBodies[i].addForce(scaleVector(this.gravity, this.rigidBodies[i].mass));
+    //     this.rigidBodies[i].update(deltaTime / this.iteration);
+    //     this.rigidBodies[i].shape.boundingBox.collision = false;
+    //   }
+
+    //   for (let i = 0; i < this.rigidBodies.length; i++) {
+    //     let objectA = this.rigidBodies[i];
+    //     let neighbors = this.grid.getNeighborObject(i, objectA);
+    //     for (let j = 0; j < neighbors.length; j++) {
+    //       let objectB = neighbors[j];
+
+    //       if (objectA.canCollision(objectB)) {
+    //         if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
+    //           // no collision
+    //           continue;
+    //         }
+    //         let result = this.collision.checkCollision(objectA.shape, objectB.shape);
+    //         if (result) {
+    //           result.resolveCollision(objectA, objectB);
+    //           result.positionalCorrection(objectA, objectB, 0.3);
+
+    //           // if (objectB instanceof Spring) {
+    //           //   /** objectA moves */
+    //           //   if (objectA.isKinematic) continue;
+    //           //   if (objectB.counter === 0) {
+    //           //     objectA.addVelocity(scaleVector(objectB.direction, objectB.springConstant));
+    //           //   }
+    //           // }
+    //         }
+    //         objectA.shape.boundingBox.collision = true;
+    //         objectB.shape.boundingBox.collision = true;
+    //       }
+    //     }
+    //   }
+    // }
+
+    this.components.forEach((component: Component) => {
+      component.objects.forEach((object) => {
+        object.active();
+      });
+    });
 
     /** erase outted objects */
-    for (let i = 0; i < this.rigidBodies.length; i++) {
-      for (let j = 0; j < this.effects.length; j++) {
-        const object = this.rigidBodies[i];
-        const effect = this.effects[j];
-        if (object.isKinematic) break;
-        let result = this.collision.checkCollision(object.shape, effect.shape);
-        if (result) {
-          effect.applyEffect(object);
+    this.components.forEach((component: Component) => {
+      component.objects.forEach((object, index) => {
+        if (!object.isKinematic) {
+          if (object.shape.centroid.isOut()) {
+            this.joints = this.joints.filter(
+              (item) =>
+                item.jointConnection.objectAId !== object.id &&
+                item.jointConnection.objectBId !== object.id,
+            );
+            component.objects.splice(index, 1);
+          }
         }
-      }
-      if (this.rigidBodies[i].shape.centroid.isOut()) {
-        this.joints = this.joints.filter(
-          (item) =>
-            item.jointConnection.objectAId !== this.rigidBodies[i].id &&
-            item.jointConnection.objectBId !== this.rigidBodies[i].id,
-        );
-        this.rigidBodies.splice(i, 1);
-        continue;
-      }
-      if (this.rigidBodies[i] instanceof Food) {
-        this.rigidBodies[i].active();
-      }
-      if (this.rigidBodies[i] instanceof Spring) {
-        this.rigidBodies[i].active();
-      }
-      if (this.rigidBodies[i] instanceof BreadBlock) {
-        this.rigidBodies[i].active();
-      }
-      if (this.rigidBodies[i] instanceof BaconBlock) {
-        this.rigidBodies[i].active();
-      }
-      if (this.rigidBodies[i] instanceof Wheel) {
-        this.rigidBodies[i].active();
-      }
-      if (this.rigidBodies[i] instanceof Floater) {
-        this.rigidBodies[i].active();
-      }
-    }
+      });
+    });
   };
 
   updateEdit = () => {
@@ -305,19 +323,29 @@ export default class Engine {
   draw() {
     if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
     if (registry.gamePhase === 'pause') this.GameBoard.draw();
-    for (let i = 0; i < this.rigidBodies.length; i++) {
-      this.rigidBodies[i].drawEffect();
-    }
-    for (let i = 0; i < this.rigidBodies.length; i++) {
-      this.rigidBodies[i].getShape().draw();
-      this.rigidBodies[i].shape.calculateBoundingBox();
-    }
+    this.components.forEach((component) => {
+      component.drawComponent();
+      component.objects.forEach((object) => {
+        object.shape.calculateBoundingBox();
+      });
+    });
+    this.components.forEach((component) => {
+      component.drawEffect();
+    });
+
+    // for (let i = 0; i < this.rigidBodies.length; i++) {
+    //   this.rigidBodies[i].drawEffect();
+    // }
+    // for (let i = 0; i < this.rigidBodies.length; i++) {
+    //   this.rigidBodies[i].getShape().draw();
+    //   this.rigidBodies[i].shape.calculateBoundingBox();
+    // }
     for (let i = 0; i < this.joints.length; i++) {
       this.joints[i].draw();
     }
-    for (let i = 0; i < this.effects.length; i++) {
-      this.effects[i].drawEffect();
-    }
+    // for (let i = 0; i < this.effects.length; i++) {
+    //   this.effects[i].drawEffect();
+    // }
   }
 
   drawSelect() {
@@ -356,7 +384,8 @@ export default class Engine {
       for (let j = iteration; j >= iteration - i; j--) {
         let x = boxSize * i + (boxSize * j) / 2;
         let y = boxSize * j;
-        this.rigidBodies.push(
+        let component = new Component(new Vector({ x: x + leftOffset, y: y + topOffset }));
+        component.objects.push(
           new RigidBody(
             new Rectangle(
               new Vector({ x: x + leftOffset, y: y + topOffset }),
@@ -367,6 +396,7 @@ export default class Engine {
             1,
           ),
         );
+        this.components.push(component);
       }
     }
   }
@@ -415,12 +445,18 @@ export default class Engine {
         break;
       case 'NONE':
         const mousePosition = getMousePosition(this.canvas, e);
-        for (let i = 0; i < this.rigidBodies.length; i++) {
-          if (this.rigidBodies[i].shape.isInside(mousePosition)) {
-            this.rigidBodies[i].select();
+        for (let i = 0; i < this.components.length; i++) {
+          if (this.components[i].isInside(mousePosition)) {
+            this.components[i].select();
             registry.setMouseEventType('EDIT');
           }
         }
+        // for (let i = 0; i < this.rigidBodies.length; i++) {
+        //   if (this.rigidBodies[i].shape.isInside(mousePosition)) {
+        //     this.rigidBodies[i].select();
+        //     registry.setMouseEventType('EDIT');
+        //   }
+        // }
         break;
       default:
         return assertUnreachableChecker(registry.mouseEventType);
@@ -474,25 +510,25 @@ export default class Engine {
   }
 
   onKeyboardPressed = (e: KeyboardEvent) => {
-    switch (e.key) {
-      case 'd':
-        this.rigidBodies[0].addForce(new Vector({ x: 200000, y: 0 }));
-        break;
-      case 'a':
-        this.rigidBodies[0].addForce(new Vector({ x: -200000, y: 0 }));
-        break;
-      case 'w':
-        this.rigidBodies[0].addForce(new Vector({ x: 0, y: -200000 }));
-        break;
-      case 's':
-        this.rigidBodies[0].addForce(new Vector({ x: 0, y: 200000 }));
-        break;
-      case 'ArrowRight':
-        this.rigidBodies[0].shape.rotate(0.05);
-        break;
-      case 'ArrowLeft':
-        this.rigidBodies[0].shape.rotate(-0.05);
-        break;
-    }
+    // switch (e.key) {
+    //   case 'd':
+    //     this.rigidBodies[0].addForce(new Vector({ x: 200000, y: 0 }));
+    //     break;
+    //   case 'a':
+    //     this.rigidBodies[0].addForce(new Vector({ x: -200000, y: 0 }));
+    //     break;
+    //   case 'w':
+    //     this.rigidBodies[0].addForce(new Vector({ x: 0, y: -200000 }));
+    //     break;
+    //   case 's':
+    //     this.rigidBodies[0].addForce(new Vector({ x: 0, y: 200000 }));
+    //     break;
+    //   case 'ArrowRight':
+    //     this.rigidBodies[0].shape.rotate(0.05);
+    //     break;
+    //   case 'ArrowLeft':
+    //     this.rigidBodies[0].shape.rotate(-0.05);
+    //     break;
+    // }
   };
 }

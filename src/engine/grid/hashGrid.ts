@@ -1,25 +1,29 @@
+import Component from '@engine/lib/component/component';
 import RigidBody from '@engine/lib/rigidbody';
 import Vector from '@engine/lib/vector';
-import SpatialGrid from './spatialGrid';
+import Grid from './grid';
 
-export default class HashGrid extends SpatialGrid {
+export default class HashGrid extends Grid {
   hashMap: Map<number, RigidBody[]>;
   hashMapSize: number;
   p1Prime: number;
   p2Prime: number;
+  components: Component[];
+  objectsToCells: Map<ObjectCode, number[]>;
   constructor(cellSize: number) {
     super(cellSize);
     this.hashMap = new Map();
-    this.objectsToCells = [];
+    this.objectsToCells = new Map(); // map<number,rigidBody[]>
+    this.components = [];
 
     this.hashMapSize = 10000;
     this.p1Prime = 125311;
     this.p2Prime = 588667;
   }
 
-  initialize(world: Vector, objects: RigidBody[]) {
+  initialize(world: Vector, objects: RigidBody[], components?: Component[]) {
     this.world = world;
-    this.objects = objects;
+    this.components = components ?? [];
   }
 
   refreshGrid() {
@@ -29,11 +33,7 @@ export default class HashGrid extends SpatialGrid {
 
   clearGrid() {
     this.hashMap.clear();
-    this.objectsToCells = [];
-
-    for (let i = 0; i < this.objects.length; i++) {
-      this.objectsToCells[i] = [];
-    }
+    this.objectsToCells.clear();
   }
 
   cellIndexToHash(x: number, y: number) {
@@ -42,36 +42,82 @@ export default class HashGrid extends SpatialGrid {
   }
 
   mapBodiesToCell() {
-    for (let i = 0; i < this.objects.length; i++) {
-      let boundingBox = this.objects[i].getShape().boundingBox;
-      let left = boundingBox.topLeft.x;
-      let right = boundingBox.bottomRight.x;
-      let top = boundingBox.topLeft.y;
-      let bottom = boundingBox.bottomRight.y;
+    this.components.forEach((component) => {
+      for (let i = 0; i < component.objects.length; i++) {
+        const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
 
-      let leftCellIndex = parseInt(String(left / this.cellSize));
-      let RightCellIndex = parseInt(String(right / this.cellSize));
-      let topCellIndex = parseInt(String(top / this.cellSize));
-      let bottomCellIndex = parseInt(String(bottom / this.cellSize));
+        let boundingBox = component.objects[i].getShape().boundingBox;
+        let left = boundingBox.topLeft.x;
+        let right = boundingBox.bottomRight.x;
+        let top = boundingBox.topLeft.y;
+        let bottom = boundingBox.bottomRight.y;
 
-      for (let x = leftCellIndex; x <= RightCellIndex; x++) {
-        for (let y = topCellIndex; y <= bottomCellIndex; y++) {
-          let hashIndex = this.cellIndexToHash(x, y);
-          let entries = this.hashMap.get(hashIndex);
-          if (entries === undefined) {
-            let newArray = [this.objects[i]];
-            this.hashMap.set(hashIndex, newArray);
-          } else {
-            entries.push(this.objects[i]);
+        let leftCellIndex = parseInt(String(left / this.cellSize));
+        let RightCellIndex = parseInt(String(right / this.cellSize));
+        let topCellIndex = parseInt(String(top / this.cellSize));
+        let bottomCellIndex = parseInt(String(bottom / this.cellSize));
+
+        for (let x = leftCellIndex; x <= RightCellIndex; x++) {
+          for (let y = topCellIndex; y <= bottomCellIndex; y++) {
+            let hashIndex = this.cellIndexToHash(x, y);
+            const entries = this.hashMap.get(hashIndex);
+            if (entries === undefined) {
+              let newArray = [component.objects[i]];
+              this.hashMap.set(hashIndex, newArray);
+            } else {
+              entries.push(component.objects[i]);
+            }
+
+            const cells = this.objectsToCells.get(objectCode);
+            if (cells === undefined) {
+              let newArray = [hashIndex];
+              this.objectsToCells.set(objectCode, newArray);
+            } else {
+              cells.push(hashIndex);
+            }
           }
-          this.objectsToCells[i].push(hashIndex);
         }
       }
-    }
+      for (let i = 0; i < component.effects.length; i++) {
+        const objectCode: ObjectCode = `${component.id}:${component.effects[i].id}`;
+
+        let boundingBox = component.effects[i].getShape().boundingBox;
+        let left = boundingBox.topLeft.x;
+        let right = boundingBox.bottomRight.x;
+        let top = boundingBox.topLeft.y;
+        let bottom = boundingBox.bottomRight.y;
+
+        let leftCellIndex = parseInt(String(left / this.cellSize));
+        let RightCellIndex = parseInt(String(right / this.cellSize));
+        let topCellIndex = parseInt(String(top / this.cellSize));
+        let bottomCellIndex = parseInt(String(bottom / this.cellSize));
+
+        for (let x = leftCellIndex; x <= RightCellIndex; x++) {
+          for (let y = topCellIndex; y <= bottomCellIndex; y++) {
+            let hashIndex = this.cellIndexToHash(x, y);
+            let entries = this.hashMap.get(hashIndex);
+            if (entries === undefined) {
+              let newArray = [component.effects[i]];
+              this.hashMap.set(hashIndex, newArray);
+            } else {
+              entries.push(component.effects[i]);
+            }
+
+            const cells = this.objectsToCells.get(objectCode);
+            if (cells === undefined) {
+              let newArray = [hashIndex];
+              this.objectsToCells.set(objectCode, newArray);
+            } else {
+              cells.push(hashIndex);
+            }
+          }
+        }
+      }
+    });
   }
 
-  getNeighborObject(objectIndex: number, object: RigidBody) {
-    let occupiedCells = this.objectsToCells[objectIndex];
+  getNeighborObject(objectCode: ObjectCode, object: RigidBody) {
+    let occupiedCells = this.objectsToCells.get(objectCode) ?? [];
     let neighborObjects: RigidBody[] = [];
     for (let i = 0; i < occupiedCells.length; i++) {
       let occupiedCellHashIndex = occupiedCells[i];

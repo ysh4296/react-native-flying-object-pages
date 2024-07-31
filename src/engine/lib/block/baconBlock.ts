@@ -1,5 +1,6 @@
 import FixedJoint from '@engine/joints/fixedJoint';
 import JointConnection from '@engine/joints/jointConnection';
+import Component from '../component/component';
 import Bacon from '../food/solid/bacon';
 import { registry } from '../main';
 import Rectangle from '../rectangle';
@@ -27,24 +28,31 @@ export default class BaconBlock extends RigidBody {
     this.counter++;
     if (this.counter > 180) {
       this.counter = 0;
-      const initIndex = registry.engine.rigidBodies.length;
+      // const initIndex = registry.engine.components.length;
+      const component = new Component(this.shape.centroid);
       for (let i = 0; i < this.baconLength; i++) {
-        registry.engine.rigidBodies.push(
+        component.objects.push(
           new Bacon(subVector(this.shape.centroid, new Vector({ x: 20 * i, y: 0 }))),
         );
+        // registry.engine.rigidBodies.push(
+        //   new Bacon(subVector(this.shape.centroid, new Vector({ x: 20 * i, y: 0 }))),
+        // );
       }
 
       for (let i = 0; i < this.baconLength; i++) {
-        registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: 10, y: 0 }));
-        registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: -10, y: 0 }));
+        component.objects[i].shape.createAnchor(new Vector({ x: 10, y: 0 }));
+        component.objects[i].shape.createAnchor(new Vector({ x: -10, y: 0 }));
+        // registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: 10, y: 0 }));
+        // registry.engine.rigidBodies[initIndex + i].shape.createAnchor(new Vector({ x: -10, y: 0 }));
       }
+      registry.engine.components.push(component);
       for (let i = 1; i < this.baconLength; i++) {
         const jointConnection = new JointConnection(
-          registry.engine.rigidBodies[initIndex + i - 1].id,
-          registry.engine.rigidBodies[initIndex + i - 1],
+          component.objects[i - 1].id,
+          component.objects[i - 1],
           1,
-          registry.engine.rigidBodies[initIndex + i].id,
-          registry.engine.rigidBodies[initIndex + i],
+          component.objects[i].id,
+          component.objects[i],
           0,
         );
         registry.engine.joints.push(new FixedJoint(jointConnection, 10, 0.8));

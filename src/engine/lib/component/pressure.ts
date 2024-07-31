@@ -6,37 +6,31 @@ import Vector from '../vector';
 import Component from './component';
 
 export default class Pressure extends Component {
-  block: RigidBody;
-  floater: RigidBody;
-  rotation: number;
+  constructor(position: Vector) {
+    super(position);
+  }
 
-  constructor(position: Vector, rotation: number = 0) {
-    super();
-    this.rotation = rotation;
-    this.block = new RigidBody(
+  addComponent() {
+    const block = new RigidBody(
       new Rectangle(
-        new Vector(position),
+        new Vector(this.centroid),
         registry.engine.GameBoard.cellSize,
         registry.engine.GameBoard.cellSize,
         'black',
       ),
       0,
     );
-    this.block.shape.rotate(rotation);
-    this.floater = new Floater(
-      new Vector(position),
+    const floater = new Floater(
+      new Vector(this.centroid),
       registry.engine.GameBoard.cellSize,
       registry.engine.GameBoard.cellSize,
       'gray',
-      this.rotation,
       0,
       120,
-      registry.engine.GameBoard.cellSize * 4,
+      registry.engine.GameBoard.cellSize,
     );
-  }
-
-  addComponent() {
-    registry.engine.rigidBodies.push(this.floater);
-    registry.engine.rigidBodies.push(this.block);
+    this.objects.push(block);
+    this.objects.push(floater);
+    registry.engine.components.push(this);
   }
 }

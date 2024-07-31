@@ -2,15 +2,15 @@ import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
 import Rectangle from '@engine/lib/rectangle';
 import RigidBody from '@engine/lib/rigidbody';
-import Vector, { rotateVector, subVector } from '@engine/lib/vector';
+import Vector, { rotateVector, scaleVector, subVector } from '@engine/lib/vector';
 
 export default class Floater extends RigidBody {
   counter: number;
   maxCounter: number;
   length: number;
   originPosition: Vector;
-  rotation: number;
   delay: number;
+  direction: Vector;
   minDelay: number;
   maxDelay: number;
   constructor(
@@ -18,7 +18,6 @@ export default class Floater extends RigidBody {
     width: number,
     height: number,
     color: string,
-    rotation: number,
     minDelay: number,
     maxDelay: number,
     length: number,
@@ -37,11 +36,10 @@ export default class Floater extends RigidBody {
     this.length = length;
     this.maxCounter = (this.length * 2 * 3 * 60) / registry.engine.GameBoard.cellSize;
     this.originPosition = new Vector(position);
-    this.rotation = rotation;
-    this.shape.rotate(rotation);
     this.delay = 0;
     this.minDelay = minDelay;
     this.maxDelay = maxDelay;
+    this.direction = new Vector({ x: 0, y: 1 });
   }
 
   active() {
@@ -69,14 +67,15 @@ export default class Floater extends RigidBody {
     if (mid > this.counter) {
       moveY = -1;
     }
+    moveY *= (this.length / mid) * 60;
+
+    // console.log('length : ', this.length);
+    // console.log(subVector(this.originPosition, this.shape.centroid).length(), moveY / 60);
     if (
-      subVector(this.originPosition, this.shape.centroid).length() < this.length ||
-      subVector(this.originPosition, this.shape.centroid).length() >= 0
+      subVector(this.originPosition, this.shape.centroid).length() - moveY / 60 <= this.length &&
+      subVector(this.originPosition, this.shape.centroid).length() - moveY / 60 >= 0
     ) {
-      this.velocity = rotateVector(
-        new Vector({ x: 0, y: moveY * (this.length / mid) * 60 }),
-        this.rotation,
-      );
+      this.velocity = scaleVector(rotateVector(this.direction, this.shape.orientation), moveY);
     } else {
       this.velocity = new Vector({ x: 0, y: 0 });
     }

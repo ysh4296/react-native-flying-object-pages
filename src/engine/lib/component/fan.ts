@@ -6,11 +6,9 @@ import Vector, { addVector } from '../vector';
 import Component from './component';
 
 export default class Fan extends Component {
-  center: Vector;
   rotation: number;
   constructor(position: Vector, rotation: number = 0) {
-    super();
-    this.center = position;
+    super(position);
     this.rotation = rotation;
   }
 
@@ -18,7 +16,7 @@ export default class Fan extends Component {
     const lboard = new RigidBody(
       new Rectangle(
         addVector(
-          new Vector(this.center),
+          new Vector(this.centroid),
           new Vector({ x: 0, y: registry.engine.GameBoard.cellSize / 2 }),
         ),
         registry.engine.GameBoard.cellSize,
@@ -27,13 +25,12 @@ export default class Fan extends Component {
       ),
       0,
     );
-    lboard.shape.rotate(this.rotation, this.center);
-    registry.engine.rigidBodies.push(lboard);
+    lboard.shape.rotate(this.rotation, this.centroid);
 
     const rboard = new RigidBody(
       new Rectangle(
         addVector(
-          new Vector(this.center),
+          new Vector(this.centroid),
           new Vector({ x: 0, y: -registry.engine.GameBoard.cellSize / 2 }),
         ),
         registry.engine.GameBoard.cellSize,
@@ -42,22 +39,24 @@ export default class Fan extends Component {
       ),
       0,
     );
-    rboard.shape.rotate(this.rotation, this.center);
-    registry.engine.rigidBodies.push(rboard);
+    rboard.shape.rotate(this.rotation, this.centroid);
 
     const effect = new Blower(
       addVector(
-        new Vector(this.center),
+        new Vector(this.centroid),
         new Vector({ x: -registry.engine.GameBoard.cellSize / 2, y: 0 }),
       ),
       addVector(
-        new Vector(this.center),
+        new Vector(this.centroid),
         new Vector({ x: registry.engine.GameBoard.cellSize, y: 0 }),
       ),
     );
-    effect.shape.rotate(this.rotation, this.center);
-    effect.destination.rotate(this.rotation, this.center);
+    effect.shape.rotate(this.rotation, this.centroid);
+    effect.destination.rotate(this.rotation, this.centroid);
 
-    registry.engine.effects.push(effect);
+    this.objects.push(lboard);
+    this.objects.push(rboard);
+    this.effects.push(effect);
+    registry.engine.components.push(this);
   }
 }

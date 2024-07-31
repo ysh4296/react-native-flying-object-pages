@@ -1,5 +1,3 @@
-import Water from '../food/liquid/water';
-import { registry } from '../main';
 import Rectangle from '../rectangle';
 import RigidBody from '../rigidbody';
 import Vector from '../vector';
@@ -24,7 +22,7 @@ export default class WaterBlock extends RigidBody {
       this.counter += 1;
       return;
     }
-    registry.engine.rigidBodies.push(new Water(this.shape.centroid));
+    // registry.engine.rigidBodies.push(new Water(this.shape.centroid));
     this.counter = 0;
   }
 }

@@ -19,6 +19,11 @@ export default class Blower extends Effect {
     );
     this.destination = destination;
     this.length = registry.engine.GameBoard.cellSize * 3;
+    const originalRotate = this.shape.rotate.bind(this.shape);
+    this.shape.rotate = (radian: number, spindle?: Vector) => {
+      originalRotate(radian, spindle);
+      this.destination.rotate(radian, spindle);
+    };
   }
 
   drawEffect() {

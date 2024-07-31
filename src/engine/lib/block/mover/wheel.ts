@@ -1,5 +1,4 @@
 import Circle from '@engine/lib/circle';
-import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
 import Vector from '@engine/lib/vector';
 import RigidBody from '../../rigidbody';
@@ -21,7 +20,6 @@ export default class Wheel extends RigidBody {
     this.matter = new Matter(0, 0.6);
     this.direction = direction;
     this.escalatorConstant = escalatorConstant;
-    registry.engine.rigidBodies.push();
   }
 
   active() {

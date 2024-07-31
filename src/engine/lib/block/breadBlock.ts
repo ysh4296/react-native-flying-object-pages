@@ -1,3 +1,4 @@
+import Component from '../component/component';
 import Bread from '../food/solid/bread';
 import { registry } from '../main';
 import Rectangle from '../rectangle';
@@ -22,9 +23,9 @@ export default class BreadBlock extends RigidBody {
   active() {
     this.counter++;
     if (this.counter > 180) {
-      registry.engine.rigidBodies.push(
-        new Bread(subVector(this.shape.centroid, new Vector({ x: 0, y: 0 }))),
-      );
+      const component = new Component(this.shape.centroid);
+      component.objects.push(new Bread(subVector(this.shape.centroid, new Vector({ x: 0, y: 0 }))));
+      registry.engine.components.push(component);
       this.counter = 0;
       return;
     }

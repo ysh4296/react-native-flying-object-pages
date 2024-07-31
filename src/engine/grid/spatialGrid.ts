@@ -2,6 +2,9 @@ import RigidBody from '@engine/lib/rigidbody';
 import Vector from '@engine/lib/vector';
 import Grid from './grid';
 
+/**
+ * @warning deprecated
+ */
 export default class SpatialGrid extends Grid {
   objects: RigidBody[];
   objectsToCells: number[][];

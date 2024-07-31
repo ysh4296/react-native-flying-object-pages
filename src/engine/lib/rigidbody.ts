@@ -1,4 +1,4 @@
-import { registry } from './main';
+import Calculator from '@engine/utils/calculator';
 import Matter from './matter';
 import Shape from './shape';
 import Vector, { addVector, scaleVector, subVector } from './vector';
@@ -21,7 +21,7 @@ export default class RigidBody {
 
   constructor(shape: Shape, mass: number) {
     this.shape = shape;
-    this.id = this.shape.calculatorUtils.generateObjectId();
+    this.id = Calculator.getInstance().generateObjectId();
     this.shape.calculateBoundingBox();
     this.mass = mass;
     if (this.mass > 0) {
@@ -192,8 +192,4 @@ export default class RigidBody {
   drawEffect() {}
 
   active() {}
-
-  select() {
-    registry.engine.EditMouseEvent.setSelectBox(this);
-  }
 }

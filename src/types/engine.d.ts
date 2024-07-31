@@ -28,9 +28,16 @@ type CameraType = {
   scale: number;
 };
 
+/**
+ * @type ObjectCode
+ * @description `${componentId}:${objectId}`
+ */
+type ObjectCode = string;
+
 type defaultRegistryType = {
   createdId: number;
-  selectedObjectId: number;
+  createdObjects: Set<ObjectCode>; // componentId, objectId || effectId
+  selectedComponentId: number;
   mouseEventType: MouseType;
   setMouseEventType: (mouseType: MouseType) => void;
   jointEventType: JointType;
