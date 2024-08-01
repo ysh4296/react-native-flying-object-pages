@@ -40,6 +40,8 @@ export const getEventLabel = (eventType: EventType): string => {
       return 'fan';
     case 'PRESSURE':
       return 'pressure';
+    case 'GRINDER':
+      return 'GRINDER';
     default:
       return assertUnreachableChecker(eventType);
   }
@@ -65,6 +67,7 @@ export const getEventList = (eventName: EventName): EventType[] => {
         'WHEEL',
         'FAN',
         'PRESSURE',
+        'GRINDER',
       ];
     default:
       return assertUnreachableChecker(eventName);

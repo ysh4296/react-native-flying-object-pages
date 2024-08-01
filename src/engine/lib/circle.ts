@@ -33,7 +33,7 @@ export default class Circle extends Shape {
 
   draw() {
     super.draw();
-    this.drawUtils.strokePoint(this.centroid, this.radius, this.color);
+    this.drawUtils.strokeCircle(this.centroid, this.radius, this.color);
   }
 
   isInside(position: Vector) {

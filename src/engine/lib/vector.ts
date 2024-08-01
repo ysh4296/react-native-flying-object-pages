@@ -108,10 +108,15 @@ export const crossVector = (vector1: Vector, vector2: Vector): number => {
  * @param radians
  * @returns rotated Vector
  */
-export const rotateVector = (vector1: Vector, radians: number): Vector => {
+export const rotateVector = (
+  vector1: Vector,
+  radians: number,
+  spindle: Vector = new Vector({ x: 0, y: 0 }),
+): Vector => {
   let result = new Vector({ x: 0, y: 0 });
-  result.x = vector1.x * Math.cos(radians) - vector1.y * Math.sin(radians);
-  result.y = vector1.x * Math.sin(radians) + vector1.y * Math.cos(radians);
+  let direction = subVector(vector1, spindle);
+  result.x = direction.x * Math.cos(radians) - direction.y * Math.sin(radians);
+  result.y = direction.x * Math.sin(radians) + direction.y * Math.cos(radians);
   return result;
 };
 

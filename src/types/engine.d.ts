@@ -18,7 +18,8 @@ type CreateType =
   | 'HEATER'
   | 'WHEEL'
   | 'FAN'
-  | 'PRESSURE';
+  | 'PRESSURE'
+  | 'GRINDER';
 
 type EventType = NoneType | MouseType | JointType | CreateType;
 

@@ -15,6 +15,7 @@ import Heater from '@engine/lib/component/heater';
 import Pressure from '@engine/lib/component/pressure';
 import Component from '@engine/lib/component/component';
 import Escalator from '@engine/lib/component/escalator';
+import Grinder from '@engine/lib/component/grinder';
 
 export default class CreateMouse {
   start: Vector;
@@ -163,6 +164,9 @@ export default class CreateMouse {
         break;
       case 'PRESSURE':
         new Pressure(this.target.shape.centroid).addComponent();
+        break;
+      case 'GRINDER':
+        new Grinder(this.target.shape.centroid).addComponent();
         break;
       default:
         assertUnreachableChecker(registry.createEventType);

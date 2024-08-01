@@ -23,6 +23,6 @@ export default class Wheel extends RigidBody {
   }
 
   active() {
-    this.angularVelocity = 1;
+    this.angularVelocity = -15;
   }
 }

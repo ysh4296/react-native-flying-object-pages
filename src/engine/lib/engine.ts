@@ -177,14 +177,6 @@ export default class Engine {
                 /** resolve collision */
                 result.resolveCollision(objectA, objectB);
                 result.positionalCorrection(objectA, objectB, 0.3);
-
-                // if (objectB instanceof Spring) {
-                //   /** objectA moves */
-                //   if (objectA.isKinematic) continue;
-                //   if (objectB.counter === 0) {
-                //     objectA.addVelocity(scaleVector(objectB.direction, objectB.springConstant));
-                //   }
-                // }
               }
               objectA.shape.boundingBox.collision = true;
               objectB.shape.boundingBox.collision = true;

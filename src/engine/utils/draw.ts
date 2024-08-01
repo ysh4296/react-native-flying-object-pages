@@ -20,22 +20,40 @@ export default class Draw {
   }
 
   drawPoint = (position: Vector, radius: number, color: string) => {
+    this.ctx.save();
     this.ctx.beginPath();
     this.ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
     this.ctx.fillStyle = color;
     this.ctx.fill();
     this.ctx.closePath();
+    this.ctx.restore();
   };
 
-  strokePoint = (position: Vector, radius: number, color: string) => {
+  strokeCircle = (position: Vector, radius: number, color: string) => {
+    this.ctx.save();
     this.ctx.beginPath();
     this.ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
     this.ctx.strokeStyle = color;
     this.ctx.stroke();
     this.ctx.closePath();
+    this.ctx.restore();
   };
 
+  strokePolygon(vertices: Vector[], color: string) {
+    this.ctx.save(); // 현재 상태 저장
+    this.ctx.beginPath();
+    this.ctx.moveTo(vertices[0].x, vertices[0].y);
+    for (let i = 1; i < vertices.length; i++) {
+      this.ctx.lineTo(vertices[i].x, vertices[i].y);
+    }
+    this.ctx.strokeStyle = color;
+    this.ctx.stroke();
+    this.ctx.closePath();
+    this.ctx.restore(); // 이전 상태로 복원
+  }
+
   drawLine = (startPosition: Vector, endPosition: Vector, color: string) => {
+    this.ctx.save();
     this.ctx.lineWidth = 1 / registry.engine.camera.scale;
     this.ctx.beginPath();
     this.ctx.moveTo(startPosition.x, startPosition.y);
@@ -43,6 +61,7 @@ export default class Draw {
     this.ctx.strokeStyle = color;
     this.ctx.stroke();
     this.ctx.closePath();
+    this.ctx.restore();
   };
 
   drawText = (position: Vector, size: number, color: string, text: string) => {
@@ -106,16 +125,41 @@ export default class Draw {
     this.ctx.restore(); // 이전 상태로 복원
   }
 
-  drawCircle(position: Vector, radius: number, color: string, rotation = 0) {
+  fillPolygon(vertices: Vector[], color: string) {
+    this.ctx.save(); // 현재 상태 저장
     this.ctx.beginPath();
+    this.ctx.moveTo(vertices[0].x, vertices[0].y);
+    for (let i = 1; i < vertices.length; i++) {
+      this.ctx.lineTo(vertices[i].x, vertices[i].y);
+    }
+    this.ctx.fillStyle = color;
+    this.ctx.fill();
+    this.ctx.closePath();
+    this.ctx.restore(); // 이전 상태로 복원
+  }
+
+  fillCircle(position: Vector, radius: number, color: string, rotation = 0) {
+    this.ctx.save(); // 현재 상태 저장this.ctx.beginPath();
+    this.ctx.beginPath();
+    this.ctx.fillStyle = color;
+    this.ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
+    this.ctx.fill();
+    this.ctx.closePath();
+    this.ctx.restore(); // 이전 상태로 복원
+  }
+
+  drawCircle(position: Vector, radius: number, color: string, rotation = 0) {
+    this.ctx.save(); // 현재 상태 저장this.ctx.beginPath();
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = color;
+    this.ctx.fillStyle = color;
     this.ctx.lineWidth = registry.engine.camera.scale;
     this.ctx.rotate(rotation);
     this.ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
-    this.ctx.strokeStyle = color;
-    this.ctx.fillStyle = color;
     this.ctx.stroke();
     this.ctx.fill();
     this.ctx.closePath();
+    this.ctx.restore(); // 이전 상태로 복원
   }
 
   drawDottedLine(
