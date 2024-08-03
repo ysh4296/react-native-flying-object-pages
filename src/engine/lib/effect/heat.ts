@@ -1,7 +1,7 @@
 import Food from '../food/food';
 import { registry } from '../main';
-import Rectangle from '../rectangle';
-import RigidBody from '../rigidbody';
+import Rectangle from '@rigidbody/rectangle';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector from '../vector';
 import Effect from './effect';
 

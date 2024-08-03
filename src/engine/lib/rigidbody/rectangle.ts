@@ -1,5 +1,5 @@
 import Polygon from './polygon';
-import Vector from './vector';
+import Vector from '../vector';
 
 export default class Rectangle extends Polygon {
   width: number;

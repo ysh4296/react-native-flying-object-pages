@@ -3,7 +3,7 @@ import JointConnection from '@engine/joints/jointConnection';
 import Engine from '@engine/lib/engine';
 import getMousePosition from '@engine/lib/getMousePosition';
 import { registry } from '@engine/lib/main';
-import RigidBody from '@engine/lib/rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector, { subVector } from '@engine/lib/vector';
 import { mouseEvent } from './mouseEvent';
 import ForceJoint from '@engine/joints/forceJoint';

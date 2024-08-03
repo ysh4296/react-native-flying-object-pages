@@ -1,6 +1,6 @@
 import Draw from '@engine/utils/draw';
 import Shape from './shape';
-import Vector, { subVector } from './vector';
+import Vector, { subVector } from '../vector';
 
 export default class Circle extends Shape {
   radius: number;

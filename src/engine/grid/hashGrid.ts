@@ -1,5 +1,5 @@
 import Component from '@engine/lib/component/component';
-import RigidBody from '@engine/lib/rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector from '@engine/lib/vector';
 import Grid from './grid';
 

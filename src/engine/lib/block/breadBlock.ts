@@ -1,8 +1,8 @@
 import Component from '../component/component';
 import Bread from '../food/solid/bread';
 import { registry } from '../main';
-import Rectangle from '../rectangle';
-import RigidBody from '../rigidbody';
+import Rectangle from '@rigidbody/rectangle';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector, { subVector } from '../vector';
 
 export default class BreadBlock extends RigidBody {

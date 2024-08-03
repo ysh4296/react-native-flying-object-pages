@@ -1,5 +1,5 @@
 import Shape from './shape';
-import Vector, { addVector, scaleVector, subVector } from './vector';
+import Vector, { addVector, scaleVector, subVector } from '../vector';
 
 export default class Polygon extends Shape {
   constructor(vertices: Vector[], color: string) {

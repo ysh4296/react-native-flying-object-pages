@@ -1,7 +1,7 @@
 import Blower from '../effect/blower';
 import { registry } from '../main';
-import Rectangle from '../rectangle';
-import RigidBody from '../rigidbody';
+import Rectangle from '@rigidbody/rectangle';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector, { addVector } from '../vector';
 import Component from './component';
 

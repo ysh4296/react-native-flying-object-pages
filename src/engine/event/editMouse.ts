@@ -2,8 +2,8 @@ import Component from '@engine/lib/component/component';
 import Engine from '@engine/lib/engine';
 import getMousePosition from '@engine/lib/getMousePosition';
 import { registry } from '@engine/lib/main';
-import Rectangle from '@engine/lib/rectangle';
-import Shape from '@engine/lib/shape';
+import Rectangle from '@rigidbody/rectangle';
+import Shape from '@engine/lib/rigidbody/shape';
 import Vector from '@engine/lib/vector';
 
 type EditType = 'NONE' | 'POSITION' | 'DIRECTION';

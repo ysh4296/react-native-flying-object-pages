@@ -1,7 +1,7 @@
-import Circle from '@engine/lib/circle';
+import Circle from '@engine/lib/rigidbody/circle';
 // import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
-import RigidBody from '@engine/lib/rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector from '@engine/lib/vector';
 
 export default class Water extends RigidBody {

@@ -3,8 +3,8 @@ import JointConnection from '@engine/joints/jointConnection';
 import Component from '../component/component';
 import Bacon from '../food/solid/bacon';
 import { registry } from '../main';
-import Rectangle from '../rectangle';
-import RigidBody from '../rigidbody';
+import Rectangle from '@rigidbody/rectangle';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector, { subVector } from '../vector';
 
 export default class BaconBlock extends RigidBody {

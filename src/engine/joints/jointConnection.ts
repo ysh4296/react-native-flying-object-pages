@@ -1,4 +1,4 @@
-import RigidBody from '@engine/lib/rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import Draw from '@engine/utils/draw';
 
 export default class JointConnection {

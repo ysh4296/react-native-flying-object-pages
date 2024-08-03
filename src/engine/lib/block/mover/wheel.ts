@@ -1,7 +1,7 @@
-import Circle from '@engine/lib/circle';
+import Circle from '@engine/lib/rigidbody/circle';
 import Matter from '@engine/lib/matter';
 import Vector from '@engine/lib/vector';
-import RigidBody from '../../rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 
 export default class Wheel extends RigidBody {
   counter: number;

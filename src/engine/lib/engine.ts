@@ -1,9 +1,9 @@
 import Draw from '@engine/utils/draw';
-import Rectangle from './rectangle';
+import Rectangle from '@rigidbody/rectangle';
 import Vector, { addVector, scaleVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
-import RigidBody from './rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import HashGrid from '@engine/grid/hashGrid';
 import GrabMouse from '@engine/event/grabMouse';
 import Joint from '@engine/joints/joint';

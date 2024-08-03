@@ -1,7 +1,7 @@
 import Calculator from '@engine/utils/calculator';
 import Effect from '../effect/effect';
 import { registry } from '../main';
-import RigidBody from '../rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector from '../vector';
 
 export default class Component {

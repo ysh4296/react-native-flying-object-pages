@@ -1,8 +1,8 @@
 import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
 import Vector, { addVector, scaleVector } from '@engine/lib/vector';
-import Rectangle from '../../rectangle';
-import RigidBody from '../../rigidbody';
+import Rectangle from '@rigidbody/rectangle';
+import RigidBody from '@rigidbody/rigidbody';
 
 export default class Rotator extends RigidBody {
   counter: number;

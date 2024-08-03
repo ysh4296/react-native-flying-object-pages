@@ -1,7 +1,7 @@
 import Matter from '@engine/lib/matter';
 import Vector, { addVector, rotateVector } from '@engine/lib/vector';
-import Rectangle from '../../rectangle';
-import RigidBody from '../../rigidbody';
+import Rectangle from '@rigidbody/rectangle';
+import RigidBody from '@rigidbody/rigidbody';
 
 export default class Spring extends RigidBody {
   counter: number;

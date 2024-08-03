@@ -2,7 +2,7 @@ import FixedJoint from '@engine/joints/fixedJoint';
 import Joint from '@engine/joints/joint';
 import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
-import Rectangle from '@engine/lib/rectangle';
+import Rectangle from '@rigidbody/rectangle';
 import Vector from '@engine/lib/vector';
 import Food from '../food';
 

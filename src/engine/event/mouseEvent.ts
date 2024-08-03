@@ -1,5 +1,5 @@
 import Engine from '@engine/lib/engine';
-import RigidBody from '@engine/lib/rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector from '@engine/lib/vector';
 import Calculator from '@engine/utils/calculator';
 

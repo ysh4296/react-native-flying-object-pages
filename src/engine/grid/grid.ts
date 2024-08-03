@@ -1,4 +1,4 @@
-import RigidBody from '@engine/lib/rigidbody';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector from '@engine/lib/vector';
 import Calculator from '@engine/utils/calculator';
 import Draw from '@engine/utils/draw';

@@ -1,7 +1,7 @@
 import Calculator from '@engine/utils/calculator';
 import Draw from '@engine/utils/draw';
 import BoundingBox from '@engine/grid/boundingBox';
-import Vector, { addVector, subVector } from './vector';
+import Vector, { addVector, subVector } from '../vector';
 
 export default class Shape {
   vertices: Vector[];

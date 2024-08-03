@@ -1,8 +1,8 @@
 import Draw from '@engine/utils/draw';
 import Wheel from '../block/mover/wheel';
 import { registry } from '../main';
-import Polygon from '../polygon';
-import RigidBody from '../rigidbody';
+import Polygon from '../rigidbody/polygon';
+import RigidBody from '@rigidbody/rigidbody';
 import Vector, { addVector, rotateVector } from '../vector';
 import Component from './component';
 
