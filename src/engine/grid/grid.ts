@@ -22,7 +22,7 @@ export default class Grid {
     this.calculatorUtils = Calculator.getInstance();
   }
 
-  initialize(world: Vector, objects: RigidBody[]) {
+  initialize(world: Vector) {
     this.world = world;
     this.cellCntX = parseInt(String(this.world.x / this.cellSize));
     this.cellCntY = parseInt(String(this.world.y / this.cellSize));

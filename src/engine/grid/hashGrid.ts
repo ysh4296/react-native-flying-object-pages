@@ -21,9 +21,9 @@ export default class HashGrid extends Grid {
     this.p2Prime = 588667;
   }
 
-  initialize(world: Vector, objects: RigidBody[], components?: Component[]) {
+  initializeComponent(world: Vector, components: Component[]) {
     this.world = world;
-    this.components = components ?? [];
+    this.components = components;
   }
 
   refreshGrid() {

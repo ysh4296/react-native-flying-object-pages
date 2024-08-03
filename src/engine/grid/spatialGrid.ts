@@ -15,24 +15,24 @@ export default class SpatialGrid extends Grid {
     this.objectsToCells = [];
   }
 
-  initialize(world: Vector, objects: RigidBody[]) {
-    this.world = world;
-    this.objects = objects;
-    this.cellCntX = parseInt(String(this.world.x / this.cellSize));
-    this.cellCntY = parseInt(String(this.world.y / this.cellSize));
-    if (this.cellSize * this.cellCntX < this.world.x) {
-      this.cellCntX++;
-    }
-    if (this.cellSize * this.cellCntY < this.world.y) {
-      this.cellCntY++;
-    }
+  // initialize(world: Vector, objects: RigidBody[]) {
+  //   this.world = world;
+  //   this.objects = objects;
+  //   this.cellCntX = parseInt(String(this.world.x / this.cellSize));
+  //   this.cellCntY = parseInt(String(this.world.y / this.cellSize));
+  //   if (this.cellSize * this.cellCntX < this.world.x) {
+  //     this.cellCntX++;
+  //   }
+  //   if (this.cellSize * this.cellCntY < this.world.y) {
+  //     this.cellCntY++;
+  //   }
 
-    for (let i = 0; i < this.cellCntX * this.cellCntY; i++) {
-      this.cells[i] = [];
-    }
+  //   for (let i = 0; i < this.cellCntX * this.cellCntY; i++) {
+  //     this.cells[i] = [];
+  //   }
 
-    // console.log(this.cells.length + " cells initiated");
-  }
+  //   // console.log(this.cells.length + " cells initiated");
+  // }
 
   refreshGrid() {
     this.clearGrid();

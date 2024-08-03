@@ -1,6 +1,6 @@
 import Draw from '@engine/utils/draw';
 import Rectangle from '@rigidbody/rectangle';
-import Vector, { addVector, scaleVector } from './vector';
+import Vector, { addVector, scaleVector, subVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
 import RigidBody from '@rigidbody/rigidbody';
@@ -16,6 +16,8 @@ import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
 import Component from './component/component';
 import Effect from './effect/effect';
+import Particle from './particle/particle';
+import FluidHashGrid from '@engine/grid/particleHashGrid';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -33,12 +35,14 @@ export default class Engine {
   joints: Joint[];
   iteration: number;
   grid: HashGrid;
+  fluidGrid: FluidHashGrid;
   GrabMouseEvent: GrabMouse;
   JointMouseEvent: JointMouse;
   CreateMouseEvent: CreateMouse;
   EditMouseEvent: EditMouse;
   camera: CameraType;
   GameBoard: Grid; // gameboard to assign circuit & blocks
+  particles: Particle[];
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -84,6 +88,7 @@ export default class Engine {
     );
     this.gravity = new Vector({ x: 0, y: 700 });
     this.components = [];
+    this.particles = [];
     const component = new Component(this.bottom.centroid);
     const bottom = new RigidBody(this.bottom, 0);
     component.objects.push(bottom);
@@ -93,10 +98,14 @@ export default class Engine {
     // this.rigidBodies.push(new RigidBody(this.left, 0));
     // this.rigidBodies.push(new RigidBody(this.right, 0));
     this.grid = new HashGrid(15);
-    this.grid.initialize(this.world, [], this.components);
+    this.fluidGrid = new FluidHashGrid(25);
+    this.grid.initializeComponent(this.world, this.components);
     this.grid.refreshGrid();
     this.GameBoard = new Grid(100);
-    this.GameBoard.initialize(this.world, []);
+    this.GameBoard.initialize(this.world);
+    this.initParticles();
+    // console.log(this.particles);
+    this.fluidGrid.initializeParticle(this.world, this.particles);
   }
 
   handleJoints() {
@@ -127,6 +136,10 @@ export default class Engine {
     this.grid.refreshGrid();
     this.handleJoints();
 
+    this.predictPositions(deltaTime);
+    this.computeNextVelocity(deltaTime);
+    this.worldBoundary();
+
     switch (registry.mouseEventType) {
       case 'DRAG':
         if (this.GrabMouseEvent.grabbedObject) {
@@ -146,16 +159,16 @@ export default class Engine {
         break;
     }
 
-    for (let it = 0; it < this.iteration; it++) {
-      this.components.forEach((component: Component) => {
-        for (let i = 0; i < component.objects.length; i++) {
-          let objectA = component.objects[i];
-          objectA.addForce(scaleVector(this.gravity, objectA.mass));
-          objectA.update(deltaTime / this.iteration);
-          objectA.shape.boundingBox.collision = false;
-        }
-      });
+    this.components.forEach((component: Component) => {
+      for (let i = 0; i < component.objects.length; i++) {
+        let objectA = component.objects[i];
+        objectA.addForce(scaleVector(this.gravity, objectA.mass));
+        objectA.update(deltaTime);
+        objectA.shape.boundingBox.collision = false;
+      }
+    });
 
+    for (let it = 0; it < this.iteration; it++) {
       this.components.forEach((component: Component) => {
         for (let i = 0; i < component.objects.length; i++) {
           let objectA = component.objects[i];
@@ -215,44 +228,6 @@ export default class Engine {
         }
       }
     });
-
-    // for (let it = 0; it < this.iteration; it++) {
-    //   for (let i = 0; i < this.rigidBodies.length; i++) {
-    //     this.rigidBodies[i].addForce(scaleVector(this.gravity, this.rigidBodies[i].mass));
-    //     this.rigidBodies[i].update(deltaTime / this.iteration);
-    //     this.rigidBodies[i].shape.boundingBox.collision = false;
-    //   }
-
-    //   for (let i = 0; i < this.rigidBodies.length; i++) {
-    //     let objectA = this.rigidBodies[i];
-    //     let neighbors = this.grid.getNeighborObject(i, objectA);
-    //     for (let j = 0; j < neighbors.length; j++) {
-    //       let objectB = neighbors[j];
-
-    //       if (objectA.canCollision(objectB)) {
-    //         if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
-    //           // no collision
-    //           continue;
-    //         }
-    //         let result = this.collision.checkCollision(objectA.shape, objectB.shape);
-    //         if (result) {
-    //           result.resolveCollision(objectA, objectB);
-    //           result.positionalCorrection(objectA, objectB, 0.3);
-
-    //           // if (objectB instanceof Spring) {
-    //           //   /** objectA moves */
-    //           //   if (objectA.isKinematic) continue;
-    //           //   if (objectB.counter === 0) {
-    //           //     objectA.addVelocity(scaleVector(objectB.direction, objectB.springConstant));
-    //           //   }
-    //           // }
-    //         }
-    //         objectA.shape.boundingBox.collision = true;
-    //         objectB.shape.boundingBox.collision = true;
-    //       }
-    //     }
-    //   }
-    // }
 
     this.components.forEach((component: Component) => {
       component.objects.forEach((object) => {
@@ -315,6 +290,12 @@ export default class Engine {
   draw() {
     if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
     if (registry.gamePhase === 'pause') this.GameBoard.draw();
+
+    for (let i = 0; i < this.particles.length; i++) {
+      let position = this.particles[i].position;
+      let color = this.particles[i].color;
+      this.drawUtils.fillCircle(position, 5, color);
+    }
     this.components.forEach((component) => {
       component.drawComponent();
       component.objects.forEach((object) => {
@@ -324,19 +305,8 @@ export default class Engine {
     this.components.forEach((component) => {
       component.drawEffect();
     });
-
-    // for (let i = 0; i < this.rigidBodies.length; i++) {
-    //   this.rigidBodies[i].drawEffect();
-    // }
-    // for (let i = 0; i < this.rigidBodies.length; i++) {
-    //   this.rigidBodies[i].getShape().draw();
-    //   this.rigidBodies[i].shape.calculateBoundingBox();
-    // }
-    for (let i = 0; i < this.joints.length; i++) {
-      this.joints[i].draw();
-    }
-    // for (let i = 0; i < this.effects.length; i++) {
-    //   this.effects[i].drawEffect();
+    // for (let i = 0; i < this.joints.length; i++) {
+    //   this.joints[i].draw();
     // }
   }
 
@@ -393,6 +363,78 @@ export default class Engine {
     }
   }
 
+  initParticles() {
+    const particleOffset = 10;
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        let positionX = i * particleOffset + this.world.x / 2;
+        let positionY = j * particleOffset + this.world.y / 2;
+        const particle = new Particle(new Vector({ x: positionX, y: positionY }), 'blue');
+        particle.velocity = scaleVector(
+          new Vector({ x: -0.5 + Math.random(), y: -0.5 + Math.random() }),
+          2000,
+        );
+        this.particles.push(particle);
+      }
+    }
+  }
+
+  neighbourSearch(mousePosition: Vector) {
+    this.fluidGrid.clearGrid();
+    this.fluidGrid.mapParticlesToCell();
+    console.log(this.fluidGrid.hashMap);
+    let hashId = this.fluidGrid.getGridIdFromPosition(mousePosition);
+    let particlesofCell = this.fluidGrid.getParticlesOfCell(hashId);
+
+    for (let i = 0; i < this.particles.length; i++) {
+      this.particles[i].color = 'blue';
+    }
+    for (let i = 0; i < particlesofCell.length; i++) {
+      particlesofCell[i].color = 'orange';
+    }
+  }
+
+  predictPositions(deltaTime: number) {
+    const velocityDamping = 1;
+    for (let i = 0; i < this.particles.length; i++) {
+      this.particles[i].prevPosition = this.particles[i].position.getCopy();
+      let positionDelta = scaleVector(this.particles[i].velocity, deltaTime * velocityDamping);
+      this.particles[i].position = addVector(this.particles[i].position, positionDelta);
+    }
+  }
+
+  computeNextVelocity(deltaTime: number) {
+    for (let i = 0; i < this.particles.length; i++) {
+      let velocity = scaleVector(
+        subVector(this.particles[i].position, this.particles[i].prevPosition),
+        1.0 / deltaTime,
+      );
+      this.particles[i].velocity = velocity;
+    }
+  }
+
+  worldBoundary() {
+    for (let i = 0; i < this.particles.length; i++) {
+      let position = this.particles[i].position;
+
+      if (position.x < 0) {
+        this.particles[i].velocity.x *= -1;
+      }
+
+      if (position.x > this.world.x) {
+        this.particles[i].velocity.x *= -1;
+      }
+
+      if (position.y < 0) {
+        this.particles[i].velocity.y *= -1;
+      }
+
+      if (position.y > this.world.y) {
+        this.particles[i].velocity.y *= -1;
+      }
+    }
+  }
+
   onMouseMove(e: MouseEvent) {
     switch (registry.mouseEventType) {
       case 'DRAG':
@@ -408,6 +450,7 @@ export default class Engine {
         this.EditMouseEvent.mouseMove(e, this.canvas, this);
         break;
       case 'NONE':
+        this.neighbourSearch(getMousePosition(this.canvas, e));
         break;
       default:
         return assertUnreachableChecker(registry.mouseEventType);

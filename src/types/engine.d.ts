@@ -35,6 +35,12 @@ type CameraType = {
  */
 type ObjectCode = string;
 
+/**
+ * @type ParticleCode
+ * @description `${partidleId}`
+ */
+type ParticleCode = string;
+
 type defaultRegistryType = {
   createdId: number;
   createdObjects: Set<ObjectCode>; // componentId, objectId || effectId
