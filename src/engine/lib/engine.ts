@@ -382,15 +382,23 @@ export default class Engine {
   neighbourSearch(mousePosition: Vector) {
     this.fluidGrid.clearGrid();
     this.fluidGrid.mapParticlesToCell();
-    console.log(this.fluidGrid.hashMap);
-    let hashId = this.fluidGrid.getGridIdFromPosition(mousePosition);
-    let particlesofCell = this.fluidGrid.getParticlesOfCell(hashId);
+    // let hashId = this.fluidGrid.getGridIdFromPosition(mousePosition);
+    // let particlesofCell = this.fluidGrid.getParticlesOfCell(hashId);
 
+    this.particles[0].position = mousePosition.getCopy();
+    let contentofCell = this.fluidGrid.getNeighborParticles(0);
     for (let i = 0; i < this.particles.length; i++) {
       this.particles[i].color = 'blue';
     }
-    for (let i = 0; i < particlesofCell.length; i++) {
-      particlesofCell[i].color = 'orange';
+    for (let i = 0; i < contentofCell.length; i++) {
+      let particle = contentofCell[i];
+
+      let direction = subVector(particle.position, mousePosition);
+      let distance = direction.lengthSquare();
+
+      if (distance < 25 * 25) {
+        contentofCell[i].color = 'orange';
+      }
     }
   }
 

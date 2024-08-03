@@ -50,23 +50,23 @@ export default class FluidHashGrid extends Grid {
     }
   }
 
-  //   getNeighborObject(objectCode: ObjectCode, object: Particle[]) {
-  //     let occupiedCells = this.objectsToCells.get(objectCode) ?? [];
-  //     let neighborObjects: Particle[] = [];
-  //     for (let i = 0; i < occupiedCells.length; i++) {
-  //       let occupiedCellHashIndex = occupiedCells[i];
-  //       let occupiedCell = this.getParticlesOfCell(occupiedCellHashIndex);
-  //       if (occupiedCell) {
-  //         for (let j = 0; j < occupiedCell.length; j++) {
-  //           let objectInCell = occupiedCell[j];
-  //           if (objectInCell != object) {
-  //             neighborObjects.push(objectInCell);
-  //           }
-  //         }
-  //       }
-  //     }
-  //     return neighborObjects.filter((item, index) => neighborObjects.indexOf(item) === index);
-  //   }
+  getNeighborParticles(particleId: number) {
+    let neighbors: Particle[] = [];
+    let pos = this.particles[particleId].position;
+    let x = parseInt(String(pos.x / this.cellSize));
+    let y = parseInt(String(pos.y / this.cellSize));
+
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        let gridX = x + i;
+        let gridY = y + j;
+        const content = this.getParticlesOfCell(this.cellIndexToHash(gridX, gridY));
+        // neighbors = neighbors.concat(neighbors, content);
+        neighbors.push(...content);
+      }
+    }
+    return neighbors;
+  }
 
   getParticlesOfCell(id: number) {
     let content = this.hashMap.get(id);
