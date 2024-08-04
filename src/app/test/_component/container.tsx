@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import useGamePhaseStore from 'store/gamePhase';
 import useMouseStore from 'store/mouseStore';
 import main, { registry } from '../../../engine/lib/main';
+import init, { greet, fibonacci } from '../../../../rust-module/pkg';
 
 const Container = () => {
   const { setMouseEventType } = useMouseStore();
@@ -24,8 +25,13 @@ const Container = () => {
 
   useEffect(() => {
     if (document) {
-      console.log('init Document!');
-      main(document, setMouseEventType);
+      init().then(() => {
+        console.log('hi');
+        console.log(greet('Next.js and WebAssembly'));
+        console.log(fibonacci(10));
+        console.log('init Document!');
+        main(document, setMouseEventType);
+      });
     }
   }, [setMouseEventType]);
 
