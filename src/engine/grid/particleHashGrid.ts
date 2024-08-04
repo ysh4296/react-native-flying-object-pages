@@ -16,8 +16,9 @@ export default class FluidHashGrid extends Grid {
     this.objectsToCells = new Map(); // map<number,rigidBody[]>
 
     this.hashMapSize = 10000;
-    this.p1Prime = 6614058611;
-    this.p2Prime = 7528850467;
+    this.p1Prime = 661401;
+    this.p2Prime = 752887;
+
     this.particles = [];
   }
 

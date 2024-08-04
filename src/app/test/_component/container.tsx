@@ -24,6 +24,7 @@ const Container = () => {
 
   useEffect(() => {
     if (document) {
+      console.log('init Document!');
       main(document, setMouseEventType);
     }
   }, [setMouseEventType]);

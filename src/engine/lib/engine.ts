@@ -43,6 +43,10 @@ export default class Engine {
   camera: CameraType;
   GameBoard: Grid; // gameboard to assign circuit & blocks
   particles: Particle[];
+  restDensity: number;
+  K_NEAR: number;
+  K: number;
+  INTERACTION_RADIUS: number;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -89,12 +93,12 @@ export default class Engine {
     this.gravity = new Vector({ x: 0, y: 700 });
     this.components = [];
     this.particles = [];
-    const component = new Component(this.bottom.centroid);
-    const bottom = new RigidBody(this.bottom, 0);
-    component.objects.push(bottom);
+    // const component = new Component(this.bottom.centroid);
+    // const bottom = new RigidBody(this.bottom, 0);
+    // component.objects.push(bottom);
     // bottom.matter = { friction: 0, restitution: 0 };
     // this.rigidBodies.push(new RigidBody(this.top, 0));
-    this.components.push(component);
+    // this.components.push(component);
     // this.rigidBodies.push(new RigidBody(this.left, 0));
     // this.rigidBodies.push(new RigidBody(this.right, 0));
     this.grid = new HashGrid(15);
@@ -104,8 +108,11 @@ export default class Engine {
     this.GameBoard = new Grid(100);
     this.GameBoard.initialize(this.world);
     this.initParticles();
-    // console.log(this.particles);
     this.fluidGrid.initializeParticle(this.world, this.particles);
+    this.restDensity = 15;
+    this.K_NEAR = 5000;
+    this.K = 100;
+    this.INTERACTION_RADIUS = 25;
   }
 
   handleJoints() {
@@ -136,10 +143,6 @@ export default class Engine {
     this.grid.refreshGrid();
     this.handleJoints();
 
-    this.predictPositions(deltaTime);
-    this.computeNextVelocity(deltaTime);
-    this.worldBoundary();
-
     switch (registry.mouseEventType) {
       case 'DRAG':
         if (this.GrabMouseEvent.grabbedObject) {
@@ -158,6 +161,23 @@ export default class Engine {
       case 'CREATE':
         break;
     }
+
+    /**
+     * apply gravity
+     */
+    this.particles.forEach((particle) => {
+      particle.velocity = addVector(particle.velocity, scaleVector(this.gravity, 0.01));
+    });
+
+    this.predictPositions(deltaTime);
+
+    this.neighbourSearch();
+
+    this.doubleDensityRelaxation(deltaTime);
+
+    this.worldBoundary();
+
+    this.computeNextVelocity(deltaTime);
 
     this.components.forEach((component: Component) => {
       for (let i = 0; i < component.objects.length; i++) {
@@ -365,41 +385,41 @@ export default class Engine {
 
   initParticles() {
     const particleOffset = 10;
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        let positionX = i * particleOffset + this.world.x / 2;
-        let positionY = j * particleOffset + this.world.y / 2;
+    for (let i = 0; i < 20; i++) {
+      for (let j = 0; j < 20; j++) {
+        let positionX = i * particleOffset;
+        let positionY = j * particleOffset;
         const particle = new Particle(new Vector({ x: positionX, y: positionY }), 'blue');
-        particle.velocity = scaleVector(
-          new Vector({ x: -0.5 + Math.random(), y: -0.5 + Math.random() }),
-          2000,
-        );
+        // particle.velocity = scaleVector(
+        //   new Vector({ x: -0.5 + Math.random(), y: -0.5 + Math.random() }),
+        //   2000,
+        // );
         this.particles.push(particle);
       }
     }
   }
 
-  neighbourSearch(mousePosition: Vector) {
+  neighbourSearch() {
     this.fluidGrid.clearGrid();
     this.fluidGrid.mapParticlesToCell();
     // let hashId = this.fluidGrid.getGridIdFromPosition(mousePosition);
     // let particlesofCell = this.fluidGrid.getParticlesOfCell(hashId);
 
-    this.particles[0].position = mousePosition.getCopy();
-    let contentofCell = this.fluidGrid.getNeighborParticles(0);
-    for (let i = 0; i < this.particles.length; i++) {
-      this.particles[i].color = 'blue';
-    }
-    for (let i = 0; i < contentofCell.length; i++) {
-      let particle = contentofCell[i];
+    // this.particles[0].position = mousePosition.getCopy();
+    // let contentofCell = this.fluidGrid.getNeighborParticles(0);
+    // for (let i = 0; i < this.particles.length; i++) {
+    //   this.particles[i].color = 'blue';
+    // }
+    // for (let i = 0; i < contentofCell.length; i++) {
+    //   let particle = contentofCell[i];
 
-      let direction = subVector(particle.position, mousePosition);
-      let distance = direction.lengthSquare();
+    //   let direction = subVector(particle.position, mousePosition);
+    //   let distance = direction.lengthSquare();
 
-      if (distance < 25 * 25) {
-        contentofCell[i].color = 'orange';
-      }
-    }
+    //   if (distance < 25 * 25) {
+    //     contentofCell[i].color = 'orange';
+    //   }
+    // }
   }
 
   predictPositions(deltaTime: number) {
@@ -426,20 +446,66 @@ export default class Engine {
       let position = this.particles[i].position;
 
       if (position.x < 0) {
-        this.particles[i].velocity.x *= -1;
+        this.particles[i].position.x = 0;
+        this.particles[i].prevPosition.x = 0;
       }
 
       if (position.x > this.world.x) {
-        this.particles[i].velocity.x *= -1;
+        this.particles[i].position.x = this.world.x;
+        this.particles[i].prevPosition.x = this.world.x;
       }
 
       if (position.y < 0) {
-        this.particles[i].velocity.y *= -1;
+        this.particles[i].position.y = 0;
+        this.particles[i].prevPosition.y = 0;
       }
 
       if (position.y > this.world.y) {
-        this.particles[i].velocity.y *= -1;
+        this.particles[i].position.y = this.world.y;
+        this.particles[i].prevPosition.y = this.world.y;
       }
+    }
+  }
+
+  doubleDensityRelaxation(deltaTime: number) {
+    for (let i = 0; i < this.particles.length; i++) {
+      let density = 0;
+      let densityNear = 0;
+
+      let neighbors = this.fluidGrid.getNeighborParticles(i);
+      let particleA = this.particles[i];
+      for (let j = 0; j < neighbors.length; j++) {
+        let particleB = neighbors[j];
+        if (particleA === particleB) continue;
+
+        let rij = subVector(particleB.position, particleA.position);
+        let q = rij.length() / this.INTERACTION_RADIUS;
+        if (q < 1) {
+          density += Math.pow(1 - q, 2);
+          densityNear += Math.pow(1 - q, 3);
+        }
+      }
+      let pressure = this.K * (density - this.restDensity);
+      let pressureNear = this.K_NEAR * densityNear;
+      let particleADisplacement = new Vector({ x: 0, y: 0 });
+
+      for (let j = 0; j < neighbors.length; j++) {
+        let particleB = neighbors[j];
+        if (particleA === particleB) continue;
+
+        let rij = subVector(particleB.position, particleA.position);
+        let q = rij.length() / this.INTERACTION_RADIUS;
+        if (q < 1) {
+          rij.normalize();
+          let displacementTerm =
+            Math.pow(deltaTime, 2) * (pressure * (1 - q) + pressureNear * Math.pow(1 - q, 2));
+          let D = scaleVector(rij, displacementTerm);
+
+          particleB.position = addVector(particleB.position, scaleVector(D, 0.5));
+          particleADisplacement = subVector(particleADisplacement, scaleVector(D, 0.5));
+        }
+      }
+      particleA.position = addVector(particleA.position, particleADisplacement);
     }
   }
 
@@ -458,7 +524,6 @@ export default class Engine {
         this.EditMouseEvent.mouseMove(e, this.canvas, this);
         break;
       case 'NONE':
-        this.neighbourSearch(getMousePosition(this.canvas, e));
         break;
       default:
         return assertUnreachableChecker(registry.mouseEventType);
