@@ -16,6 +16,10 @@ export const registry: defaultRegistryType & { engine: Engine } = {
   animationOffset: 0,
   setMouseEventType: () => {},
   gamePhase: 'pause',
+  memory: {
+    buffer: new ArrayBuffer(0),
+    grow: () => 0,
+  },
 };
 
 const main = (document: Document, setMouseEventType: (mouseType: MouseType) => void) => {

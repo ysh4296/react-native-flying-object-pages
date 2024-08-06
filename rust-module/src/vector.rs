@@ -3,7 +3,8 @@
 use wasm_bindgen::prelude::*;
 use std::f64::consts::PI;
 
-#[wasm_bindgen]
+#[wasm_bindgen(getter_with_clone)]
+#[derive(Clone,PartialEq)]
 pub struct Vector {
     pub x: f64,
     pub y: f64,
@@ -68,7 +69,7 @@ impl Vector {
     pub fn cross(&self, target: &Vector) -> f64 {
         self.x * target.y - self.y * target.x
     }
-    
+
     pub fn is_out(&self, max_x: f64, max_y: f64) -> bool {
         self.x < 0.0 || self.x > max_x || self.y < 0.0 || self.y > max_y
     }

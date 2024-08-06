@@ -51,6 +51,7 @@ type defaultRegistryType = {
   createEventType: CreateType;
   animationOffset: number;
   gamePhase: GamePhase;
+  memory: WebAssembly.Memory;
 };
 
 type GamePhase = 'play' | 'pause';

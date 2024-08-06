@@ -1,4 +1,7 @@
 mod vector;
+mod particle;
+mod fluidHashGrid;
+mod universe;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
