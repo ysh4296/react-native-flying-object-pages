@@ -107,20 +107,12 @@ export default class Engine {
     const left = new RigidBody(this.left, 0);
     component.objects.push(left);
     this.components.push(component);
-    // bottom.matter = { friction: 0, restitution: 0 };
-    // this.rigidBodies.push(new RigidBody(this.top, 0));
-    // this.components.push(component);
-    // this.rigidBodies.push(new RigidBody(this.left, 0));
-    // this.rigidBodies.push(new RigidBody(this.right, 0));
     this.grid = new HashGrid(15);
     this.grid.initializeComponent(this.world, this.components);
     this.grid.refreshGrid();
     this.GameBoard = new Grid(100);
     this.GameBoard.initialize(this.world);
-    // this.initParticles();
     // this.rustEngine = new rustEngine();
-
-    // this.fluidGrid.initializeParticle(this.particles);
     this.restDensity = 15;
     this.K_NEAR = 5000;
     this.K = 100;
@@ -146,20 +138,11 @@ export default class Engine {
       'black',
       fpsText,
     );
-    // for (let i = 0; i < this.rigidBodies.length; i++) {
-    //   if (this.rigidBodies[i] instanceof WaterBlock) {
-    //     this.rigidBodies[i].active();
-    //   }
-    // }
 
     this.grid.refreshGrid();
     this.handleJoints();
 
     // this.rustEngine.update(deltaTime);
-
-    // const particlesPtr = this.universe.particles();
-    // const cells = new Float64Array(registry.memory.buffer, particlesPtr, 400 * 6);
-    // console.log(cells);
 
     switch (registry.mouseEventType) {
       case 'DRAG':
@@ -247,8 +230,6 @@ export default class Engine {
         const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
 
         let neighbors = this.grid.getNeighborObject(objectCode, objectA);
-        // objectA.addForce(scaleVector(this.gravity, objectA.mass));
-        objectA.update(deltaTime / this.iteration);
         objectA.shape.boundingBox.collision = false;
         for (let j = 0; j < neighbors.length; j++) {
           let effectB = neighbors[j];
@@ -335,15 +316,6 @@ export default class Engine {
   draw() {
     if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
     if (registry.gamePhase === 'pause') this.GameBoard.draw();
-    // sprite.spriteSheet.load;
-    // for (let i = 0; i < this.particles.length; i++) {
-    //   console.log('position get ', this.particles);
-    //   this.drawUtils.fillCircle(
-    //     new Vector({ x: this.particles[i].position.x, y: this.particles[i].position.y }),
-    //     5,
-    //     this.particles[i].color,
-    //   );
-    // }
     this.components.forEach((component) => {
       component.drawComponent();
       component.objects.forEach((object) => {
@@ -423,145 +395,6 @@ export default class Engine {
       }
     }
   }
-
-  initParticles() {
-    // const particleOffset = 10;
-    for (let i = 0; i < 20; i++) {
-      for (let j = 0; j < 20; j++) {
-        // let positionX = i * particleOffset;
-        // let positionY = j * particleOffset;
-        // console.log(new rustVector(positionX, positionY));
-        // let particle = new rustParticle(new rustVector(positionX, positionY), 'blue');
-        // console.log(new rustParticle(new rustVector(positionX, positionY), 'blue'));
-        // particle.velocity = scaleVector(
-        //   new Vector({ x: -0.5 + Math.random(), y: -0.5 + Math.random() }),
-        //   2000,
-        // );
-        // console.log(particle.position.x);
-        // console.log(new rustParticle(new rustVector(positionX, positionY), 'blue'));
-        // this.particles.push(new rustParticle(new rustVector(positionX, positionY), 'blue'));
-        // console.log(particle);
-        // // console.log(this.particles[i * 20 + j].position);
-        // // console.log(this.particles[i * 20 + j].position);
-      }
-    }
-  }
-
-  neighbourSearch() {
-    // this.fluidGrid.clearGrid();
-    // this.fluidGrid.mapParticlesToCell();
-    // let hashId = this.fluidGrid.getGridIdFromPosition(mousePosition);
-    // let particlesofCell = this.fluidGrid.getParticlesOfCell(hashId);
-    // this.particles[0].position = mousePosition.getCopy();
-    // let contentofCell = this.fluidGrid.getNeighborParticles(0);
-    // for (let i = 0; i < this.particles.length; i++) {
-    //   this.particles[i].color = 'blue';
-    // }
-    // for (let i = 0; i < contentofCell.length; i++) {
-    //   let particle = contentofCell[i];
-    //   let direction = subVector(particle.position, mousePosition);
-    //   let distance = direction.lengthSquare();
-    //   if (distance < 25 * 25) {
-    //     contentofCell[i].color = 'orange';
-    //   }
-    // }
-  }
-
-  // predictPositions(deltaTime: number) {
-  //   const velocityDamping = 1;
-  //   for (let i = 0; i < this.particles.length; i++) {
-  //     this.particles[i].prev_position = this.particles[i].position.get_copy();
-  //     let positionDelta = rustVector.scale_vector(
-  //       this.particles[i].velocity,
-  //       deltaTime * velocityDamping,
-  //     );
-  //     this.particles[i].position = rustVector.add_vector(this.particles[i].position, positionDelta);
-  //   }
-  // }
-
-  // computeNextVelocity(deltaTime: number) {
-  //   for (let i = 0; i < this.particles.length; i++) {
-  //     let velocity = rustVector.scale_vector(
-  //       rustVector.sub_vector(this.particles[i].position, this.particles[i].prev_position),
-  //       1.0 / deltaTime,
-  //     );
-  //     this.particles[i].velocity = velocity;
-  //   }
-  // }
-
-  // worldBoundary() {
-  //   for (let i = 0; i < this.particles.length; i++) {
-  //     let position = this.particles[i].position;
-
-  //     if (position.x < 0) {
-  //       this.particles[i].position.x = 0;
-  //       this.particles[i].prev_position.x = 0;
-  //     }
-
-  //     if (position.x > this.world.x) {
-  //       this.particles[i].position.x = this.world.x;
-  //       this.particles[i].prev_position.x = this.world.x;
-  //     }
-
-  //     if (position.y < 0) {
-  //       this.particles[i].position.y = 0;
-  //       this.particles[i].prev_position.y = 0;
-  //     }
-
-  //     if (position.y > this.world.y) {
-  //       this.particles[i].position.y = this.world.y;
-  //       this.particles[i].prev_position.y = this.world.y;
-  //     }
-  //   }
-  // }
-
-  // doubleDensityRelaxation(deltaTime: number) {
-  //   for (let i = 0; i < this.particles.length; i++) {
-  //     let density = 0;
-  //     let densityNear = 0;
-
-  //     let neighbors = this.fluidGrid.getNeighborParticles(i);
-  //     let particleA = this.particles[i];
-  //     for (let j = 0; j < neighbors.length; j++) {
-  //       let particleB = neighbors[j];
-  //       if (particleA === particleB) continue;
-
-  //       let rij = rustVector.sub_vector(particleB.position, particleA.position);
-  //       let q = rij.length() / this.INTERACTION_RADIUS;
-  //       if (q < 1) {
-  //         density += Math.pow(1 - q, 2);
-  //         densityNear += Math.pow(1 - q, 3);
-  //       }
-  //     }
-  //     let pressure = this.K * (density - this.restDensity);
-  //     let pressureNear = this.K_NEAR * densityNear;
-  //     let particleADisplacement = new rustVector(0, 0);
-
-  //     for (let j = 0; j < neighbors.length; j++) {
-  //       let particleB = neighbors[j];
-  //       if (particleA === particleB) continue;
-
-  //       let rij = rustVector.sub_vector(particleB.position, particleA.position);
-  //       let q = rij.length() / this.INTERACTION_RADIUS;
-  //       if (q < 1) {
-  //         rij.normalize();
-  //         let displacementTerm =
-  //           Math.pow(deltaTime, 2) * (pressure * (1 - q) + pressureNear * Math.pow(1 - q, 2));
-  //         // let D = scaleVector(rij, displacementTerm);
-  //         let D = rustVector.scale_vector(rij, displacementTerm);
-  //         const particleBMove = rustVector.scale_vector(D, 0.5);
-  //         particleB.position.x += particleBMove.x;
-  //         particleB.position.y += particleBMove.y;
-
-  //         // addVector(particleB.position, scaleVector(D, 0.5));
-  //         // particleADisplacement = subVector(particleADisplacement, scaleVector(D, 0.5));
-  //         particleADisplacement.x -= particleBMove.x;
-  //         particleADisplacement.y -= particleBMove.y;
-  //       }
-  //     }
-  //     particleA.position = rustVector.add_vector(particleA.position, particleADisplacement);
-  //   }
-  // }
 
   onMouseMove(e: MouseEvent) {
     switch (registry.mouseEventType) {
