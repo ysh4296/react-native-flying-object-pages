@@ -16,7 +16,8 @@ import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
 import Component from './component/component';
 import Effect from './effect/effect';
-import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
+import Water from './food/liquid/water';
+// import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -43,7 +44,7 @@ export default class Engine {
   K_NEAR: number;
   K: number;
   INTERACTION_RADIUS: number;
-  rustEngine: rustEngine;
+  // rustEngine: rustEngine;
   gravity: Vector;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
@@ -90,9 +91,22 @@ export default class Engine {
       'red',
     );
     this.components = [];
-    // const component = new Component(this.bottom.centroid);
-    // const bottom = new RigidBody(this.bottom, 0);
-    // component.objects.push(bottom);
+    let component = new Component(this.bottom.centroid);
+    const bottom = new RigidBody(this.bottom, 0);
+    component.objects.push(bottom);
+    this.components.push(component);
+    component = new Component(this.top.centroid);
+    const top = new RigidBody(this.top, 0);
+    component.objects.push(top);
+    this.components.push(component);
+    component = new Component(this.right.centroid);
+    const right = new RigidBody(this.right, 0);
+    component.objects.push(right);
+    this.components.push(component);
+    component = new Component(this.left.centroid);
+    const left = new RigidBody(this.left, 0);
+    component.objects.push(left);
+    this.components.push(component);
     // bottom.matter = { friction: 0, restitution: 0 };
     // this.rigidBodies.push(new RigidBody(this.top, 0));
     // this.components.push(component);
@@ -104,7 +118,7 @@ export default class Engine {
     this.GameBoard = new Grid(100);
     this.GameBoard.initialize(this.world);
     // this.initParticles();
-    this.rustEngine = new rustEngine();
+    // this.rustEngine = new rustEngine();
 
     // this.fluidGrid.initializeParticle(this.particles);
     this.restDensity = 15;
@@ -141,7 +155,7 @@ export default class Engine {
     this.grid.refreshGrid();
     this.handleJoints();
 
-    this.rustEngine.update(deltaTime);
+    // this.rustEngine.update(deltaTime);
 
     // const particlesPtr = this.universe.particles();
     // const cells = new Float64Array(registry.memory.buffer, particlesPtr, 400 * 6);
@@ -212,6 +226,7 @@ export default class Engine {
                 // no collision
                 continue;
               }
+
               let result = this.collision.checkCollision(objectA.shape, objectB.shape);
               if (result) {
                 /** resolve collision */
@@ -258,7 +273,10 @@ export default class Engine {
 
     this.components.forEach((component: Component) => {
       component.objects.forEach((object) => {
-        object.active();
+        if (object instanceof Water) {
+        } else {
+          object.active();
+        }
       });
     });
 
@@ -266,7 +284,7 @@ export default class Engine {
     this.components.forEach((component: Component) => {
       component.objects.forEach((object, index) => {
         if (!object.isKinematic) {
-          if (object.shape.centroid.isOut()) {
+          if (object.shape.centroid.isOut() || (object instanceof Water && object.hp <= 0)) {
             this.joints = this.joints.filter(
               (item) =>
                 item.jointConnection.objectAId !== object.id &&
@@ -317,7 +335,7 @@ export default class Engine {
   draw() {
     if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
     if (registry.gamePhase === 'pause') this.GameBoard.draw();
-
+    // sprite.spriteSheet.load;
     // for (let i = 0; i < this.particles.length; i++) {
     //   console.log('position get ', this.particles);
     //   this.drawUtils.fillCircle(
@@ -336,20 +354,21 @@ export default class Engine {
       component.drawEffect();
     });
 
-    const particlesPtr = this.rustEngine.particles();
-    const cells = new Float64Array(registry.memory.buffer, particlesPtr, 1600 * 7);
+    // const particlesPtr = this.rustEngine.particles();
+    // const cells = new Float64Array(registry.memory.buffer, particlesPtr, 1600 * 7);
 
-    for (let i = 0; i < 1600 * 7; i += 7) {
-      // i is index of particle
-      // cells[i]; // positionx
-      // cells[i + 1]; // positiony
-      // cells[i + 2]; // prevx
-      // cells[i + 3]; // prevy
-      // cells[i + 4]; // velox
-      // cells[i + 5]; // veloy
+    // for (let i = 0; i < 1600 * 7; i += 7) {
+    //   // i is index of particle
+    //   // cells[i]; // positionx
+    //   // cells[i + 1]; // positiony
+    //   // cells[i + 2]; // prevx
+    //   // cells[i + 3]; // prevy
+    //   // cells[i + 4]; // velox
+    //   // cells[i + 5]; // veloy
 
-      this.drawUtils.fillCircle(new Vector({ x: cells[i + 1], y: cells[i + 2] }), 5, 'blue');
-    }
+    //   this.drawUtils.fillCircle(new Vector({ x: cells[i + 1], y: cells[i + 2] }), 5, 'blue');
+    // }
+    // registry.sprite.drawSprite();
   }
 
   drawSelect() {

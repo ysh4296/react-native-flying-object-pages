@@ -18,6 +18,7 @@ import useGamePhaseStore from 'store/gamePhase';
 import useMouseStore from 'store/mouseStore';
 import main, { registry } from '../../../engine/lib/main';
 import init, { greet, fibonacci } from '../../../../rust-module/pkg/rust_module';
+import SpriteDraw from '@engine/utils/sprite';
 // import { memory } from '../../../../rust-module/pkg/rust_module_bg.wasm';
 
 const Container = () => {
@@ -33,7 +34,12 @@ const Container = () => {
         console.log('init Document!');
         console.log('grid created');
         registry.memory = wasm.memory;
-        main(document, setMouseEventType);
+
+        const sprite = new SpriteDraw();
+        sprite.init().then(() => {
+          registry.sprite = sprite;
+          main(document, setMouseEventType);
+        });
       });
     }
   }, [setMouseEventType]);

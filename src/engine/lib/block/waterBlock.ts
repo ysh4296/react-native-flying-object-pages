@@ -1,6 +1,9 @@
 import Rectangle from '@rigidbody/rectangle';
 import RigidBody from '@rigidbody/rigidbody';
-import Vector from '../vector';
+import Component from '../component/component';
+import Water from '../food/liquid/water';
+import { registry } from '../main';
+import Vector, { addVector } from '../vector';
 
 export default class WaterBlock extends RigidBody {
   counter: number;
@@ -22,7 +25,10 @@ export default class WaterBlock extends RigidBody {
       this.counter += 1;
       return;
     }
-    // registry.engine.rigidBodies.push(new Water(this.shape.centroid));
+
+    const component = new Component(this.shape.centroid);
+    component.objects.push(new Water(addVector(this.shape.centroid, new Vector({ x: 0, y: 100 }))));
+    registry.engine.components.push(component);
     this.counter = 0;
   }
 }

@@ -1,15 +1,17 @@
 import Draw from '@engine/utils/draw';
+import Sprite from '@engine/utils/sprite';
 import Engine from './engine';
 import Vector from './vector';
 
 /**
  * to use Engine as class Type the type hasbeen added seperatly from default Registry type
  */
-export const registry: defaultRegistryType & { engine: Engine } = {
+export const registry: defaultRegistryType & { engine: Engine; sprite: Sprite } = {
   createdId: 0,
   createdObjects: new Set(),
   selectedComponentId: -1,
   engine: null as unknown as Engine,
+  sprite: null as unknown as Sprite,
   mouseEventType: 'NONE',
   jointEventType: 'NONE',
   createEventType: 'NONE',

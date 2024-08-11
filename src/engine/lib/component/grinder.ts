@@ -40,7 +40,7 @@ export default class Grinder extends Component {
 
     const wheel = new Wheel(
       this.centroid,
-      registry.engine.GameBoard.cellSize / 2,
+      registry.engine.GameBoard.cellSize / 4,
       'rgb(180, 180, 180)',
     );
     wheel.shape.draw = () => {

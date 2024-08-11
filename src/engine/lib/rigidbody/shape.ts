@@ -94,8 +94,6 @@ export default class Shape {
     /** Centroid point rotation */
     let rotatedCentroid = this.calculatorUtils.rotateAroundPoint(this.centroid, spindle, radian);
 
-    // console.log(spindle, rotatedCentroid);
-
     this.centroid = rotatedCentroid;
 
     /** 전향력은 편집단계에서는 저장하지 말아야한다. */

@@ -16,6 +16,7 @@ import Pressure from '@engine/lib/component/pressure';
 import Component from '@engine/lib/component/component';
 import Escalator from '@engine/lib/component/escalator';
 import Grinder from '@engine/lib/component/grinder';
+import Matter from '@engine/lib/matter';
 
 export default class CreateMouse {
   start: Vector;
@@ -96,16 +97,18 @@ export default class CreateMouse {
         break;
       case 'CIRCLE':
         component = new Component(new Vector(this.target.shape.centroid));
-        component.objects.push(
-          new RigidBody(
-            new Circle(
-              new Vector(this.target.shape.centroid),
-              registry.engine.GameBoard.cellSize / 2,
-              'green',
-            ),
-            1,
+        const circle = new RigidBody(
+          new Circle(
+            new Vector(this.target.shape.centroid),
+            registry.engine.GameBoard.cellSize / 4,
+            'green',
           ),
+          0,
         );
+
+        circle.matter = new Matter(0.8, 0);
+
+        component.objects.push(circle);
         registry.engine.components.push(component);
         break;
       case 'BACONBLOCK':
