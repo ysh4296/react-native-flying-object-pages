@@ -49,6 +49,16 @@ export default class Component {
     this.orientation %= Math.PI * 2;
   }
 
+  move(delta: Vector) {
+    for (let i = 0; i < this.objects.length; i++) {
+      this.objects[i].shape.move(delta);
+    }
+    for (let i = 0; i < this.effects.length; i++) {
+      this.effects[i].shape.move(delta);
+    }
+    this.centroid.add(delta);
+  }
+
   select() {
     registry.engine.EditMouseEvent.setSelectComponent(this);
   }

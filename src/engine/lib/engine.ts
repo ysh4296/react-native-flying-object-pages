@@ -1,6 +1,6 @@
 import Draw from '@engine/utils/draw';
 import Rectangle from '@rigidbody/rectangle';
-import Vector, { addVector, scaleVector } from './vector';
+import Vector, { addVector, scaleVector, subVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
 import RigidBody from '@rigidbody/rigidbody';
@@ -58,7 +58,7 @@ export default class Engine {
     this.EditMouseEvent = new EditMouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
-    this.gravity = new Vector({ x: 0, y: 700 });
+    this.gravity = new Vector({ x: 0, y: 300 });
     this.world = world;
     this.iteration = 10;
     this.camera = {
@@ -74,8 +74,8 @@ export default class Engine {
     );
     this.bottom = new Rectangle(
       new Vector({ x: this.world.x / 2 - 10, y: this.world.y - 10 }),
-      this.world.x - 100,
-      20,
+      this.world.x - 300,
+      60,
       'red',
     );
     this.left = new Rectangle(
@@ -261,17 +261,20 @@ export default class Engine {
       });
     });
 
-    /** erase outted objects */
+    /** reset position for outted objects */
     this.components.forEach((component: Component) => {
       component.objects.forEach((object, index) => {
         if (!object.isKinematic) {
           if (object.shape.centroid.isOut() || (object instanceof Water && object.hp <= 0)) {
-            this.joints = this.joints.filter(
-              (item) =>
-                item.jointConnection.objectAId !== object.id &&
-                item.jointConnection.objectBId !== object.id,
-            );
-            component.objects.splice(index, 1);
+            // this.joints = this.joints.filter(
+            //   (item) =>
+            //     item.jointConnection.objectAId !== object.id &&
+            //     item.jointConnection.objectBId !== object.id,
+            // );
+            // component.objects.splice(index, 1);
+            const toStartPoint = subVector(new Vector({ x: 400, y: 20 }), object.shape.centroid);
+
+            object.shape.move(toStartPoint);
           }
         }
       });

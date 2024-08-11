@@ -52,6 +52,7 @@ type defaultRegistryType = {
   animationOffset: number;
   gamePhase: GamePhase;
   memory: WebAssembly.Memory;
+  gameTime: number;
 };
 
 type GamePhase = 'play' | 'pause';

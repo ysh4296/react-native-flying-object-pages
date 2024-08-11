@@ -1,5 +1,7 @@
+import { jsonData } from '@engine/levels/1-1';
 import Draw from '@engine/utils/draw';
 import Sprite from '@engine/utils/sprite';
+import Monster from './component/defense/monster';
 import Engine from './engine';
 import Vector from './vector';
 
@@ -16,6 +18,7 @@ export const registry: defaultRegistryType & { engine: Engine; sprite: Sprite } 
   jointEventType: 'NONE',
   createEventType: 'NONE',
   animationOffset: 0,
+  gameTime: 0,
   setMouseEventType: () => {},
   gamePhase: 'pause',
   memory: {
@@ -30,6 +33,8 @@ const main = (document: Document, setMouseEventType: (mouseType: MouseType) => v
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+
+  const levelData = jsonData;
 
   let currentTime = 0;
 
@@ -48,6 +53,21 @@ const main = (document: Document, setMouseEventType: (mouseType: MouseType) => v
       /** update animationOffset */
       registry.animationOffset = (registry.animationOffset + 1) % 60;
 
+      // console.log(levelData[0].time * 60);
+      while (levelData.length > 0 && levelData[0].time * 60 <= registry.gameTime) {
+        const object = levelData.shift();
+        if (object) {
+          // const monster = new Monster(object.position, 100);
+          // monster.addComponent();
+          // registry.engine.components.push(monster);
+          for (let i = 0; i < object.numbers; i++) {
+            const monster = new Monster(object.position, 100);
+            monster.addComponent();
+            registry.engine.components.push(monster);
+          }
+        }
+      }
+
       let targetTime = performance.now();
       let deltaTime = (targetTime - currentTime) / 1000;
 
@@ -56,6 +76,7 @@ const main = (document: Document, setMouseEventType: (mouseType: MouseType) => v
       if (registry.gamePhase === 'pause') {
         registry.engine.updateEdit();
       } else {
+        registry.gameTime = registry.gameTime + 1;
         registry.engine.update(deltaTime);
       }
       registry.engine.draw();

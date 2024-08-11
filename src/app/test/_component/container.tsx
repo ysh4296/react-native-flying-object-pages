@@ -17,9 +17,8 @@ import { useEffect } from 'react';
 import useGamePhaseStore from 'store/gamePhase';
 import useMouseStore from 'store/mouseStore';
 import main, { registry } from '../../../engine/lib/main';
-import init, { greet, fibonacci } from '../../../../rust-module/pkg/rust_module';
+import init from '../../../../rust-module/pkg/rust_module';
 import SpriteDraw from '@engine/utils/sprite';
-// import { memory } from '../../../../rust-module/pkg/rust_module_bg.wasm';
 
 const Container = () => {
   const { setMouseEventType } = useMouseStore();
@@ -28,11 +27,6 @@ const Container = () => {
   useEffect(() => {
     if (document) {
       init().then(async (wasm) => {
-        console.log('hi');
-        console.log(greet('Next.js and WebAssembly'));
-        console.log(fibonacci(10));
-        console.log('init Document!');
-        console.log('grid created');
         registry.memory = wasm.memory;
 
         const sprite = new SpriteDraw();
