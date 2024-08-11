@@ -31,21 +31,9 @@ const Container = () => {
         console.log(greet('Next.js and WebAssembly'));
         console.log(fibonacci(10));
         console.log('init Document!');
-        // new FluidHashGrid(1000);
         console.log('grid created');
-        // console.log(new Particle(new rustVector(1000, 0), 'blue').position.x);
-        // const res = await fetch('../../../../rust-module/pkg/rust_module_bg.wasm');
-        // console.log(res);
-        // // // bytes from memory
-        // const buffer = await res.arrayBuffer();
-        // // // this will create an object
-        // // // WebAssembly is part of window api. so make sure you are on client side.
-        // const wasm = await WebAssembly.instantiate(buffer);
-        // console.log('wasm', wasm);
-        // console.log(memory);
         registry.memory = wasm.memory;
         main(document, setMouseEventType);
-        // console.log(wasm.memory);
       });
     }
   }, [setMouseEventType]);

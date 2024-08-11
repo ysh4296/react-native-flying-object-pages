@@ -1,7 +1,7 @@
 mod vector;
 mod particle;
-mod fluidHashGrid;
-mod universe;
+mod fluid_hash_grid;
+mod engine;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

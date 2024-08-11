@@ -3,6 +3,12 @@ use wasm_bindgen::prelude::*;
 
 use crate::{particle::Particle, vector::Vector};
 
+#[wasm_bindgen(getter_with_clone)]
+#[derive(Clone)]
+pub struct ParticleVectors {
+    pub particles: Vec<Particle>,
+    pub neighbors: Vec<Particle>,
+}
 #[wasm_bindgen]
 #[derive(Clone)]
 pub struct FluidHashGrid {
@@ -19,31 +25,32 @@ impl FluidHashGrid {
     pub fn new(cell_size: f64) -> FluidHashGrid {
         FluidHashGrid {
             hash_map: HashMap::new(),
-            hash_map_size: 10000,
+            hash_map_size: 1000000,
             p1_prime: 661401,
             p2_prime: 752887,
             cell_size,
         }
     }
 
-    pub fn refresh_grid(&mut self, particles:Vec<Particle>) {
+    pub fn refresh_grid(&mut self, particles:Vec<Particle>) -> Vec<Particle> {
         self.clear_grid();
-        self.map_particles_to_cell(particles);
+        self.map_particles_to_cell(particles)
     }
 
     pub fn clear_grid(&mut self) {
         self.hash_map.clear();
     }
 
-    pub fn map_particles_to_cell(&mut self, particles:Vec<Particle>) {
+    pub fn map_particles_to_cell(&mut self, particles:Vec<Particle>) -> Vec<Particle> {
         for particle in &particles {
             let position = &particle.position;
             let hash = self.get_grid_id_from_position(position);
             self.hash_map.entry(hash).or_insert(Vec::new()).push(particle.clone());
         }
+        particles
     }
 
-    pub fn get_neighbor_particles(&self, particle_id: usize, particles:Vec<Particle>) -> Vec<Particle> {
+    pub fn get_neighbor_particles(&self, particle_id: usize, particles:Vec<Particle>) -> ParticleVectors {
         let mut neighbors = Vec::new();
         let pos = &particles[particle_id].position;
         let x = (pos.x / self.cell_size).floor() as i64;
@@ -57,7 +64,8 @@ impl FluidHashGrid {
                 neighbors.extend(content);
             }
         }
-        neighbors
+
+        ParticleVectors { particles:particles, neighbors:neighbors }
     }
 
     pub fn get_particles_of_cell(&self, id: u64) -> Vec<Particle> {

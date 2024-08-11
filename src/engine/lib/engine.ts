@@ -1,6 +1,6 @@
 import Draw from '@engine/utils/draw';
 import Rectangle from '@rigidbody/rectangle';
-import Vector, { addVector } from './vector';
+import Vector, { addVector, scaleVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
 import RigidBody from '@rigidbody/rigidbody';
@@ -16,16 +16,7 @@ import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
 import Component from './component/component';
 import Effect from './effect/effect';
-// import Particle from './particle/particle';
-// import FluidHashGrid from '@engine/grid/particleHashGrid';
-import {
-  Vector as rustVector,
-  // FluidHashGrid as rustFluidHashGrid,
-  Particle as rustParticle,
-  Universe,
-} from '../../../rust-module/pkg/rust_module';
-import FluidHashGrid from '@engine/grid/particleHashGrid';
-// import { memory } from '../../../rust-module/pkg/rust_module_bg.wasm';
+import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
 
 export default class Engine {
   canvas: HTMLCanvasElement;
@@ -38,24 +29,22 @@ export default class Engine {
   left: Rectangle;
   right: Rectangle;
   collision: Collision;
-  gravity: rustVector;
   components: Component[];
   joints: Joint[];
   iteration: number;
   grid: HashGrid;
-  fluidGrid: FluidHashGrid;
   GrabMouseEvent: GrabMouse;
   JointMouseEvent: JointMouse;
   CreateMouseEvent: CreateMouse;
   EditMouseEvent: EditMouse;
   camera: CameraType;
   GameBoard: Grid; // gameboard to assign circuit & blocks
-  particles: any;
   restDensity: number;
   K_NEAR: number;
   K: number;
   INTERACTION_RADIUS: number;
-  universe: Universe;
+  rustEngine: rustEngine;
+  gravity: Vector;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -68,6 +57,7 @@ export default class Engine {
     this.EditMouseEvent = new EditMouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
+    this.gravity = new Vector({ x: 0, y: 700 });
     this.world = world;
     this.iteration = 10;
     this.camera = {
@@ -99,9 +89,7 @@ export default class Engine {
       this.world.y - 100,
       'red',
     );
-    this.gravity = new rustVector(0, 700);
     this.components = [];
-    this.particles = [];
     // const component = new Component(this.bottom.centroid);
     // const bottom = new RigidBody(this.bottom, 0);
     // component.objects.push(bottom);
@@ -111,18 +99,12 @@ export default class Engine {
     // this.rigidBodies.push(new RigidBody(this.left, 0));
     // this.rigidBodies.push(new RigidBody(this.right, 0));
     this.grid = new HashGrid(15);
-    this.fluidGrid = new FluidHashGrid(25);
     this.grid.initializeComponent(this.world, this.components);
     this.grid.refreshGrid();
     this.GameBoard = new Grid(100);
     this.GameBoard.initialize(this.world);
     // this.initParticles();
-    this.universe = new Universe();
-    const particlesPtr = this.universe.particles();
-    console.log(particlesPtr);
-    const cells = new Float64Array(registry.memory.buffer, particlesPtr, 400);
-    console.log(cells);
-    console.log(registry.memory.buffer);
+    this.rustEngine = new rustEngine();
 
     // this.fluidGrid.initializeParticle(this.particles);
     this.restDensity = 15;
@@ -159,7 +141,7 @@ export default class Engine {
     this.grid.refreshGrid();
     this.handleJoints();
 
-    this.universe.update();
+    this.rustEngine.update(deltaTime);
 
     // const particlesPtr = this.universe.particles();
     // const cells = new Float64Array(registry.memory.buffer, particlesPtr, 400 * 6);
@@ -187,27 +169,27 @@ export default class Engine {
     /**
      * apply gravity
      */
-    this.particles.forEach((particle: rustParticle) => {
-      particle.velocity = rustVector.add_vector(
-        particle.velocity,
-        rustVector.scale_vector(this.gravity, 0.01),
-      );
-    });
+    // this.particles.forEach((particle: rustParticle) => {
+    //   particle.velocity = rustVector.add_vector(
+    //     particle.velocity,
+    //     rustVector.scale_vector(this.gravity, 0.01),
+    //   );
+    // });
 
-    this.predictPositions(deltaTime);
+    // this.predictPositions(deltaTime);
 
-    this.neighbourSearch();
+    // this.neighbourSearch();
 
     // this.doubleDensityRelaxation(deltaTime);
 
-    this.worldBoundary();
+    // this.worldBoundary();
 
-    this.computeNextVelocity(deltaTime);
+    // this.computeNextVelocity(deltaTime);
 
     this.components.forEach((component: Component) => {
       for (let i = 0; i < component.objects.length; i++) {
         let objectA = component.objects[i];
-        // objectA.addForce(scaleVector(this.gravity, objectA.mass));
+        objectA.addForce(scaleVector(this.gravity, objectA.mass));
         objectA.update(deltaTime);
         objectA.shape.boundingBox.collision = false;
       }
@@ -336,16 +318,14 @@ export default class Engine {
     if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
     if (registry.gamePhase === 'pause') this.GameBoard.draw();
 
-    for (let i = 0; i < this.particles.length; i++) {
-      console.log('position get ', this.particles);
-      // let position = this.particles[i].position;
-      // let color = this.particles[i].color;
-      this.drawUtils.fillCircle(
-        new Vector({ x: this.particles[i].position.x, y: this.particles[i].position.y }),
-        5,
-        this.particles[i].color,
-      );
-    }
+    // for (let i = 0; i < this.particles.length; i++) {
+    //   console.log('position get ', this.particles);
+    //   this.drawUtils.fillCircle(
+    //     new Vector({ x: this.particles[i].position.x, y: this.particles[i].position.y }),
+    //     5,
+    //     this.particles[i].color,
+    //   );
+    // }
     this.components.forEach((component) => {
       component.drawComponent();
       component.objects.forEach((object) => {
@@ -356,10 +336,10 @@ export default class Engine {
       component.drawEffect();
     });
 
-    const particlesPtr = this.universe.particles();
-    const cells = new Float64Array(registry.memory.buffer, particlesPtr, 400 * 6);
+    const particlesPtr = this.rustEngine.particles();
+    const cells = new Float64Array(registry.memory.buffer, particlesPtr, 1600 * 7);
 
-    for (let i = 0; i < 400 * 6; i += 6) {
+    for (let i = 0; i < 1600 * 7; i += 7) {
       // i is index of particle
       // cells[i]; // positionx
       // cells[i + 1]; // positiony
@@ -368,12 +348,8 @@ export default class Engine {
       // cells[i + 4]; // velox
       // cells[i + 5]; // veloy
 
-      this.drawUtils.fillCircle(new Vector({ x: cells[i], y: cells[i + 1] }), 5, 'blue');
+      this.drawUtils.fillCircle(new Vector({ x: cells[i + 1], y: cells[i + 2] }), 5, 'blue');
     }
-
-    // for (let i = 0; i < this.joints.length; i++) {
-    //   this.joints[i].draw();
-    // }
   }
 
   drawSelect() {
@@ -453,11 +429,10 @@ export default class Engine {
   }
 
   neighbourSearch() {
-    this.fluidGrid.clearGrid();
-    this.fluidGrid.mapParticlesToCell();
+    // this.fluidGrid.clearGrid();
+    // this.fluidGrid.mapParticlesToCell();
     // let hashId = this.fluidGrid.getGridIdFromPosition(mousePosition);
     // let particlesofCell = this.fluidGrid.getParticlesOfCell(hashId);
-
     // this.particles[0].position = mousePosition.getCopy();
     // let contentofCell = this.fluidGrid.getNeighborParticles(0);
     // for (let i = 0; i < this.particles.length; i++) {
@@ -465,63 +440,61 @@ export default class Engine {
     // }
     // for (let i = 0; i < contentofCell.length; i++) {
     //   let particle = contentofCell[i];
-
     //   let direction = subVector(particle.position, mousePosition);
     //   let distance = direction.lengthSquare();
-
     //   if (distance < 25 * 25) {
     //     contentofCell[i].color = 'orange';
     //   }
     // }
   }
 
-  predictPositions(deltaTime: number) {
-    const velocityDamping = 1;
-    for (let i = 0; i < this.particles.length; i++) {
-      this.particles[i].prev_position = this.particles[i].position.get_copy();
-      let positionDelta = rustVector.scale_vector(
-        this.particles[i].velocity,
-        deltaTime * velocityDamping,
-      );
-      this.particles[i].position = rustVector.add_vector(this.particles[i].position, positionDelta);
-    }
-  }
+  // predictPositions(deltaTime: number) {
+  //   const velocityDamping = 1;
+  //   for (let i = 0; i < this.particles.length; i++) {
+  //     this.particles[i].prev_position = this.particles[i].position.get_copy();
+  //     let positionDelta = rustVector.scale_vector(
+  //       this.particles[i].velocity,
+  //       deltaTime * velocityDamping,
+  //     );
+  //     this.particles[i].position = rustVector.add_vector(this.particles[i].position, positionDelta);
+  //   }
+  // }
 
-  computeNextVelocity(deltaTime: number) {
-    for (let i = 0; i < this.particles.length; i++) {
-      let velocity = rustVector.scale_vector(
-        rustVector.sub_vector(this.particles[i].position, this.particles[i].prev_position),
-        1.0 / deltaTime,
-      );
-      this.particles[i].velocity = velocity;
-    }
-  }
+  // computeNextVelocity(deltaTime: number) {
+  //   for (let i = 0; i < this.particles.length; i++) {
+  //     let velocity = rustVector.scale_vector(
+  //       rustVector.sub_vector(this.particles[i].position, this.particles[i].prev_position),
+  //       1.0 / deltaTime,
+  //     );
+  //     this.particles[i].velocity = velocity;
+  //   }
+  // }
 
-  worldBoundary() {
-    for (let i = 0; i < this.particles.length; i++) {
-      let position = this.particles[i].position;
+  // worldBoundary() {
+  //   for (let i = 0; i < this.particles.length; i++) {
+  //     let position = this.particles[i].position;
 
-      if (position.x < 0) {
-        this.particles[i].position.x = 0;
-        this.particles[i].prev_position.x = 0;
-      }
+  //     if (position.x < 0) {
+  //       this.particles[i].position.x = 0;
+  //       this.particles[i].prev_position.x = 0;
+  //     }
 
-      if (position.x > this.world.x) {
-        this.particles[i].position.x = this.world.x;
-        this.particles[i].prev_position.x = this.world.x;
-      }
+  //     if (position.x > this.world.x) {
+  //       this.particles[i].position.x = this.world.x;
+  //       this.particles[i].prev_position.x = this.world.x;
+  //     }
 
-      if (position.y < 0) {
-        this.particles[i].position.y = 0;
-        this.particles[i].prev_position.y = 0;
-      }
+  //     if (position.y < 0) {
+  //       this.particles[i].position.y = 0;
+  //       this.particles[i].prev_position.y = 0;
+  //     }
 
-      if (position.y > this.world.y) {
-        this.particles[i].position.y = this.world.y;
-        this.particles[i].prev_position.y = this.world.y;
-      }
-    }
-  }
+  //     if (position.y > this.world.y) {
+  //       this.particles[i].position.y = this.world.y;
+  //       this.particles[i].prev_position.y = this.world.y;
+  //     }
+  //   }
+  // }
 
   // doubleDensityRelaxation(deltaTime: number) {
   //   for (let i = 0; i < this.particles.length; i++) {
