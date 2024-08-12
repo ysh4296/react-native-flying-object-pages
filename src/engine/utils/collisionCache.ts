@@ -1,4 +1,5 @@
 import ImageCircle from '@engine/lib/balls/imageCircle';
+import Monster from '@engine/lib/component/defense/monster';
 import { registry } from '@engine/lib/main';
 import RigidBody from '@engine/lib/rigidbody/rigidbody';
 import { subVector } from '@engine/lib/vector';
@@ -64,8 +65,15 @@ export default class CollisionCache {
           (result.penetrationPoint.y + objectA.shape.centroid.y) / 2,
           damage,
         );
+
         // console.log('after : ', objectA.shape.collisionTime);
         // damaging
+        const targetMonster = registry.engine.components.find((component) =>
+          component.objects.find((object) => object.id === objectA.id),
+        );
+        if (targetMonster instanceof Monster) {
+          targetMonster.hp -= damage;
+        }
       }
 
       if (objectB instanceof ImageCircle) {
@@ -87,6 +95,12 @@ export default class CollisionCache {
         );
 
         // damaging
+        const targetMonster = registry.engine.components.find((component) =>
+          component.objects.find((object) => object.id === objectB.id),
+        );
+        if (targetMonster instanceof Monster) {
+          targetMonster.hp -= damage;
+        }
       }
     }
   }

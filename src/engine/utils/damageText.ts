@@ -2,8 +2,8 @@ import { registry } from '@engine/lib/main';
 
 export default class DamageText {
   damageTexts: DamageTextType[];
-  constructor(damageTexts: DamageTextType[]) {
-    this.damageTexts = damageTexts;
+  constructor() {
+    this.damageTexts = [];
   }
 
   addDamageText(x: number, y: number, value: number) {

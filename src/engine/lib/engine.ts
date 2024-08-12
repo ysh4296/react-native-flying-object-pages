@@ -19,6 +19,8 @@ import Effect from './effect/effect';
 import Water from './food/liquid/water';
 import CollisionCache from '@engine/utils/collisionCache';
 import DamageText from '@engine/utils/damageText';
+import Monster from './component/defense/monster';
+import ParticleEffects from '@engine/utils/particleEffects';
 // import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
 
 export default class Engine {
@@ -50,6 +52,7 @@ export default class Engine {
   gravity: Vector;
   collisionCache: CollisionCache;
   damageText: DamageText;
+  particleEffect: ParticleEffects;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -122,7 +125,8 @@ export default class Engine {
     this.K = 100;
     this.INTERACTION_RADIUS = 25;
     this.collisionCache = new CollisionCache(6);
-    this.damageText = new DamageText([]);
+    this.damageText = new DamageText();
+    this.particleEffect = new ParticleEffects();
   }
 
   handleJoints() {
@@ -257,7 +261,16 @@ export default class Engine {
     });
 
     /** reset position for outted objects */
-    this.components.forEach((component: Component) => {
+    this.components.forEach((component: Component, componentIndex: number) => {
+      if (component instanceof Monster) {
+        if (component.hp < 0) {
+          // dead!
+          component.objects.forEach((object) => {
+            this.particleEffect.createExplosion(object.shape.centroid, 30);
+          });
+          this.components.splice(componentIndex, 1);
+        }
+      }
       component.objects.forEach((object, index) => {
         if (!object.isKinematic) {
           if (object.shape.centroid.isOut() || (object instanceof Water && object.hp <= 0)) {
@@ -339,6 +352,8 @@ export default class Engine {
     //   this.drawUtils.fillCircle(new Vector({ x: cells[i + 1], y: cells[i + 2] }), 5, 'blue');
     // }
     // registry.sprite.drawSprite();
+    this.particleEffect.update();
+    this.particleEffect.draw();
     this.damageText.updateAndDrawDamageTexts();
   }
 
