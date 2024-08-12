@@ -17,6 +17,8 @@ import Grid from '@engine/grid/grid';
 import Component from './component/component';
 import Effect from './effect/effect';
 import Water from './food/liquid/water';
+import CollisionCache from '@engine/utils/collisionCache';
+import DamageText from '@engine/utils/damageText';
 // import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
 
 export default class Engine {
@@ -46,6 +48,8 @@ export default class Engine {
   INTERACTION_RADIUS: number;
   // rustEngine: rustEngine;
   gravity: Vector;
+  collisionCache: CollisionCache;
+  damageText: DamageText;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -73,9 +77,9 @@ export default class Engine {
       'red',
     );
     this.bottom = new Rectangle(
-      new Vector({ x: this.world.x / 2 - 10, y: this.world.y - 10 }),
+      new Vector({ x: this.world.x / 2 - 10, y: this.world.y - 100 }),
       this.world.x - 300,
-      60,
+      100,
       'red',
     );
     this.left = new Rectangle(
@@ -117,6 +121,8 @@ export default class Engine {
     this.K_NEAR = 5000;
     this.K = 100;
     this.INTERACTION_RADIUS = 25;
+    this.collisionCache = new CollisionCache(6);
+    this.damageText = new DamageText([]);
   }
 
   handleJoints() {
@@ -163,39 +169,21 @@ export default class Engine {
         break;
     }
 
-    /**
-     * apply gravity
-     */
-    // this.particles.forEach((particle: rustParticle) => {
-    //   particle.velocity = rustVector.add_vector(
-    //     particle.velocity,
-    //     rustVector.scale_vector(this.gravity, 0.01),
-    //   );
-    // });
-
-    // this.predictPositions(deltaTime);
-
-    // this.neighbourSearch();
-
-    // this.doubleDensityRelaxation(deltaTime);
-
-    // this.worldBoundary();
-
-    // this.computeNextVelocity(deltaTime);
-
-    this.components.forEach((component: Component) => {
-      for (let i = 0; i < component.objects.length; i++) {
-        let objectA = component.objects[i];
-        objectA.addForce(scaleVector(this.gravity, objectA.mass));
-        objectA.update(deltaTime);
-        objectA.shape.boundingBox.collision = false;
-      }
-    });
-
     for (let it = 0; it < this.iteration; it++) {
       this.components.forEach((component: Component) => {
         for (let i = 0; i < component.objects.length; i++) {
           let objectA = component.objects[i];
+          objectA.addForce(scaleVector(this.gravity, objectA.mass));
+          objectA.update(deltaTime / this.iteration);
+        }
+      });
+
+      this.components.forEach((component: Component) => {
+        for (let i = 0; i < component.objects.length; i++) {
+          let objectA = component.objects[i];
+          // objectA.update(deltaTime / this.iteration);
+          objectA.shape.boundingBox.collision = false;
+
           const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
 
           let neighbors = this.grid.getNeighborObject(objectCode, objectA);
@@ -213,6 +201,13 @@ export default class Engine {
               let result = this.collision.checkCollision(objectA.shape, objectB.shape);
               if (result) {
                 /** resolve collision */
+                // hard crashed
+
+                if (result.depth > 3) {
+                  // depth mostly between 3 ~ 12
+                  this.collisionCache.onCollision(result, objectA, objectB);
+                }
+
                 result.resolveCollision(objectA, objectB);
                 result.positionalCorrection(objectA, objectB, 0.3);
               }
@@ -272,7 +267,7 @@ export default class Engine {
             //     item.jointConnection.objectBId !== object.id,
             // );
             // component.objects.splice(index, 1);
-            const toStartPoint = subVector(new Vector({ x: 400, y: 20 }), object.shape.centroid);
+            const toStartPoint = subVector(new Vector({ x: 400, y: 100 }), object.shape.centroid);
 
             object.shape.move(toStartPoint);
           }
@@ -344,6 +339,7 @@ export default class Engine {
     //   this.drawUtils.fillCircle(new Vector({ x: cells[i + 1], y: cells[i + 2] }), 5, 'blue');
     // }
     // registry.sprite.drawSprite();
+    this.damageText.updateAndDrawDamageTexts();
   }
 
   drawSelect() {

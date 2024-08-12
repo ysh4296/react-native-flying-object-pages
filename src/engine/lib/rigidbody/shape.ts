@@ -13,6 +13,7 @@ export default class Shape {
   anchorPoints: Map<number, Vector>;
   normals: Vector[];
   orientation: number;
+  collisionTime: number;
 
   constructor(vertices: Vector[], color: string) {
     this.drawUtils = Draw.getInstance();
@@ -27,6 +28,7 @@ export default class Shape {
       throw new TypeError("Cannot construct abstract instances directly of Class 'Shape'");
     }
     this.anchorPoints = new Map();
+    this.collisionTime = -Infinity;
   }
 
   setCentroid(position: Vector) {

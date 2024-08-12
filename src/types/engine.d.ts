@@ -56,3 +56,12 @@ type defaultRegistryType = {
 };
 
 type GamePhase = 'play' | 'pause';
+
+type DamageTextType = {
+  x: number;
+  y: number;
+  value: number;
+  alpha: number; // 투명도
+  lifespan: number; // 남은 시간 (밀리초)
+  velocityY: number; // 위로 떠오르는 속도
+};

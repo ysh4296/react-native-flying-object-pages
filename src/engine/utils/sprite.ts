@@ -27,7 +27,7 @@ export default class Sprite {
     // 이미지가 로드된 후 작업을 진행
     const spriteWidth = 72; // 스프라이트의 너비
     const spriteHeight = 72; // 스프라이트의 높이
-    const spriteIndex = 9;
+    const spriteIndex = 8;
     const columns = 5; // 스프라이트 시트의 열 수
 
     const col = spriteIndex % columns;

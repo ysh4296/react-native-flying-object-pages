@@ -82,6 +82,11 @@ export default class Grinder extends Component {
       );
     };
     this.objects.push(wheel);
+
+    this.objects.forEach((object) => {
+      this.objects[0].addNonCollisionObject(object);
+    });
+
     registry.engine.components.push(this);
   }
 }
