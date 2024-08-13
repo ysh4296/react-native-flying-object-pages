@@ -66,7 +66,7 @@ export default class Engine {
     this.EditMouseEvent = new EditMouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
-    this.gravity = new Vector({ x: 0, y: 700 });
+    this.gravity = new Vector({ x: 0, y: 300 });
     this.world = world;
     this.iteration = 10;
     this.camera = {

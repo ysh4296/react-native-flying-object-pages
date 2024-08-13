@@ -38,7 +38,7 @@ export default class CollisionCache {
      */
     if (this.hasCooldownPassed(objectA.id, objectB.id)) {
       let collisionVector = subVector(objectA.velocity, objectB.velocity);
-      let damage = registry.engine.calculatorUtils.clamp(collisionVector.length(), 600, 10);
+      let damage = registry.engine.calculatorUtils.clamp(collisionVector.length(), 800, 10);
 
       damage = Math.ceil(damage / 10);
       // execute collision Event
