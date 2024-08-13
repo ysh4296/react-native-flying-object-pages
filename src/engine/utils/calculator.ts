@@ -185,4 +185,21 @@ export default class Calculator {
   generateObjectId() {
     return registry.createdId++;
   }
+
+  /**
+   * @param p0
+   * @param p1
+   * @param p2
+   * @param p3
+   * @param t x position between 0 to 1
+   * @returns y position on bezier curve
+   */
+  calculateBezier(p0: number, p1: number, p2: number, p3: number, t: number) {
+    return (
+      Math.pow(1 - t, 3) * p0 +
+      3 * Math.pow(1 - t, 2) * t * p1 +
+      3 * (1 - t) * Math.pow(t, 2) * p2 +
+      Math.pow(t, 3) * p3
+    );
+  }
 }

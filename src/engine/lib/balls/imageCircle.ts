@@ -31,8 +31,10 @@ export default class ImageCircle extends RigidBody {
         registry.engine.drawUtils.drawCircle(this.shape.centroid, 25, 'white');
         return;
       }
-      this.shape.drawUtils.drawCircle(this.shape.centroid, 25, '#87CEFA');
+
+      // this.shape.drawUtils.drawCircle(this.shape.centroid, 25, '#87CEFA');
       this.shape.drawUtils.ctx.save();
+      this.shape.drawUtils.ctx.beginPath();
       const newStart = subVector(
         this.shape.centroid,
         rotateVector(new Vector({ x: 25, y: 25 }), this.shape.orientation),
@@ -41,6 +43,7 @@ export default class ImageCircle extends RigidBody {
       this.shape.drawUtils.ctx.rotate(this.shape.orientation);
 
       registry.sprite.drawSprite();
+      this.shape.drawUtils.ctx.closePath();
       this.shape.drawUtils.ctx.restore();
     };
   }

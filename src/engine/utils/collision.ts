@@ -61,6 +61,12 @@ export default class Collision {
 
     if (direction.lengthSquare() < radiusSum * radiusSum) {
       let directionLength = direction.length();
+      if (directionLength === 0) {
+        /**
+         * prevent divide 0 error
+         */
+        directionLength = 0.00000001;
+      }
       let penetratedNormal = scaleVector(direction, 1 / directionLength);
       let penetrationDepth = radiusSum - directionLength;
       let penetrationPoint = subVector(centroidA, scaleVector(penetratedNormal, -circleA.radius));

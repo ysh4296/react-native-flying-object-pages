@@ -92,6 +92,7 @@ export default class RigidBody {
   }
 
   update(deltaTime: number) {
+    if (deltaTime === 0) return;
     this.integrate(deltaTime);
     this.velocity.scale(0.99999);
     this.angularVelocity *= 0.999;

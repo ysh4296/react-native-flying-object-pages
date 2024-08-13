@@ -41,7 +41,6 @@ export default class CollisionCache {
       let damage = registry.engine.calculatorUtils.clamp(collisionVector.length(), 600, 10);
 
       damage = Math.ceil(damage / 10);
-      // console.log('cooldown');
       // execute collision Event
       let id1 = objectA.id;
       let id2 = objectB.id;
@@ -66,7 +65,6 @@ export default class CollisionCache {
           damage,
         );
 
-        // console.log('after : ', objectA.shape.collisionTime);
         // damaging
         const targetMonster = registry.engine.components.find((component) =>
           component.objects.find((object) => object.id === objectA.id),

@@ -16,11 +16,11 @@ import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
 import Component from './component/component';
 import Effect from './effect/effect';
-import Water from './food/liquid/water';
 import CollisionCache from '@engine/utils/collisionCache';
 import DamageText from '@engine/utils/damageText';
 import Monster from './component/defense/monster';
 import ParticleEffects from '@engine/utils/particleEffects';
+import GoldGainEffect from '@engine/utils/goldGainEffect';
 // import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
 
 export default class Engine {
@@ -53,6 +53,7 @@ export default class Engine {
   collisionCache: CollisionCache;
   damageText: DamageText;
   particleEffect: ParticleEffects;
+  goldGainEffect: GoldGainEffect;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -65,7 +66,7 @@ export default class Engine {
     this.EditMouseEvent = new EditMouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
-    this.gravity = new Vector({ x: 0, y: 300 });
+    this.gravity = new Vector({ x: 0, y: 700 });
     this.world = world;
     this.iteration = 10;
     this.camera = {
@@ -127,6 +128,7 @@ export default class Engine {
     this.collisionCache = new CollisionCache(6);
     this.damageText = new DamageText();
     this.particleEffect = new ParticleEffects();
+    this.goldGainEffect = new GoldGainEffect();
   }
 
   handleJoints() {
@@ -185,7 +187,7 @@ export default class Engine {
       this.components.forEach((component: Component) => {
         for (let i = 0; i < component.objects.length; i++) {
           let objectA = component.objects[i];
-          // objectA.update(deltaTime / this.iteration);
+
           objectA.shape.boundingBox.collision = false;
 
           const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
@@ -207,7 +209,7 @@ export default class Engine {
                 /** resolve collision */
                 // hard crashed
 
-                if (result.depth > 3) {
+                if (result.depth > 1) {
                   // depth mostly between 3 ~ 12
                   this.collisionCache.onCollision(result, objectA, objectB);
                 }
@@ -253,13 +255,11 @@ export default class Engine {
 
     this.components.forEach((component: Component) => {
       component.objects.forEach((object) => {
-        if (object instanceof Water) {
-        } else {
-          object.active();
-        }
+        object.active();
       });
     });
 
+    const eraseIndex: number[] = [];
     /** reset position for outted objects */
     this.components.forEach((component: Component, componentIndex: number) => {
       if (component instanceof Monster) {
@@ -267,13 +267,30 @@ export default class Engine {
           // dead!
           component.objects.forEach((object) => {
             this.particleEffect.createExplosion(object.shape.centroid, 30);
+            this.particleEffect.createBlinking(object.shape.centroid);
+            this.goldGainEffect.addGlodGainText(
+              object.shape.centroid.x,
+              object.shape.centroid.y,
+              1000,
+            );
           });
-          this.components.splice(componentIndex, 1);
+          eraseIndex.push(componentIndex);
         }
       }
-      component.objects.forEach((object, index) => {
+    });
+
+    // eraseIndex를 내림차순으로 정렬
+    eraseIndex.sort((a, b) => b - a);
+
+    // 인덱스가 큰 것부터 순서대로 삭제
+    eraseIndex.forEach((index) => {
+      this.components.splice(index, 1);
+    });
+
+    this.components.forEach((component: Component, componentIndex: number) => {
+      component.objects.forEach((object) => {
         if (!object.isKinematic) {
-          if (object.shape.centroid.isOut() || (object instanceof Water && object.hp <= 0)) {
+          if (object.shape.centroid.isOut()) {
             // this.joints = this.joints.filter(
             //   (item) =>
             //     item.jointConnection.objectAId !== object.id &&
@@ -281,8 +298,13 @@ export default class Engine {
             // );
             // component.objects.splice(index, 1);
             const toStartPoint = subVector(new Vector({ x: 400, y: 100 }), object.shape.centroid);
-
+            // console.log(toStartPoint.x, '  :  ', toStartPoint.y);
             object.shape.move(toStartPoint);
+
+            // console.log(object.shape.centroid.x, '  :  ', object.shape.centroid.y);
+            // object.velocity.scale(0.001);
+            // console.log(object.shape.centroid.x, ' : ', object.shape.centroid.y);
+            object.velocity = new Vector({ x: 0, y: 0 });
           }
         }
       });
@@ -354,6 +376,7 @@ export default class Engine {
     // registry.sprite.drawSprite();
     this.particleEffect.update();
     this.particleEffect.draw();
+    this.goldGainEffect.updateAndDrawGlodGainTexts();
     this.damageText.updateAndDrawDamageTexts();
   }
 

@@ -61,7 +61,7 @@ const main = (document: Document, setMouseEventType: (mouseType: MouseType) => v
           // monster.addComponent();
           // registry.engine.components.push(monster);
           for (let i = 0; i < object.numbers; i++) {
-            const monster = new Monster(object.position, 100);
+            const monster = new Monster(object.position, 200);
             monster.addComponent();
             registry.engine.components.push(monster);
           }

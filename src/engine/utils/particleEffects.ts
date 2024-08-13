@@ -1,3 +1,4 @@
+import Blinking from '@engine/lib/particle/blinking';
 import Particle from '@engine/lib/particle/particle';
 import Vector from '@engine/lib/vector';
 
@@ -12,6 +13,10 @@ export default class ParticleEffects {
     for (let i = 0; i < count; i++) {
       this.particles.push(new Particle(position));
     }
+  }
+
+  createBlinking(position: Vector) {
+    this.particles.push(new Blinking(position));
   }
 
   update() {

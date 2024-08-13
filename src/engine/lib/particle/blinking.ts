@@ -1,23 +1,17 @@
 import { registry } from '../main';
 import Vector from '../vector';
+import Particle from './particle';
 
-export default class Particle {
-  position: Vector;
-  velocity: Vector;
-  size: number;
-  color: string;
-  life: number;
-
+export default class Blinking extends Particle {
   constructor(position: Vector) {
-    this.position = position.getCopy();
-    this.velocity = new Vector({ x: Math.random() - 0.5, y: Math.random() - 0.5 });
-    this.size = Math.random() * 5 + 2;
-    this.color = `rgba(255, 20, 0, ${Math.random()})`; // 오렌지 색상
-    this.life = Math.random() * 30 + 30; // 파티클의 수명
+    super(position);
+    this.velocity = new Vector({ x: 0, y: 0 });
+    this.size = 25;
+    this.color = `rgba(255, 0, 0, 1)`; // 오렌지 색상
+    this.life = 12; // 파티클의 수명
   }
 
   update() {
-    this.position.add(this.velocity);
     this.life -= 1;
   }
 

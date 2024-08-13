@@ -180,4 +180,9 @@ export default class Draw {
     this.ctx.closePath();
     this.ctx.restore(); // 이전 상태로 복원
   }
+
+  drawCenteredText(center: Vector, text: string) {
+    const textWidth = this.ctx.measureText(text).width;
+    this.ctx.fillText(text, center.x - textWidth / 2, center.y);
+  }
 }
