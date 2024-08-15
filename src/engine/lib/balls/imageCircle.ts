@@ -31,12 +31,21 @@ export default class ImageCircle extends RigidBody {
         registry.engine.drawUtils.drawCircle(this.shape.centroid, 25, 'white');
         return;
       }
+
+      let newAngle: number = 0;
+
+      if (this.velocity.length() > 10) {
+        newAngle = registry.engine.calculatorUtils.getAngleBetweenVectors(
+          new Vector({ x: 0, y: 1 }),
+          this.velocity,
+        );
+      }
       const newStart = subVector(
         this.shape.centroid,
-        rotateVector(new Vector({ x: 25, y: 25 }), this.shape.orientation),
+        rotateVector(new Vector({ x: 25, y: 25 }), newAngle),
       );
       // registry.sprite.drawSprite(this.shape.orientation, newStart);
-      registry.animation.drawAnimation(this.shape.orientation, newStart);
+      registry.animation.drawAnimation(newAngle, newStart);
     };
   }
 }

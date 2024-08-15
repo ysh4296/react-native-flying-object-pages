@@ -5,6 +5,7 @@ export default class Animation {
   spriteSheet: HTMLImageElement;
   animationFrame: number;
   frameDelay: number;
+
   constructor() {
     this.spriteSheet = new Image();
     this.animationFrame = 0;
