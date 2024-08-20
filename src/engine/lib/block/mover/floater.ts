@@ -25,7 +25,7 @@ export default class Floater extends RigidBody {
     super(new Rectangle(new Vector({ x: position.x, y: position.y }), width, height, color), 0);
     this.matter = new Matter(0, 0.05);
     this.shape.draw = () => {
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: width, y: height }),
         color,

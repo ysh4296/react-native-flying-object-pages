@@ -1,3 +1,4 @@
+import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
 import Vector from '@engine/lib/vector';
 import Rectangle from '@rigidbody/rectangle';
@@ -9,7 +10,7 @@ export default class Plate extends RigidBody {
     this.matter = new Matter(0, 0.7);
 
     this.shape.draw = () => {
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: width, y: height }),
         'black',

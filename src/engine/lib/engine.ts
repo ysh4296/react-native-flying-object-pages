@@ -21,6 +21,11 @@ import DamageText from '@engine/utils/damageText';
 import Monster from './component/defense/monster';
 import ParticleEffects from '@engine/utils/particleEffects';
 import GoldGainEffect from '@engine/utils/goldGainEffect';
+import skillEffects from '@engine/utils/skillEffects';
+import Charactor from './game/charactor';
+import BoundingBox from '@engine/grid/boundingBox';
+import { BounceAttribute } from './game/attribute/attribute';
+import Shape from './rigidbody/shape';
 // import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
 
 export default class Engine {
@@ -44,16 +49,14 @@ export default class Engine {
   EditMouseEvent: EditMouse;
   camera: CameraType;
   GameBoard: Grid; // gameboard to assign circuit & blocks
-  restDensity: number;
-  K_NEAR: number;
-  K: number;
-  INTERACTION_RADIUS: number;
   // rustEngine: rustEngine;
   gravity: Vector;
   collisionCache: CollisionCache;
   damageText: DamageText;
   particleEffect: ParticleEffects;
   goldGainEffect: GoldGainEffect;
+  skillEffect: skillEffects;
+  charactorMap: Map<number, Charactor>;
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, world: Vector) {
     this.canvas = canvas;
@@ -67,6 +70,7 @@ export default class Engine {
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
     this.gravity = new Vector({ x: 0, y: 300 });
+    this.charactorMap = new Map();
     this.world = world;
     this.iteration = 10;
     this.camera = {
@@ -116,15 +120,12 @@ export default class Engine {
     component.objects.push(left);
     this.components.push(component);
     this.grid = new HashGrid(15);
-    this.grid.initializeComponent(this.world, this.components);
-    this.grid.refreshGrid();
+    this.skillEffect = new skillEffects();
+    this.grid.initializeComponent(this.world, this.components, this.skillEffect.active);
+    this.grid.refreshGrid(this.components, this.skillEffect.active);
     this.GameBoard = new Grid(100);
     this.GameBoard.initialize(this.world);
     // this.rustEngine = new rustEngine();
-    this.restDensity = 15;
-    this.K_NEAR = 5000;
-    this.K = 100;
-    this.INTERACTION_RADIUS = 25;
     this.collisionCache = new CollisionCache(6);
     this.damageText = new DamageText();
     this.particleEffect = new ParticleEffects();
@@ -151,7 +152,11 @@ export default class Engine {
       fpsText,
     );
 
-    this.grid.refreshGrid();
+    this.charactorMap.forEach((charactor) => charactor.update());
+
+    this.skillEffect.update();
+
+    this.grid.refreshGrid(this.components, this.skillEffect.active);
     this.handleJoints();
 
     // this.rustEngine.update(deltaTime);
@@ -225,37 +230,99 @@ export default class Engine {
       });
     }
 
-    this.components.forEach((component: Component) => {
-      for (let i = 0; i < component.objects.length; i++) {
-        let objectA = component.objects[i];
-        const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
+    // this.components.forEach((component: Component) => {
+    //   for (let i = 0; i < component.objects.length; i++) {
+    //     let objectA = component.objects[i];
+    //     const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
 
-        let neighbors = this.grid.getNeighborObject(objectCode, objectA);
-        objectA.shape.boundingBox.collision = false;
-        for (let j = 0; j < neighbors.length; j++) {
-          let effectB = neighbors[j];
-          if (effectB instanceof Effect) {
-            if (objectA.canCollision(effectB)) {
-              if (!objectA.shape.boundingBox.intersect(effectB.shape.boundingBox)) {
-                // no collision
-                continue;
-              }
-              let result = this.collision.checkCollision(objectA.shape, effectB.shape);
-              if (result) {
-                /** apply effect */
-                effectB.applyEffect(objectA);
-              }
-              objectA.shape.boundingBox.collision = true;
-              effectB.shape.boundingBox.collision = true;
-            }
-          }
-        }
-      }
-    });
+    //     let neighbors = this.grid.getNeighborObject(objectCode, objectA);
+    //     objectA.shape.boundingBox.collision = false;
+    //     for (let j = 0; j < neighbors.length; j++) {
+    //       let effectB = neighbors[j];
+    //       if (effectB instanceof Effect) {
+    //         if (objectA.canCollision(effectB)) {
+    //           if (!objectA.shape.boundingBox.intersect(effectB.shape.boundingBox)) {
+    //             // no collision
+    //             continue;
+    //           }
+    //           let result = this.collision.checkCollision(objectA.shape, effectB.shape);
+    //           if (result) {
+    //             /** apply effect */
+    //             effectB.applyEffect(objectA);
+    //           }
+    //           objectA.shape.boundingBox.collision = true;
+    //           effectB.shape.boundingBox.collision = true;
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
 
     this.components.forEach((component: Component) => {
       component.objects.forEach((object) => {
         object.active();
+      });
+    });
+
+    this.skillEffect.active.forEach((skillFrame) => {
+      skillFrame.frame.effectRanges.forEach((effectRange: Shape) => {
+        const neighbors = this.grid.getNeighborSkill(effectRange);
+        effectRange.boundingBox.collision = false;
+        /**
+         * frame은 스킬의 원형으로 boundingbox가 user의 현위치를 고려하지 않고 계산되고 있습니다.
+         * skill frame과 user를 통해 충돌 확인 로직을 구현해야 합니다.
+         */
+        const userSkillFrame = new BoundingBox();
+        userSkillFrame.topLeft = addVector(
+          effectRange.boundingBox.topLeft,
+          skillFrame.user.object.shape.centroid,
+        );
+        userSkillFrame.bottomRight = addVector(
+          effectRange.boundingBox.bottomRight,
+          skillFrame.user.object.shape.centroid,
+        );
+
+        for (let i = 0; i < neighbors.length; i++) {
+          let object = neighbors[i];
+          if (object.id === skillFrame.user.object.id) {
+            continue;
+          }
+          if (!object.shape.boundingBox.intersect(userSkillFrame)) {
+            // no collision
+            continue;
+          }
+          const userEffectShape = new Rectangle(skillFrame.user.object.shape.centroid, 0, 0, '');
+          userEffectShape.vertices = [];
+          userEffectShape.normals = [];
+          effectRange.vertices.forEach((v) => {
+            userEffectShape.vertices.push(new Vector(v));
+          });
+
+          effectRange.normals.forEach((v) => {
+            userEffectShape.normals.push(new Vector(v));
+          });
+
+          userEffectShape.centroid = new Vector(effectRange.centroid);
+
+          userEffectShape.move(skillFrame.user.object.shape.centroid);
+
+          let result = this.collision.checkCollision(object.shape, userEffectShape);
+          if (result) {
+            /** skill applied */
+            skillFrame.skill.attributes.forEach((attribute) => {
+              if (attribute instanceof BounceAttribute) {
+                if (object.id !== skillFrame.user.object.id) {
+                  attribute.apply(object);
+                  if (result) {
+                    this.collisionCache.onCollision(result, object, skillFrame.user.object, 4);
+                  }
+                }
+              }
+            });
+          }
+          object.shape.boundingBox.collision = true;
+          effectRange.boundingBox.collision = true;
+        }
       });
     });
 
@@ -291,19 +358,9 @@ export default class Engine {
       component.objects.forEach((object) => {
         if (!object.isKinematic) {
           if (object.shape.centroid.isOut()) {
-            // this.joints = this.joints.filter(
-            //   (item) =>
-            //     item.jointConnection.objectAId !== object.id &&
-            //     item.jointConnection.objectBId !== object.id,
-            // );
-            // component.objects.splice(index, 1);
             const toStartPoint = subVector(new Vector({ x: 400, y: 100 }), object.shape.centroid);
-            // console.log(toStartPoint.x, '  :  ', toStartPoint.y);
             object.shape.move(toStartPoint);
 
-            // console.log(object.shape.centroid.x, '  :  ', object.shape.centroid.y);
-            // object.velocity.scale(0.001);
-            // console.log(object.shape.centroid.x, ' : ', object.shape.centroid.y);
             object.velocity = new Vector({ x: 0, y: 0 });
           }
         }
@@ -343,7 +400,7 @@ export default class Engine {
         }
         break;
     }
-    this.grid.refreshGrid();
+    this.grid.refreshGrid(this.components, this.skillEffect.active);
   };
 
   draw() {
@@ -353,6 +410,7 @@ export default class Engine {
       component.drawComponent();
       component.objects.forEach((object) => {
         object.shape.calculateBoundingBox();
+        object.shape.boundingBox.draw();
       });
     });
     this.components.forEach((component) => {
@@ -374,6 +432,19 @@ export default class Engine {
     //   this.drawUtils.fillCircle(new Vector({ x: cells[i + 1], y: cells[i + 2] }), 5, 'blue');
     // }
     // registry.sprite.drawSprite();
+
+    this.skillEffect.active.forEach((skillFrame) => {
+      skillFrame.frame.effectRanges.forEach((effectRange) => {
+        effectRange.calculateBoundingBox();
+        const { centroid } = skillFrame.user.object.shape;
+        this.drawUtils.ctx.save();
+        this.drawUtils.ctx.translate(centroid.x, centroid.y);
+        effectRange.boundingBox.draw();
+        this.drawUtils.ctx.restore();
+      });
+    });
+
+    this.skillEffect.draw();
     this.particleEffect.update();
     this.particleEffect.draw();
     this.goldGainEffect.updateAndDrawGlodGainTexts();
@@ -407,31 +478,31 @@ export default class Engine {
     this.ctx.restore();
   };
 
-  createTempPyramid() {
-    let boxSize = 50;
-    let iteration = 8;
-    let leftOffset = 40;
-    let topOffset = this.world.y - iteration * boxSize - 36;
-    for (let i = 0; i < iteration; i++) {
-      for (let j = iteration; j >= iteration - i; j--) {
-        let x = boxSize * i + (boxSize * j) / 2;
-        let y = boxSize * j;
-        let component = new Component(new Vector({ x: x + leftOffset, y: y + topOffset }));
-        component.objects.push(
-          new RigidBody(
-            new Rectangle(
-              new Vector({ x: x + leftOffset, y: y + topOffset }),
-              boxSize,
-              boxSize,
-              'black',
-            ),
-            1,
-          ),
-        );
-        this.components.push(component);
-      }
-    }
-  }
+  // createTempPyramid() {
+  //   let boxSize = 50;
+  //   let iteration = 8;
+  //   let leftOffset = 40;
+  //   let topOffset = this.world.y - iteration * boxSize - 36;
+  //   for (let i = 0; i < iteration; i++) {
+  //     for (let j = iteration; j >= iteration - i; j--) {
+  //       let x = boxSize * i + (boxSize * j) / 2;
+  //       let y = boxSize * j;
+  //       let component = new Component(new Vector({ x: x + leftOffset, y: y + topOffset }));
+  //       component.objects.push(
+  //         new RigidBody(
+  //           new Rectangle(
+  //             new Vector({ x: x + leftOffset, y: y + topOffset }),
+  //             boxSize,
+  //             boxSize,
+  //             'black',
+  //           ),
+  //           1,
+  //         ),
+  //       );
+  //       this.components.push(component);
+  //     }
+  //   }
+  // }
 
   onMouseMove(e: MouseEvent) {
     switch (registry.mouseEventType) {

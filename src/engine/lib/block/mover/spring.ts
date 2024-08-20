@@ -1,3 +1,4 @@
+import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
 import Vector, { addVector, rotateVector } from '@engine/lib/vector';
 import Rectangle from '@rigidbody/rectangle';
@@ -21,13 +22,13 @@ export default class Spring extends RigidBody {
     this.direction = direction;
     this.springConstant = springConstant;
     this.shape.draw = () => {
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: width, y: height }),
         'purple',
         this.shape.orientation,
       );
-      this.shape.drawUtils.drawArrow(
+      registry.engine.drawUtils.drawArrow(
         addVector(this.direction, this.shape.centroid),
         this.shape.centroid,
         'white',
@@ -38,6 +39,7 @@ export default class Spring extends RigidBody {
     this.shape.rotate = (radian: number, spindle?: Vector) => {
       originalRotate(radian, spindle); // 기존 rotate 함수 호출
       this.direction = rotateVector(this.direction, radian); // 추가 동작
+      return this.shape;
     };
   }
 

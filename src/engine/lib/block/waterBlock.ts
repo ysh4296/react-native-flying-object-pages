@@ -11,7 +11,7 @@ export default class WaterBlock extends RigidBody {
     super(new Rectangle(position, width, height, 'blue'), 0);
     this.counter = 0;
     this.shape.draw = () => {
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         position,
         new Vector({ x: width, y: height }),
         color,

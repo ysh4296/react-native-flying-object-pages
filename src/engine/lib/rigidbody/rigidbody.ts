@@ -19,7 +19,7 @@ export default class RigidBody {
   nonCollisionObjects: Set<RigidBody>;
   private static instance: RigidBody;
 
-  constructor(shape: Shape, mass: number) {
+  constructor(shape: Shape, mass: number = 0) {
     this.shape = shape;
     this.id = Calculator.getInstance().generateObjectId();
     this.shape.calculateBoundingBox();

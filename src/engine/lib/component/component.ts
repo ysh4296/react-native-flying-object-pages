@@ -19,6 +19,8 @@ export default class Component {
     this.orientation = 0;
   }
 
+  addComponent() {}
+
   drawComponent() {
     for (let i = 0; i < this.objects.length; i++) {
       this.objects[i].shape.draw();

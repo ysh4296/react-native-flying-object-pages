@@ -1,10 +1,9 @@
-import Draw from '@engine/utils/draw';
 import Shape from './shape';
 import Vector, { subVector } from '../vector';
+import { registry } from '@engine/lib/main';
 
 export default class Circle extends Shape {
   radius: number;
-  drawUtils: Draw;
 
   constructor(position: Vector, radius: number, color: string) {
     super(
@@ -12,7 +11,6 @@ export default class Circle extends Shape {
       color,
     );
     this.radius = radius;
-    this.drawUtils = Draw.getInstance();
     super.setCentroid(position);
   }
 
@@ -33,7 +31,7 @@ export default class Circle extends Shape {
 
   draw() {
     super.draw();
-    this.drawUtils.strokeCircle(this.centroid, this.radius, this.color);
+    registry.engine.drawUtils.strokeCircle(this.centroid, this.radius, this.color);
   }
 
   isInside(position: Vector) {

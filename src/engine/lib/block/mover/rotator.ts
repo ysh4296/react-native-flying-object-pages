@@ -28,13 +28,13 @@ export default class Rotator extends RigidBody {
         this.shape.orientation,
       );
 
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: width, y: height }),
         'gray',
         this.shape.orientation,
       );
-      this.shape.drawUtils.drawArrow(
+      registry.engine.drawUtils.drawArrow(
         addVector(
           scaleVector(accelationDirection, 1 / accelationDirection.length()),
           this.shape.centroid,

@@ -1,11 +1,10 @@
 import Calculator from '@engine/utils/calculator';
-import Draw from '@engine/utils/draw';
 import BoundingBox from '@engine/grid/boundingBox';
 import Vector, { addVector, subVector } from '../vector';
+import { registry } from '../main';
 
 export default class Shape {
   vertices: Vector[];
-  drawUtils: Draw;
   calculatorUtils: Calculator;
   centroid: Vector;
   color: string;
@@ -16,7 +15,6 @@ export default class Shape {
   collisionTime: number;
 
   constructor(vertices: Vector[], color: string) {
-    this.drawUtils = Draw.getInstance();
     this.calculatorUtils = Calculator.getInstance();
     this.vertices = vertices;
     this.centroid = new Vector({ x: 0, y: 0 });
@@ -55,13 +53,17 @@ export default class Shape {
 
   draw() {
     for (let i = 1; i < this.vertices.length; i++) {
-      this.drawUtils.drawLine(this.vertices[i - 1], this.vertices[i], this.color);
+      registry.engine.drawUtils.drawLine(this.vertices[i - 1], this.vertices[i], this.color);
     }
-    this.drawUtils.drawLine(this.vertices[this.vertices.length - 1], this.vertices[0], this.color);
-    this.drawUtils.drawPoint(this.centroid, 5, this.color);
+    registry.engine.drawUtils.drawLine(
+      this.vertices[this.vertices.length - 1],
+      this.vertices[0],
+      this.color,
+    );
+    registry.engine.drawUtils.drawPoint(this.centroid, 5, this.color);
 
     for (const [, anchor] of this.anchorPoints.entries()) {
-      this.drawUtils.drawPoint(anchor, 5, 'green');
+      registry.engine.drawUtils.drawPoint(anchor, 5, 'green');
     }
   }
 
@@ -101,6 +103,8 @@ export default class Shape {
     /** 전향력은 편집단계에서는 저장하지 말아야한다. */
     this.orientation += radian;
     this.orientation %= Math.PI * 2;
+
+    return this;
   }
 
   calculateInertia(mass: number) {
@@ -110,7 +114,7 @@ export default class Shape {
 
   calculateBoundingBox() {
     let topLeft = new Vector({ x: Number.MAX_VALUE, y: Number.MAX_VALUE });
-    let bottomRight = new Vector({ x: Number.MIN_VALUE, y: Number.MIN_VALUE });
+    let bottomRight = new Vector({ x: -Number.MAX_VALUE, y: -Number.MAX_VALUE });
 
     for (let i = 0; i < this.vertices.length; i++) {
       let x = this.vertices[i].x;

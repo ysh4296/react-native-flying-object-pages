@@ -15,7 +15,7 @@ export default class BaconBlock extends RigidBody {
     this.counter = 0;
     this.baconLength = 3;
     this.shape.draw = () => {
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: width, y: height }),
         color,

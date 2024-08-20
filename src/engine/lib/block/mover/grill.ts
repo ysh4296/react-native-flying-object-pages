@@ -1,3 +1,4 @@
+import { registry } from '@engine/lib/main';
 import Matter from '@engine/lib/matter';
 import Vector from '@engine/lib/vector';
 import Rectangle from '@rigidbody/rectangle';
@@ -8,7 +9,7 @@ export default class Grill extends RigidBody {
     super(new Rectangle(new Vector({ x: position.x, y: position.y }), width, height, color), 0);
     this.matter = new Matter(0, 0.05);
     this.shape.draw = () => {
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: width, y: height }),
         'red',

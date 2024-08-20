@@ -1,17 +1,15 @@
-import Draw from '@engine/utils/draw';
 import Vector from '@engine/lib/vector';
+import { registry } from '@engine/lib/main';
 
 export default class BoundingBox {
   topLeft: Vector;
   bottomRight: Vector;
   collision: boolean;
-  drawUtils: Draw;
 
   constructor() {
     this.topLeft = new Vector({ x: 0, y: 0 });
     this.bottomRight = new Vector({ x: 0, y: 0 });
     this.collision = false;
-    this.drawUtils = Draw.getInstance();
   }
 
   intersect(target: BoundingBox): boolean {
@@ -36,22 +34,22 @@ export default class BoundingBox {
     if (this.collision) {
       color = 'red';
     }
-    this.drawUtils.drawLine(
+    registry.engine.drawUtils.drawLine(
       this.topLeft,
       new Vector({ x: this.bottomRight.x, y: this.topLeft.y }),
       color,
     );
-    this.drawUtils.drawLine(
+    registry.engine.drawUtils.drawLine(
       new Vector({ x: this.bottomRight.x, y: this.topLeft.y }),
       this.bottomRight,
       color,
     );
-    this.drawUtils.drawLine(
+    registry.engine.drawUtils.drawLine(
       this.bottomRight,
       new Vector({ x: this.topLeft.x, y: this.bottomRight.y }),
       color,
     );
-    this.drawUtils.drawLine(
+    registry.engine.drawUtils.drawLine(
       new Vector({ x: this.topLeft.x, y: this.bottomRight.y }),
       this.topLeft,
       color,

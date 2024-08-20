@@ -22,7 +22,7 @@ export default class Bacon extends Food {
     const cookedColor = ['#e53b3b', '#9f1313', '#eebf77'];
 
     this.shape.draw = () => {
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: 30, y: 20 }),
         this.shape.calculatorUtils.rgbaToHex(
@@ -34,7 +34,7 @@ export default class Bacon extends Food {
         ),
         this.getShape().orientation,
       );
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: 30, y: 5 }),
         this.shape.calculatorUtils.rgbaToHex(
@@ -47,7 +47,7 @@ export default class Bacon extends Food {
         this.getShape().orientation,
         new Vector({ x: 0, y: -5 }),
       );
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: 30, y: 10 }),
         this.shape.calculatorUtils.rgbaToHex(

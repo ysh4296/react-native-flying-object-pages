@@ -17,17 +17,17 @@ export default class Water extends RigidBody {
     );
     this.temprature = 0;
     this.shape.draw = () => {
-      this.shape.drawUtils.drawCircle(this.shape.centroid, 25, '#87CEFA');
-      this.shape.drawUtils.ctx.save();
+      registry.engine.drawUtils.drawCircle(this.shape.centroid, 25, '#87CEFA');
+      registry.engine.drawUtils.ctx.save();
       const newStart = subVector(
         this.shape.centroid,
         rotateVector(new Vector({ x: 25, y: 25 }), this.shape.orientation),
       );
-      this.shape.drawUtils.ctx.translate(newStart.x, newStart.y);
-      this.shape.drawUtils.ctx.rotate(this.shape.orientation);
+      registry.engine.drawUtils.ctx.translate(newStart.x, newStart.y);
+      registry.engine.drawUtils.ctx.rotate(this.shape.orientation);
 
       registry.sprite.drawSprite();
-      this.shape.drawUtils.ctx.restore();
+      registry.engine.drawUtils.ctx.restore();
     };
     this.matter = new Matter(0.7, 0.4);
     this.hp = 300;

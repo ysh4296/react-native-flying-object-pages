@@ -23,6 +23,7 @@ export default class Blower extends Effect {
     this.shape.rotate = (radian: number, spindle?: Vector) => {
       originalRotate(radian, spindle);
       this.destination.rotate(radian, spindle);
+      return this.shape;
     };
   }
 

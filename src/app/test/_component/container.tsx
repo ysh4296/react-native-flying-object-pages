@@ -20,25 +20,26 @@ import main, { registry } from '../../../engine/lib/main';
 import init from '../../../../rust-module/pkg/rust_module';
 import Sprite from '@engine/utils/sprite';
 import Animation from '@engine/utils/animation';
+import { initSkillData } from '@engine/lib/game/data/skillData';
 
 const Container = () => {
   const { setMouseEventType } = useMouseStore();
   const { gamePhase, setGamePhase } = useGamePhaseStore();
-
   useEffect(() => {
     if (document) {
       init().then(async (wasm) => {
+        await initSkillData();
         registry.memory = wasm.memory;
 
         const sprite = new Sprite();
         const animation = new Animation();
-        sprite.init().then(() => {
-          registry.sprite = sprite;
-          animation.init().then(() => {
-            registry.animation = animation;
-            main(document, setMouseEventType);
-          });
-        });
+        registry.sprite = sprite;
+        await sprite.init();
+
+        await animation.init();
+        registry.animation = animation;
+
+        main(document, setMouseEventType);
       });
     }
   }, [setMouseEventType]);
@@ -172,6 +173,17 @@ const Container = () => {
               );
               break;
             case 'GRINDER':
+              registry.engine.CreateMouseEvent.target = new RigidBody(
+                new Rectangle(
+                  new Vector({ x: 0, y: 0 }),
+                  registry.engine.GameBoard.cellSize,
+                  registry.engine.GameBoard.cellSize,
+                  'black',
+                ),
+                1,
+              );
+              break;
+            case 'MAGICIAN':
               registry.engine.CreateMouseEvent.target = new RigidBody(
                 new Rectangle(
                   new Vector({ x: 0, y: 0 }),

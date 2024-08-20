@@ -1,5 +1,6 @@
 import Polygon from './polygon';
 import Vector from '../vector';
+import { registry } from '../main';
 
 export default class Rectangle extends Polygon {
   width: number;
@@ -25,7 +26,7 @@ export default class Rectangle extends Polygon {
 
   draw() {
     super.draw();
-    this.drawUtils.fillRect(
+    registry.engine.drawUtils.fillRect(
       this.centroid,
       new Vector({ x: this.width, y: this.height }),
       this.color,

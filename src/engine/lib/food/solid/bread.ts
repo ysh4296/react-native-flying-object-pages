@@ -2,6 +2,7 @@ import Matter from '@engine/lib/matter';
 import Rectangle from '@rigidbody/rectangle';
 import Vector from '@engine/lib/vector';
 import Food from '../food';
+import { registry } from '@engine/lib/main';
 
 export default class Bread extends Food {
   temprature: number;
@@ -18,7 +19,7 @@ export default class Bread extends Food {
     const cookedColor = ['#6d3200'];
     this.shape.draw = () => {
       /** normal bread */
-      this.shape.drawUtils.fillRect(
+      registry.engine.drawUtils.fillRect(
         this.shape.centroid,
         new Vector({ x: 120, y: 20 }),
         this.shape.calculatorUtils.rgbaToHex(
@@ -33,13 +34,13 @@ export default class Bread extends Food {
 
       /** cooked bread */
       if (this.counter >= 0) {
-        let linearGradient = this.shape.drawUtils.ctx.createLinearGradient(0, -10, 0, 0);
+        let linearGradient = registry.engine.drawUtils.ctx.createLinearGradient(0, -10, 0, 0);
         linearGradient.addColorStop(0, '#422308');
         linearGradient.addColorStop(this.counter / this.maxCounter, 'rgba(0, 0, 0, 0)');
         // linearGradient.addColorStop(this.counter / this.maxCounter, '#eec07b');
         linearGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-        this.shape.drawUtils.fillRect(
+        registry.engine.drawUtils.fillRect(
           this.shape.centroid,
           new Vector({ x: 120, y: 10 }),
           linearGradient,
@@ -47,13 +48,13 @@ export default class Bread extends Food {
           new Vector({ x: 0, y: -5 }),
         );
 
-        linearGradient = this.shape.drawUtils.ctx.createLinearGradient(0, 0, 0, 10);
+        linearGradient = registry.engine.drawUtils.ctx.createLinearGradient(0, 0, 0, 10);
 
         linearGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
         linearGradient.addColorStop(1 - this.counter / this.maxCounter, 'rgba(0, 0, 0, 0)');
         linearGradient.addColorStop(1, '#422308');
 
-        this.shape.drawUtils.fillRect(
+        registry.engine.drawUtils.fillRect(
           this.shape.centroid,
           new Vector({ x: 120, y: 10 }),
           linearGradient,

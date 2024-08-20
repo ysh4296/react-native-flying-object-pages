@@ -85,7 +85,6 @@ export default class EditMouse {
     if (this.rotateSelectBox.isInside(this.mousePosition)) {
       this.editType = 'DIRECTION';
       registry.engine.canvas.style.cursor = 'grabbing';
-      console.log(registry.selectedComponentId);
       registry.engine.components
         .find((component: Component) => component.id === registry.selectedComponentId)
         ?.rotate(Math.PI / 2);

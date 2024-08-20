@@ -17,6 +17,8 @@ import Component from '@engine/lib/component/component';
 import Escalator from '@engine/lib/component/escalator';
 import Grinder from '@engine/lib/component/grinder';
 import Matter from '@engine/lib/matter';
+import Charactor from '@engine/lib/game/charactor';
+import { skillData } from '@engine/lib/game/data/skillData';
 
 export default class CreateMouse {
   start: Vector;
@@ -57,9 +59,6 @@ export default class CreateMouse {
   mouseDown(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
     this.start = this.mousePosition;
     this.isEdit = true;
-
-    // centroid 설정에 문제 있을 수 있으나 문제 x
-    // react app 과 연계해야함
   }
 
   mouseUp(e: MouseEvent, canvas: HTMLCanvasElement, engine: Engine) {
@@ -170,6 +169,41 @@ export default class CreateMouse {
         break;
       case 'GRINDER':
         new Grinder(this.target.shape.centroid).addComponent();
+        break;
+      case 'MAGICIAN':
+        const magician = new RigidBody(
+          new Circle(new Vector(this.target.shape.centroid), 25, 'blue'),
+        );
+        const spriteConfiguration: spriteConfiguration = {
+          source: 'charactor',
+          width: 72,
+          height: 72,
+          row: 0,
+          column: 0,
+        };
+        magician.shape.draw = () => {
+          registry.sprite.newDrawSprite(magician, spriteConfiguration);
+        };
+        component = new Component(this.target.shape.centroid);
+        component.objects.push(magician);
+
+        registry.engine.components.push(component);
+        const magicianCharactor = new Charactor(
+          magician.id,
+          {
+            STR: 5,
+            VIT: 5,
+            INT: 5,
+            DEX: 5,
+            LCK: 5,
+            AGI: 5,
+            SPI: 5,
+          },
+          skillData[0],
+          magician,
+        );
+        // magicianCharactor.battleStat.MP = 1000000;
+        registry.engine.charactorMap.set(magician.id, magicianCharactor);
         break;
       default:
         assertUnreachableChecker(registry.createEventType);

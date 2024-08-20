@@ -32,15 +32,18 @@ export default class CollisionCache {
     this.lastCollisionTime.clear();
   }
 
-  onCollision(result: CollisionManifold, objectA: RigidBody, objectB: RigidBody) {
+  onCollision(result: CollisionManifold, objectA: RigidBody, objectB: RigidBody, damage?: number) {
     /**
      * length of Collision Vector usually 0 to 600
      */
     if (this.hasCooldownPassed(objectA.id, objectB.id)) {
       let collisionVector = subVector(objectA.velocity, objectB.velocity);
-      let damage = registry.engine.calculatorUtils.clamp(collisionVector.length(), 800, 10);
 
-      damage = Math.ceil(damage / 10);
+      if (!damage) {
+        damage = registry.engine.calculatorUtils.clamp(collisionVector.length(), 800, 10);
+
+        damage = Math.ceil(damage / 10);
+      }
       // execute collision Event
       let id1 = objectA.id;
       let id2 = objectB.id;
