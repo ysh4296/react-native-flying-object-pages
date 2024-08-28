@@ -1,5 +1,5 @@
-import Circle from '@engine/lib/rigidbody/circle';
 import RigidBody from '@rigidbody/rigidbody';
+import Circle from '@engine/lib/rigidbody/circle';
 import Vector, { rotateVector, subVector } from '@engine/lib/vector';
 import { registry } from '@engine/lib/main';
 

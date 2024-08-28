@@ -1,6 +1,6 @@
+import Shape from './shape';
 import Calculator from '@engine/utils/calculator';
 import Matter from '../matter';
-import Shape from './shape';
 import Vector, { addVector, scaleVector, subVector } from '../vector';
 
 export default class RigidBody {

@@ -1,8 +1,7 @@
-import Component from '@engine/lib/component/component';
-import RigidBody from '@rigidbody/rigidbody';
 import Vector from '@engine/lib/vector';
 import Grid from './grid';
 import Shape from '@engine/lib/rigidbody/shape';
+import RigidBody from '@rigidbody/rigidbody';
 import { SkillFrame } from '@engine/utils/skillEffects';
 
 export default class HashGrid extends Grid {
@@ -11,18 +10,18 @@ export default class HashGrid extends Grid {
   hashMapSize: number;
   p1Prime: number;
   p2Prime: number;
-  components: Component[];
+  objects: RigidBody[];
   skillFrames: SkillFrame[];
-  objectsToCells: Map<ObjectCode, number[]>; // < object, hashMapKey >
-  framesToCells: Map<Shape, number[]>;
+  objectsToCells: Map<RigidBody, number[]>; // < object, hashMapKey >
+  framesToCells: Map<Shape, number[]>; // < skillFrame, hashMapKey >
   constructor(cellSize: number) {
     super(cellSize);
     this.hashMap = new Map();
     this.frameHashMap = new Map();
-    this.objectsToCells = new Map(); // map<number,rigidBody[]>
+    this.objectsToCells = new Map();
     this.framesToCells = new Map();
 
-    this.components = [];
+    this.objects = [];
     this.skillFrames = [];
 
     this.hashMapSize = 10000000;
@@ -30,14 +29,14 @@ export default class HashGrid extends Grid {
     this.p2Prime = 588667;
   }
 
-  initializeComponent(world: Vector, components: Component[], skillFrames: SkillFrame[]) {
+  initializeComponent(world: Vector, objects: RigidBody[], skillFrames: SkillFrame[]) {
     this.world = world;
-    this.components = components;
+    this.objects = objects;
     this.skillFrames = skillFrames;
   }
 
-  refreshGrid(components: Component[], skillFrames: SkillFrame[]) {
-    this.components = components;
+  refreshGrid(objects: RigidBody[], skillFrames: SkillFrame[]) {
+    this.objects = objects;
     this.skillFrames = skillFrames;
     this.clearGrid();
     this.mapBodiesToCell();
@@ -57,74 +56,35 @@ export default class HashGrid extends Grid {
   }
 
   mapBodiesToCell() {
-    this.components.forEach((component) => {
-      for (let i = 0; i < component.objects.length; i++) {
-        const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
+    this.objects.forEach((object) => {
+      let boundingBox = object.getShape().boundingBox;
+      let left = boundingBox.topLeft.x;
+      let right = boundingBox.bottomRight.x;
+      let top = boundingBox.topLeft.y;
+      let bottom = boundingBox.bottomRight.y;
 
-        let boundingBox = component.objects[i].getShape().boundingBox;
-        let left = boundingBox.topLeft.x;
-        let right = boundingBox.bottomRight.x;
-        let top = boundingBox.topLeft.y;
-        let bottom = boundingBox.bottomRight.y;
+      let leftCellIndex = parseInt(String(left / this.cellSize));
+      let RightCellIndex = parseInt(String(right / this.cellSize));
+      let topCellIndex = parseInt(String(top / this.cellSize));
+      let bottomCellIndex = parseInt(String(bottom / this.cellSize));
 
-        let leftCellIndex = parseInt(String(left / this.cellSize));
-        let RightCellIndex = parseInt(String(right / this.cellSize));
-        let topCellIndex = parseInt(String(top / this.cellSize));
-        let bottomCellIndex = parseInt(String(bottom / this.cellSize));
-
-        for (let x = leftCellIndex; x <= RightCellIndex; x++) {
-          for (let y = topCellIndex; y <= bottomCellIndex; y++) {
-            let hashIndex = this.cellIndexToHash(x, y);
-            const entries = this.hashMap.get(hashIndex);
-            if (entries === undefined) {
-              let newArray = [component.objects[i]];
-              this.hashMap.set(hashIndex, newArray);
-            } else {
-              entries.push(component.objects[i]);
-            }
-
-            const cells = this.objectsToCells.get(objectCode);
-            if (cells === undefined) {
-              let newArray = [hashIndex];
-              this.objectsToCells.set(objectCode, newArray);
-            } else {
-              cells.push(hashIndex);
-            }
+      for (let x = leftCellIndex; x <= RightCellIndex; x++) {
+        for (let y = topCellIndex; y <= bottomCellIndex; y++) {
+          let hashIndex = this.cellIndexToHash(x, y);
+          const entries = this.hashMap.get(hashIndex);
+          if (entries === undefined) {
+            let newArray = [object];
+            this.hashMap.set(hashIndex, newArray);
+          } else {
+            entries.push(object);
           }
-        }
-      }
-      for (let i = 0; i < component.effects.length; i++) {
-        const objectCode: ObjectCode = `${component.id}:${component.effects[i].id}`;
 
-        let boundingBox = component.effects[i].getShape().boundingBox;
-        let left = boundingBox.topLeft.x;
-        let right = boundingBox.bottomRight.x;
-        let top = boundingBox.topLeft.y;
-        let bottom = boundingBox.bottomRight.y;
-
-        let leftCellIndex = parseInt(String(left / this.cellSize));
-        let RightCellIndex = parseInt(String(right / this.cellSize));
-        let topCellIndex = parseInt(String(top / this.cellSize));
-        let bottomCellIndex = parseInt(String(bottom / this.cellSize));
-
-        for (let x = leftCellIndex; x <= RightCellIndex; x++) {
-          for (let y = topCellIndex; y <= bottomCellIndex; y++) {
-            let hashIndex = this.cellIndexToHash(x, y);
-            let entries = this.hashMap.get(hashIndex);
-            if (entries === undefined) {
-              let newArray = [component.effects[i]];
-              this.hashMap.set(hashIndex, newArray);
-            } else {
-              entries.push(component.effects[i]);
-            }
-
-            const cells = this.objectsToCells.get(objectCode);
-            if (cells === undefined) {
-              let newArray = [hashIndex];
-              this.objectsToCells.set(objectCode, newArray);
-            } else {
-              cells.push(hashIndex);
-            }
+          const cells = this.objectsToCells.get(object);
+          if (cells === undefined) {
+            let newArray = [hashIndex];
+            this.objectsToCells.set(object, newArray);
+          } else {
+            cells.push(hashIndex);
           }
         }
       }
@@ -178,8 +138,8 @@ export default class HashGrid extends Grid {
     });
   }
 
-  getNeighborObject(objectCode: ObjectCode, object: RigidBody) {
-    let occupiedCells = this.objectsToCells.get(objectCode) ?? [];
+  getNeighborObject(object: RigidBody) {
+    let occupiedCells = this.objectsToCells.get(object) ?? [];
     let neighborObjects: RigidBody[] = [];
     for (let i = 0; i < occupiedCells.length; i++) {
       let occupiedCellHashIndex = occupiedCells[i];

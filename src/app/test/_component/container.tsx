@@ -2,16 +2,10 @@
 
 import { Button, Text } from '@chakra-ui/react';
 import EventSelect from '@component/eventSelect';
-import BaconBlock from '@engine/lib/block/baconBlock';
-import BreadBlock from '@engine/lib/block/breadBlock';
-import Grill from '@engine/lib/block/mover/grill';
-import Spring from '@engine/lib/block/mover/spring';
-import Wheel from '@engine/lib/block/mover/wheel';
-import WaterBlock from '@engine/lib/block/waterBlock';
-import Circle from '@engine/lib/rigidbody/circle';
-import Rectangle from '@rigidbody/rectangle';
-import RigidBody from '@rigidbody/rigidbody';
 import Vector from '@engine/lib/vector';
+import RigidBody from '@rigidbody/rigidbody';
+import Rectangle from '@rigidbody/rectangle';
+import Circle from '@engine/lib/rigidbody/circle';
 import { assertUnreachableChecker } from '@utils/typeChecker';
 import { useEffect } from 'react';
 import useGamePhaseStore from 'store/gamePhase';
@@ -25,6 +19,7 @@ import { initSkillData } from '@engine/lib/game/data/skillData';
 const Container = () => {
   const { setMouseEventType } = useMouseStore();
   const { gamePhase, setGamePhase } = useGamePhaseStore();
+
   useEffect(() => {
     if (document) {
       init().then(async (wasm) => {
@@ -72,7 +67,6 @@ const Container = () => {
         eventName="CREATE"
         setEventType={(createType) => {
           registry.createEventType = createType as CreateType;
-
           switch (registry.createEventType) {
             case 'NONE':
               break;
@@ -87,99 +81,9 @@ const Container = () => {
                 1,
               );
               break;
-            case 'WATERBLOCK':
-              registry.engine.CreateMouseEvent.target = new WaterBlock(
-                new Vector({ x: 0, y: 0 }),
-                registry.engine.GameBoard.cellSize,
-                registry.engine.GameBoard.cellSize,
-                'blue',
-              );
-              break;
             case 'CIRCLE':
               registry.engine.CreateMouseEvent.target = new RigidBody(
                 new Circle(new Vector({ x: 0, y: 0 }), registry.engine.GameBoard.cellSize, 'green'),
-                1,
-              );
-              break;
-            case 'BACONBLOCK':
-              registry.engine.CreateMouseEvent.target = new BaconBlock(
-                new Vector({ x: 0, y: 0 }),
-                registry.engine.GameBoard.cellSize,
-                registry.engine.GameBoard.cellSize,
-                'blue',
-              );
-              break;
-            case 'BREADBLOCK':
-              registry.engine.CreateMouseEvent.target = new BreadBlock(
-                new Vector({ x: 0, y: 0 }),
-                registry.engine.GameBoard.cellSize,
-                registry.engine.GameBoard.cellSize,
-                'blue',
-              );
-              break;
-            // case 'ESCALATOR':
-            //   registry.engine.CreateMouseEvent.target = new Escalator(
-            //     new Vector({ x: 0, y: 0 }),
-            //     registry.engine.GameBoard.cellSize,
-            //     registry.engine.GameBoard.cellSize,
-            //     'purple',
-            //     new Vector({ x: 1, y: 0 }),
-            //     50,
-            //   );
-            //   break;
-            case 'SPRING':
-              registry.engine.CreateMouseEvent.target = new Spring(
-                new Vector({ x: 0, y: 0 }),
-                registry.engine.GameBoard.cellSize,
-                registry.engine.GameBoard.cellSize,
-                'purple',
-              );
-              break;
-            case 'HEATER':
-              registry.engine.CreateMouseEvent.target = new Grill(
-                new Vector({ x: 0, y: 0 }),
-                registry.engine.GameBoard.cellSize,
-                registry.engine.GameBoard.cellSize,
-                'red',
-              );
-              break;
-            case 'WHEEL':
-              registry.engine.CreateMouseEvent.target = new Wheel(
-                new Vector({ x: 0, y: 0 }),
-                registry.engine.GameBoard.cellSize / 2,
-                'red',
-              );
-              break;
-            case 'FAN':
-              registry.engine.CreateMouseEvent.target = new RigidBody(
-                new Rectangle(
-                  new Vector({ x: 0, y: 0 }),
-                  registry.engine.GameBoard.cellSize,
-                  registry.engine.GameBoard.cellSize,
-                  'black',
-                ),
-                1,
-              );
-              break;
-            case 'PRESSURE':
-              registry.engine.CreateMouseEvent.target = new RigidBody(
-                new Rectangle(
-                  new Vector({ x: 0, y: 0 }),
-                  registry.engine.GameBoard.cellSize,
-                  registry.engine.GameBoard.cellSize,
-                  'black',
-                ),
-                1,
-              );
-              break;
-            case 'GRINDER':
-              registry.engine.CreateMouseEvent.target = new RigidBody(
-                new Rectangle(
-                  new Vector({ x: 0, y: 0 }),
-                  registry.engine.GameBoard.cellSize,
-                  registry.engine.GameBoard.cellSize,
-                  'black',
-                ),
                 1,
               );
               break;

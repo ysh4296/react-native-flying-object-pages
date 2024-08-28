@@ -1,8 +1,8 @@
-import Component from '@engine/lib/component/component';
 import Engine from '@engine/lib/engine';
 import getMousePosition from '@engine/lib/getMousePosition';
 import { registry } from '@engine/lib/main';
 import Rectangle from '@rigidbody/rectangle';
+import RigidBody from '@engine/lib/rigidbody/rigidbody';
 import Shape from '@engine/lib/rigidbody/shape';
 import Vector from '@engine/lib/vector';
 
@@ -26,10 +26,8 @@ export default class EditMouse {
     let currentPosition: Vector = getMousePosition(canvas, e);
     this.mousePosition = currentPosition;
 
-    const selectedComponent = engine.components.find(
-      (component) => component.id === registry.selectedComponentId,
-    );
-    if (!selectedComponent) return;
+    const selectedObject = engine.objects.find((object) => object.id === registry.selectedObjectId);
+    if (!selectedObject) return;
 
     /**
      * not grabbing anything
@@ -40,7 +38,7 @@ export default class EditMouse {
         registry.engine.canvas.style.cursor = 'grab';
         return;
       }
-      if (selectedComponent.isInside(this.mousePosition)) {
+      if (selectedObject.shape.isInside(this.mousePosition)) {
         registry.engine.canvas.style.cursor = 'grab';
         return;
       }
@@ -80,14 +78,14 @@ export default class EditMouse {
 
     // if (!selectedObject) return;
 
-    if (!registry.selectedComponentId) return;
+    if (!registry.selectedObjectId) return;
 
     if (this.rotateSelectBox.isInside(this.mousePosition)) {
       this.editType = 'DIRECTION';
       registry.engine.canvas.style.cursor = 'grabbing';
-      registry.engine.components
-        .find((component: Component) => component.id === registry.selectedComponentId)
-        ?.rotate(Math.PI / 2);
+      registry.engine.objects
+        .find((object: RigidBody) => object.id === registry.selectedObjectId)
+        ?.shape.rotate(Math.PI / 2);
       return;
     }
     // if (selectedObject.shape.isInside(this.mousePosition)) {
@@ -105,16 +103,16 @@ export default class EditMouse {
     registry.engine.canvas.style.cursor = 'default';
   }
 
-  setSelectComponent(target: Component) {
-    registry.selectedComponentId = target.id;
+  setSelectComponent(target: RigidBody) {
+    registry.selectedObjectId = target.id;
 
     this.rotateSelectBox = new Rectangle(
-      new Vector({ x: target.centroid.x, y: target.centroid.y - 100 }),
+      new Vector({ x: target.shape.centroid.x, y: target.shape.centroid.y - 100 }),
       this.rotateSelectBoxStyle.x,
       this.rotateSelectBoxStyle.y,
       '',
     );
-    this.rotateSelectBox.rotate(target.orientation, target.centroid);
+    this.rotateSelectBox.rotate(target.shape.orientation, target.shape.centroid);
   }
 
   drawSelect() {
@@ -141,8 +139,8 @@ export default class EditMouse {
     //   (object: RigidBody) => object.id === registry.selectedObjectId,
     // );
 
-    const selectedComponent = registry.engine.components.find(
-      (component: Component) => component.id === registry.selectedComponentId,
+    const selectedObject = registry.engine.objects.find(
+      (object: RigidBody) => object.id === registry.selectedObjectId,
     );
 
     /**
@@ -151,28 +149,25 @@ export default class EditMouse {
 
     // if (!selectedObject) return;
 
-    if (!selectedComponent) return;
+    if (!selectedObject) return;
 
-    selectedComponent.drawComponent();
+    selectedObject?.shape.draw();
     // selectedComponent.drawEffect();
 
-    for (let i = 0; i < selectedComponent.objects.length; i++) {
-      const selectedObject = selectedComponent.objects[i];
-      for (let j = 1; j < selectedObject.shape.vertices.length; j++) {
-        registry.engine.drawUtils.drawDottedLine(
-          selectedObject.shape.vertices[j - 1],
-          selectedObject.shape.vertices[j],
-          'black',
-          registry.animationOffset * 0.1,
-        );
-      }
+    for (let j = 1; j < selectedObject.shape.vertices.length; j++) {
       registry.engine.drawUtils.drawDottedLine(
-        selectedObject.shape.vertices[selectedObject.shape.vertices.length - 1],
-        selectedObject.shape.vertices[0],
+        selectedObject.shape.vertices[j - 1],
+        selectedObject.shape.vertices[j],
         'black',
         registry.animationOffset * 0.1,
       );
     }
+    registry.engine.drawUtils.drawDottedLine(
+      selectedObject.shape.vertices[selectedObject.shape.vertices.length - 1],
+      selectedObject.shape.vertices[0],
+      'black',
+      registry.animationOffset * 0.1,
+    );
 
     // selectedObject.shape.draw();
 

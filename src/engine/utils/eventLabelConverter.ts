@@ -24,24 +24,8 @@ export const getEventLabel = (eventType: EventType): string => {
       return 'circle';
     case 'RECTANGLE':
       return 'rectangle';
-    case 'WATERBLOCK':
-      return 'waterblock';
-    case 'BACONBLOCK':
-      return 'baconblock';
-    case 'BREADBLOCK':
-      return 'breadblock';
     case 'SPRING':
       return 'spring';
-    case 'HEATER':
-      return 'heater';
-    case 'WHEEL':
-      return 'wheel';
-    case 'FAN':
-      return 'fan';
-    case 'PRESSURE':
-      return 'pressure';
-    case 'GRINDER':
-      return 'GRINDER';
     case 'MAGICIAN':
       return 'magician';
     default:
@@ -60,16 +44,7 @@ export const getEventList = (eventName: EventName): EventType[] => {
         'NONE',
         'CIRCLE',
         'RECTANGLE',
-        'WATERBLOCK',
-        'BACONBLOCK',
-        'BREADBLOCK',
         // 'ESCALATOR',
-        'SPRING',
-        'HEATER',
-        'WHEEL',
-        'FAN',
-        'PRESSURE',
-        'GRINDER',
         'MAGICIAN',
       ];
     default:

@@ -1,5 +1,4 @@
 import Draw from '@engine/utils/draw';
-import Rectangle from '@rigidbody/rectangle';
 import Vector, { addVector, scaleVector, subVector } from './vector';
 import Calculator from '@engine/utils/calculator';
 import Collision from '@engine/utils/collision';
@@ -14,10 +13,9 @@ import getMousePosition from './getMousePosition';
 import EditMouse from '@engine/event/editMouse';
 import { assertUnreachableChecker } from '@utils/typeChecker';
 import Grid from '@engine/grid/grid';
-import Component from './component/component';
-import Effect from './effect/effect';
 import CollisionCache from '@engine/utils/collisionCache';
 import DamageText from '@engine/utils/damageText';
+import Rectangle from '@rigidbody/rectangle';
 import Monster from './component/defense/monster';
 import ParticleEffects from '@engine/utils/particleEffects';
 import GoldGainEffect from '@engine/utils/goldGainEffect';
@@ -25,7 +23,6 @@ import skillEffects from '@engine/utils/skillEffects';
 import Charactor from './game/charactor';
 import BoundingBox from '@engine/grid/boundingBox';
 import { BounceAttribute } from './game/attribute/attribute';
-import Shape from './rigidbody/shape';
 // import { Engine as rustEngine } from '../../../rust-module/pkg/rust_module';
 
 export default class Engine {
@@ -39,7 +36,7 @@ export default class Engine {
   left: Rectangle;
   right: Rectangle;
   collision: Collision;
-  components: Component[];
+  objects: RigidBody[];
   joints: Joint[];
   iteration: number;
   grid: HashGrid;
@@ -69,7 +66,7 @@ export default class Engine {
     this.EditMouseEvent = new EditMouse();
     this.calculatorUtils = Calculator.getInstance();
     this.collision = Collision.getInstance();
-    this.gravity = new Vector({ x: 0, y: 300 });
+    this.gravity = new Vector({ x: 0, y: 700 });
     this.charactorMap = new Map();
     this.world = world;
     this.iteration = 10;
@@ -102,27 +99,19 @@ export default class Engine {
       this.world.y - 100,
       'red',
     );
-    this.components = [];
-    let component = new Component(this.bottom.centroid);
+    this.objects = [];
     const bottom = new RigidBody(this.bottom, 0);
-    component.objects.push(bottom);
-    this.components.push(component);
-    component = new Component(this.top.centroid);
+    this.objects.push(bottom);
     const top = new RigidBody(this.top, 0);
-    component.objects.push(top);
-    this.components.push(component);
-    component = new Component(this.right.centroid);
+    this.objects.push(top);
     const right = new RigidBody(this.right, 0);
-    component.objects.push(right);
-    this.components.push(component);
-    component = new Component(this.left.centroid);
+    this.objects.push(right);
     const left = new RigidBody(this.left, 0);
-    component.objects.push(left);
-    this.components.push(component);
+    this.objects.push(left);
     this.grid = new HashGrid(15);
     this.skillEffect = new skillEffects();
-    this.grid.initializeComponent(this.world, this.components, this.skillEffect.active);
-    this.grid.refreshGrid(this.components, this.skillEffect.active);
+    this.grid.initializeComponent(this.world, this.objects, this.skillEffect.active);
+    this.grid.refreshGrid(this.objects, this.skillEffect.active);
     this.GameBoard = new Grid(100);
     this.GameBoard.initialize(this.world);
     // this.rustEngine = new rustEngine();
@@ -156,7 +145,7 @@ export default class Engine {
 
     this.skillEffect.update();
 
-    this.grid.refreshGrid(this.components, this.skillEffect.active);
+    this.grid.refreshGrid(this.objects, this.skillEffect.active);
     this.handleJoints();
 
     // this.rustEngine.update(deltaTime);
@@ -181,91 +170,45 @@ export default class Engine {
     }
 
     for (let it = 0; it < this.iteration; it++) {
-      this.components.forEach((component: Component) => {
-        for (let i = 0; i < component.objects.length; i++) {
-          let objectA = component.objects[i];
-          objectA.addForce(scaleVector(this.gravity, objectA.mass));
-          objectA.update(deltaTime / this.iteration);
-        }
+      this.objects.forEach((object: RigidBody) => {
+        object.addForce(scaleVector(this.gravity, object.mass));
+        object.update(deltaTime / this.iteration);
       });
 
-      this.components.forEach((component: Component) => {
-        for (let i = 0; i < component.objects.length; i++) {
-          let objectA = component.objects[i];
+      this.objects.forEach((object: RigidBody) => {
+        object.shape.boundingBox.collision = false;
+        let neighbors = this.grid.getNeighborObject(object);
 
-          objectA.shape.boundingBox.collision = false;
-
-          const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
-
-          let neighbors = this.grid.getNeighborObject(objectCode, objectA);
-          for (let j = 0; j < neighbors.length; j++) {
-            let objectB = neighbors[j];
-            if (objectB instanceof Effect) {
+        for (let j = 0; j < neighbors.length; j++) {
+          let neighbor = neighbors[j];
+          if (object.canCollision(neighbor)) {
+            if (!object.shape.boundingBox.intersect(neighbor.shape.boundingBox)) {
+              // no collision
               continue;
             }
-            if (objectA.canCollision(objectB)) {
-              if (!objectA.shape.boundingBox.intersect(objectB.shape.boundingBox)) {
-                // no collision
-                continue;
+
+            let result = this.collision.checkCollision(object.shape, neighbor.shape);
+            if (result) {
+              /** resolve collision */
+              // hard crashed
+
+              if (result.depth > 1) {
+                // depth mostly between 3 ~ 12
+                this.collisionCache.onCollision(result, object, neighbor);
               }
 
-              let result = this.collision.checkCollision(objectA.shape, objectB.shape);
-              if (result) {
-                /** resolve collision */
-                // hard crashed
-
-                if (result.depth > 1) {
-                  // depth mostly between 3 ~ 12
-                  this.collisionCache.onCollision(result, objectA, objectB);
-                }
-
-                result.resolveCollision(objectA, objectB);
-                result.positionalCorrection(objectA, objectB, 0.3);
-              }
-              objectA.shape.boundingBox.collision = true;
-              objectB.shape.boundingBox.collision = true;
+              result.resolveCollision(object, neighbor);
+              result.positionalCorrection(object, neighbor, 0.3);
             }
+            object.shape.boundingBox.collision = true;
+            object.shape.boundingBox.collision = true;
           }
         }
       });
     }
 
-    // this.components.forEach((component: Component) => {
-    //   for (let i = 0; i < component.objects.length; i++) {
-    //     let objectA = component.objects[i];
-    //     const objectCode: ObjectCode = `${component.id}:${component.objects[i].id}`;
-
-    //     let neighbors = this.grid.getNeighborObject(objectCode, objectA);
-    //     objectA.shape.boundingBox.collision = false;
-    //     for (let j = 0; j < neighbors.length; j++) {
-    //       let effectB = neighbors[j];
-    //       if (effectB instanceof Effect) {
-    //         if (objectA.canCollision(effectB)) {
-    //           if (!objectA.shape.boundingBox.intersect(effectB.shape.boundingBox)) {
-    //             // no collision
-    //             continue;
-    //           }
-    //           let result = this.collision.checkCollision(objectA.shape, effectB.shape);
-    //           if (result) {
-    //             /** apply effect */
-    //             effectB.applyEffect(objectA);
-    //           }
-    //           objectA.shape.boundingBox.collision = true;
-    //           effectB.shape.boundingBox.collision = true;
-    //         }
-    //       }
-    //     }
-    //   }
-    // });
-
-    this.components.forEach((component: Component) => {
-      component.objects.forEach((object) => {
-        object.active();
-      });
-    });
-
     this.skillEffect.active.forEach((skillFrame) => {
-      skillFrame.frame.effectRanges.forEach((effectRange: Shape) => {
+      skillFrame.frame.effectRanges.forEach((effectRange) => {
         const neighbors = this.grid.getNeighborSkill(effectRange);
         effectRange.boundingBox.collision = false;
         /**
@@ -287,6 +230,7 @@ export default class Engine {
           if (object.id === skillFrame.user.object.id) {
             continue;
           }
+          if (object.isKinematic) continue;
           if (!object.shape.boundingBox.intersect(userSkillFrame)) {
             // no collision
             continue;
@@ -328,19 +272,17 @@ export default class Engine {
 
     const eraseIndex: number[] = [];
     /** reset position for outted objects */
-    this.components.forEach((component: Component, componentIndex: number) => {
-      if (component instanceof Monster) {
-        if (component.hp < 0) {
+    this.objects.forEach((object: RigidBody, componentIndex: number) => {
+      if (object instanceof Monster) {
+        if (object.hp < 0) {
           // dead!
-          component.objects.forEach((object) => {
-            this.particleEffect.createExplosion(object.shape.centroid, 30);
-            this.particleEffect.createBlinking(object.shape.centroid);
-            this.goldGainEffect.addGlodGainText(
-              object.shape.centroid.x,
-              object.shape.centroid.y,
-              1000,
-            );
-          });
+          this.particleEffect.createExplosion(object.shape.centroid, 30);
+          this.particleEffect.createBlinking(object.shape.centroid);
+          this.goldGainEffect.addGlodGainText(
+            object.shape.centroid.x,
+            object.shape.centroid.y,
+            1000,
+          );
           eraseIndex.push(componentIndex);
         }
       }
@@ -351,20 +293,18 @@ export default class Engine {
 
     // 인덱스가 큰 것부터 순서대로 삭제
     eraseIndex.forEach((index) => {
-      this.components.splice(index, 1);
+      this.objects.splice(index, 1);
     });
 
-    this.components.forEach((component: Component, componentIndex: number) => {
-      component.objects.forEach((object) => {
-        if (!object.isKinematic) {
-          if (object.shape.centroid.isOut()) {
-            const toStartPoint = subVector(new Vector({ x: 400, y: 100 }), object.shape.centroid);
-            object.shape.move(toStartPoint);
+    this.objects.forEach((object: RigidBody) => {
+      if (!object.isKinematic) {
+        if (object.shape.centroid.isOut()) {
+          const toStartPoint = subVector(new Vector({ x: 400, y: 100 }), object.shape.centroid);
+          object.shape.move(toStartPoint);
 
-            object.velocity = new Vector({ x: 0, y: 0 });
-          }
+          object.velocity = new Vector({ x: 0, y: 0 });
         }
-      });
+      }
     });
   };
 
@@ -386,34 +326,23 @@ export default class Engine {
         if (registry.createEventType === 'RECTANGLE') {
           this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
         }
-        if (registry.createEventType === 'BACONBLOCK') {
-          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
-        }
-        if (registry.createEventType === 'BREADBLOCK') {
-          this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
-        }
-        // if (registry.createEventType === 'ESCALATOR') {
-        //   this.drawUtils.drawRect(position, new Vector({ x: width, y: height }), 'green');
-        // }
         if (registry.createEventType === 'CIRCLE') {
           this.drawUtils.drawCircle(position, Math.min(width, height) / 2, 'green');
         }
         break;
     }
-    this.grid.refreshGrid(this.components, this.skillEffect.active);
+    this.grid.refreshGrid(this.objects, this.skillEffect.active);
   };
 
   draw() {
     if (registry.mouseEventType === 'CREATE') this.CreateMouseEvent.drawCreate();
     if (registry.gamePhase === 'pause') this.GameBoard.draw();
-    this.components.forEach((component) => {
-      component.drawComponent();
-      component.objects.forEach((object) => {
-        object.shape.calculateBoundingBox();
-        object.shape.boundingBox.draw();
-      });
+    this.objects.forEach((object) => {
+      object.shape.draw();
+      object.shape.calculateBoundingBox();
+      object.shape.boundingBox.draw();
     });
-    this.components.forEach((component) => {
+    this.objects.forEach((component) => {
       component.drawEffect();
     });
 
@@ -548,9 +477,8 @@ export default class Engine {
         break;
       case 'NONE':
         const mousePosition = getMousePosition(this.canvas, e);
-        for (let i = 0; i < this.components.length; i++) {
-          if (this.components[i].isInside(mousePosition)) {
-            this.components[i].select();
+        for (let i = 0; i < this.objects.length; i++) {
+          if (this.objects[i].shape.isInside(mousePosition)) {
             registry.setMouseEventType('EDIT');
           }
         }
@@ -613,25 +541,8 @@ export default class Engine {
   }
 
   onKeyboardPressed = (e: KeyboardEvent) => {
-    // switch (e.key) {
-    //   case 'd':
-    //     this.rigidBodies[0].addForce(new Vector({ x: 200000, y: 0 }));
-    //     break;
-    //   case 'a':
-    //     this.rigidBodies[0].addForce(new Vector({ x: -200000, y: 0 }));
-    //     break;
-    //   case 'w':
-    //     this.rigidBodies[0].addForce(new Vector({ x: 0, y: -200000 }));
-    //     break;
-    //   case 's':
-    //     this.rigidBodies[0].addForce(new Vector({ x: 0, y: 200000 }));
-    //     break;
-    //   case 'ArrowRight':
-    //     this.rigidBodies[0].shape.rotate(0.05);
-    //     break;
-    //   case 'ArrowLeft':
-    //     this.rigidBodies[0].shape.rotate(-0.05);
-    //     break;
-    // }
+    /**
+     * key board press event
+     */
   };
 }

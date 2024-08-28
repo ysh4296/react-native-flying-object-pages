@@ -1,9 +1,9 @@
-import ImageCircle from '@engine/lib/balls/imageCircle';
-import Monster from '@engine/lib/component/defense/monster';
-import { registry } from '@engine/lib/main';
 import RigidBody from '@engine/lib/rigidbody/rigidbody';
-import { subVector } from '@engine/lib/vector';
+import Monster from '@engine/lib/component/defense/monster';
+import ImageCircle from '@engine/lib/balls/imageCircle';
 import CollisionManifold from './collisionManifold';
+import { registry } from '@engine/lib/main';
+import { subVector } from '@engine/lib/vector';
 
 export default class CollisionCache {
   lastCollisionTime: Map<string, number>;
@@ -69,9 +69,7 @@ export default class CollisionCache {
         );
 
         // damaging
-        const targetMonster = registry.engine.components.find((component) =>
-          component.objects.find((object) => object.id === objectA.id),
-        );
+        const targetMonster = registry.engine.objects.find((object) => object.id === objectA.id);
         if (targetMonster instanceof Monster) {
           targetMonster.hp -= damage;
         }
@@ -96,9 +94,7 @@ export default class CollisionCache {
         );
 
         // damaging
-        const targetMonster = registry.engine.components.find((component) =>
-          component.objects.find((object) => object.id === objectB.id),
-        );
+        const targetMonster = registry.engine.objects.find((object) => object.id === objectB.id);
         if (targetMonster instanceof Monster) {
           targetMonster.hp -= damage;
         }

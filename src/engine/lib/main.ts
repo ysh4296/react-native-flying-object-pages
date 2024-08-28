@@ -1,10 +1,10 @@
 import { jsonData } from '@engine/levels/1-1';
 import Animation from '@engine/utils/animation';
 import Draw from '@engine/utils/draw';
-import Sprite from '@engine/utils/sprite';
-import Monster from './component/defense/monster';
 import Engine from './engine';
 import Vector from './vector';
+import Sprite from '@engine/utils/sprite';
+import Monster from './component/defense/monster';
 
 /**
  * to use Engine as class Type the type hasbeen added seperatly from default Registry type
@@ -16,7 +16,7 @@ export const registry: defaultRegistryType & {
 } = {
   createdId: 0,
   createdObjects: new Set(),
-  selectedComponentId: -1,
+  selectedObjectId: -1,
   engine: null as unknown as Engine,
   sprite: null as unknown as Sprite,
   animation: null as unknown as Animation,
@@ -63,13 +63,9 @@ const main = (document: Document, setMouseEventType: (mouseType: MouseType) => v
       while (levelData.length > 0 && levelData[0].time * 60 <= registry.gameTime) {
         const object = levelData.shift();
         if (object) {
-          // const monster = new Monster(object.position, 100);
-          // monster.addComponent();
-          // registry.engine.components.push(monster);
           for (let i = 0; i < object.numbers; i++) {
             const monster = new Monster(object.position, 200);
-            monster.addComponent();
-            registry.engine.components.push(monster);
+            registry.engine.objects.push(monster);
           }
         }
       }
