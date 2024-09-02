@@ -4,14 +4,18 @@ import Vector, { rotateVector, subVector } from '@engine/lib/vector';
 import { registry } from '@engine/lib/main';
 
 export default class ImageCircle extends RigidBody {
-  src: string;
-  constructor(position: Vector, src: string) {
+  state: CharactorState;
+  frameNumber: number;
+  frameOffset: number;
+
+  constructor(position: Vector) {
     super(
       new Circle(new Vector({ x: position.x + Math.random() * 10 - 5, y: position.y }), 25, 'blue'),
       0.04,
     );
-
-    this.src = src;
+    this.state = 'idle';
+    this.frameNumber = 0;
+    this.frameOffset = 0;
 
     const originalUpdate = this.update.bind(this);
 
@@ -25,7 +29,10 @@ export default class ImageCircle extends RigidBody {
       }
       originalUpdate(deltaTime);
     };
-
+    /**
+     * 캐릭터의 sprite 정보, sprite state, frame number, frame offset 만으로 animation을 그릴 수있어야 합니다.
+     * image circle의 draw 로직은 테스트중이며 전체 game object의 기본 draw 로직으로 적용될 예정입니다.
+     */
     this.shape.draw = () => {
       if (this.shape.collisionTime + registry.engine.collisionCache.cooldown > registry.gameTime) {
         registry.engine.drawUtils.drawCircle(this.shape.centroid, 25, 'white');
@@ -45,7 +52,24 @@ export default class ImageCircle extends RigidBody {
         rotateVector(new Vector({ x: 25, y: 25 }), newAngle),
       );
       // registry.sprite.drawSprite(this.shape.orientation, newStart);
-      registry.animation.drawAnimation(newAngle, newStart);
+      registry.animation.drawAnimation(this.state, this.frameNumber, newAngle, newStart);
+
+      // loop & charactor state logic
+      this.frameOffset++;
+      if (
+        this.frameOffset ==
+        registry.animation.animationConfig.frames[this.state][this.frameNumber].frameRate
+      ) {
+        this.frameOffset = 0; // reset frameoffset
+        // loop and nextframe
+        this.frameNumber++;
+
+        if (this.frameNumber === registry.animation.animationConfig.frames[this.state].length) {
+          // reset State
+          if (this.state !== 'idle') this.state = 'idle';
+          this.frameNumber = 0;
+        }
+      }
     };
   }
 }

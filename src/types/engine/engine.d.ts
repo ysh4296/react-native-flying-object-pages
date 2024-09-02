@@ -10,17 +10,13 @@ type CreateType = NoneType | 'RECTANGLE' | 'CIRCLE' | 'MAGICIAN';
 
 type EventType = NoneType | MouseType | JointType | CreateType;
 
+type Position = { x: number; y: number };
+
 type CameraType = {
   x: number;
   y: number;
   scale: number;
 };
-
-/**
- * @type ObjectCode
- * @description `${componentId}:${objectId}`
- */
-type ObjectCode = string;
 
 /**
  * @type ParticleCode
@@ -30,7 +26,6 @@ type ParticleCode = string;
 
 type defaultRegistryType = {
   createdId: number;
-  createdObjects: Set<ObjectCode>; // componentId, objectId || effectId
   selectedObjectId: number;
   mouseEventType: MouseType;
   setMouseEventType: (mouseType: MouseType) => void;

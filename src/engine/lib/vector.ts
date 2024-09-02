@@ -4,7 +4,7 @@ export default class Vector {
   x: number;
   y: number;
   this: any;
-  constructor(pos: position) {
+  constructor(pos: Position) {
     this.x = pos.x;
     this.y = pos.y;
   }

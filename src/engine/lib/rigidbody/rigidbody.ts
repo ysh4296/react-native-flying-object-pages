@@ -21,6 +21,10 @@ export default class RigidBody {
 
   constructor(shape: Shape, mass: number = 0) {
     this.shape = shape;
+    /**
+     * @todo
+     * don't create object id at rigidbody it makes useless object id
+     */
     this.id = Calculator.getInstance().generateObjectId();
     this.shape.calculateBoundingBox();
     this.mass = mass;

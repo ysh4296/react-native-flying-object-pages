@@ -183,6 +183,7 @@ export default class Calculator {
    * @returns number id
    */
   generateObjectId() {
+    console.log('generate');
     return registry.createdId++;
   }
 

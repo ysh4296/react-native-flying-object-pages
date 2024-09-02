@@ -253,11 +253,15 @@ export default class Engine {
           let result = this.collision.checkCollision(object.shape, userEffectShape);
           if (result) {
             /** skill applied */
+
+            // this.collisionCache.hasCooldownPassed(object.id, skillFrame.user.id);
+
             skillFrame.skill.attributes.forEach((attribute) => {
               if (attribute instanceof BounceAttribute) {
                 if (object.id !== skillFrame.user.object.id) {
                   attribute.apply(object);
                   if (result) {
+                    //Skill Cache를 따로 생성하고 {캐릭터} {스킬 id} 의 형태로 스킬 적용캐시를 생성해야 함
                     this.collisionCache.onCollision(result, object, skillFrame.user.object, 4);
                   }
                 }
@@ -406,32 +410,6 @@ export default class Engine {
   restoreZoom = () => {
     this.ctx.restore();
   };
-
-  // createTempPyramid() {
-  //   let boxSize = 50;
-  //   let iteration = 8;
-  //   let leftOffset = 40;
-  //   let topOffset = this.world.y - iteration * boxSize - 36;
-  //   for (let i = 0; i < iteration; i++) {
-  //     for (let j = iteration; j >= iteration - i; j--) {
-  //       let x = boxSize * i + (boxSize * j) / 2;
-  //       let y = boxSize * j;
-  //       let component = new Component(new Vector({ x: x + leftOffset, y: y + topOffset }));
-  //       component.objects.push(
-  //         new RigidBody(
-  //           new Rectangle(
-  //             new Vector({ x: x + leftOffset, y: y + topOffset }),
-  //             boxSize,
-  //             boxSize,
-  //             'black',
-  //           ),
-  //           1,
-  //         ),
-  //       );
-  //       this.components.push(component);
-  //     }
-  //   }
-  // }
 
   onMouseMove(e: MouseEvent) {
     switch (registry.mouseEventType) {

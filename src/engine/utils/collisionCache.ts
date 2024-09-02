@@ -20,8 +20,8 @@ export default class CollisionCache {
     }
     const key = `${id1}-${id2}`;
     const now = registry.gameTime;
-    const lastTime = this.lastCollisionTime.get(key) || 0;
-    if (now - lastTime > this.cooldown) {
+    const lastTime = this.lastCollisionTime.get(key) || -1;
+    if (now - lastTime > this.cooldown || lastTime == -1) {
       this.lastCollisionTime.set(key, now);
       return true;
     }

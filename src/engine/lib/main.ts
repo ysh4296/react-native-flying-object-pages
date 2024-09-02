@@ -15,7 +15,6 @@ export const registry: defaultRegistryType & {
   animation: Animation;
 } = {
   createdId: 0,
-  createdObjects: new Set(),
   selectedObjectId: -1,
   engine: null as unknown as Engine,
   sprite: null as unknown as Sprite,

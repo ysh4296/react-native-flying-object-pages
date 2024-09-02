@@ -1,16 +1,91 @@
 import { registry } from '@engine/lib/main';
 import Vector from '@engine/lib/vector';
 
+// 전체 애니메이션 정보를 로드하고, looped animation을 실행합니다.
 export default class Animation {
   spriteSheet: HTMLImageElement;
-  animationFrame: number;
-  frameDelay: number;
+  animationConfig: CharactorAnimationConfig;
 
   constructor() {
     this.spriteSheet = new Image();
-    this.animationFrame = 0;
-    this.frameDelay = 0;
-    this.setAnimation(8);
+
+    /**
+     * @todo
+     * read json Data
+     */
+    this.animationConfig = {
+      graphic: 'Fireball.png',
+      frames: {
+        idle: [
+          {
+            x: 0,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+          {
+            x: 16,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+          {
+            x: 32,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+          {
+            x: 48,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+          {
+            x: 64,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+          {
+            x: 80,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+          {
+            x: 96,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+          {
+            x: 112,
+            y: 0,
+            width: 16,
+            height: 16,
+            frameRate: 10,
+          },
+        ],
+        damage: [
+          {
+            x: 128,
+            y: 0,
+            width: 64,
+            height: 64,
+            frameRate: 5,
+          },
+        ],
+        skill: [],
+      },
+    };
   }
 
   // 비동기 초기화 메서드
@@ -28,35 +103,23 @@ export default class Animation {
     });
   }
 
-  setAnimation(animationId: number) {
-    this.animationFrame = animationId; // 8프레임
-    this.frameDelay = 6; // 프레임당 12초
-  }
-
-  drawAnimation(rotation?: number, translation?: Vector) {
+  drawAnimation(
+    state: CharactorState,
+    frameNumber: number,
+    rotation?: number,
+    translation?: Vector,
+  ) {
     // 이미지가 로드된 후 작업을 진행
-    const spriteWidth = 16; // 스프라이트의 너비
-    const spriteHeight = 16; // 스프라이트의 높이
-    let spriteIndex = registry.gameTime % (this.animationFrame * this.frameDelay);
-    spriteIndex = Math.floor(spriteIndex / this.frameDelay);
-
-    const columns = 8; // 스프라이트 시트의 열 수
-
-    const col = spriteIndex % columns;
-    const row = Math.floor(spriteIndex / columns);
-
-    const sx = col * spriteWidth;
-    const sy = row * spriteHeight;
     registry.engine.drawUtils.ctx.save();
     if (translation) registry.engine.drawUtils.ctx.translate(translation.x, translation.y);
     if (rotation) registry.engine.drawUtils.ctx.rotate(rotation);
-
+    const sprite = this.animationConfig.frames[state][frameNumber];
     registry.engine.drawUtils.ctx.drawImage(
       this.spriteSheet,
-      sx,
-      sy,
-      spriteWidth,
-      spriteHeight,
+      sprite.x,
+      sprite.y,
+      sprite.width,
+      sprite.height,
       0,
       0,
       50,
