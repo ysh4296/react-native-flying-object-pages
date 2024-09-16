@@ -7,7 +7,7 @@ import { colors } from '@theme/colors';
 export const theme = extendTheme({
   fonts: {
     heading: fonts.bungee.style.fontFamily,
-    body: fonts.bungee.style.fontFamily,
+    body: fonts.inter.style.fontFamily,
   },
   colors: colors,
   components: {
