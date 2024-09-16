@@ -15,11 +15,9 @@
     "incremental": true,
     "baseUrl": "./src",
     "paths": {
-      "@engine/*": ["./engine/*"],
       "@component/*": ["./component/*"],
       "@theme/*": ["./theme/*"],
-      "@utils/*": ["./utils/*"],
-      "@rigidbody/*": ["./engine/lib/rigidbody/*"]
+      "@utils/*": ["./utils/*"]
     },
     "plugins": [
       {
