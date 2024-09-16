@@ -1,3 +1,5 @@
+import SnackBox from '@component/SnackBox';
+
 export default function Home() {
-  return <p>no module</p>;
+  return <SnackBox snackId="@dbtmdgns4296/demo" />;
 }
