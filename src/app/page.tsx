@@ -1,14 +1,15 @@
-import { Heading, Text } from '@chakra-ui/react';
-import SnackBox from '@component/SnackBox';
-import GettingStarted from '../markdown/gettingStarted.mdx';
+'use client';
 
-export default function Home() {
+import Description from '@component/landing/Description';
+import Home from '@component/landing/Home';
+// import SnackBox from '@component/SnackBox';
+// import GettingStarted from '../markdown/gettingStarted.mdx';
+
+export default function App() {
   return (
     <>
-      <Heading>React Native Flying Objects</Heading>
-      <Text fontSize="3xl">React Native Package for Implement Interactive Objects!</Text>
-      <SnackBox snackId="@dbtmdgns4296/demo" />
-      <GettingStarted />
+      <Home />
+      <Description />
     </>
   );
 }
