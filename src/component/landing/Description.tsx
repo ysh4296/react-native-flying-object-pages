@@ -7,9 +7,9 @@ const Description = () => {
     <Center width="100vw">
       <VStack width="80%" gap={16} padding={16} borderTop="1px" borderColor="gray.300">
         <Text fontWeight="800" fontSize="4xl">
-          For Creative Components!
+          Implement Creative Components!
         </Text>
-        <SnackBox snackId="@dbtmdgns4296/demo" />
+        <SnackBox snackId="@dbtmdgns4296/flow-example" />
         <Button variant="solid">
           <Text>See More Examples</Text>
           <ExternalLinkIcon marginLeft={4} />

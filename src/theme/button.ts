@@ -1,11 +1,11 @@
 import { ComponentStyleConfig } from '@chakra-ui/react';
 import { colors } from './colors';
+import { layerStyles } from './layerStyle';
 
 export const ButtonStyle: ComponentStyleConfig = {
   baseStyle: {
     fontWeight: 'bold',
     textTransform: 'uppercase',
-    borderRadius: 'base',
   },
   sizes: {
     sm: {
@@ -21,13 +21,12 @@ export const ButtonStyle: ComponentStyleConfig = {
   },
   variants: {
     outline: {
-      border: '2px solid',
-      borderColor: [colors.error[600], colors.error[700], colors.error[800]],
       color: [colors.primary[500], colors.primary[600], colors.primary[800]],
+      ...layerStyles.base,
     },
     solid: {
       bg: 'purple.500',
-      color: 'white',
+      ...layerStyles.base,
     },
   },
   defaultProps: {

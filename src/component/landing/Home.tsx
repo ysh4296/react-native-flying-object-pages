@@ -24,7 +24,7 @@ const Home = () => {
             <Text>Getting Started</Text>
             <ExternalLinkIcon marginLeft={4} />
           </Button>
-          <Button>
+          <Button variant="outline">
             <Text
               onClick={() => {
                 alert('link to github');

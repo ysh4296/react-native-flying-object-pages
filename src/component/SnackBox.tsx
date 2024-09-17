@@ -1,5 +1,6 @@
 'use client';
 
+import { Box } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 interface SnackBoxProps {
@@ -19,7 +20,7 @@ const SnackBox = (props: SnackBoxProps) => {
   }
 
   return (
-    <>
+    <Box width="100%" padding={4} border="1px solid">
       <div
         data-snack-id={snackId}
         data-snack-platform="web"
@@ -35,7 +36,7 @@ const SnackBox = (props: SnackBoxProps) => {
         }}
       />
       <script async src="https://snack.expo.dev/embed.js" />
-    </>
+    </Box>
   );
 };
 
