@@ -1,5 +1,6 @@
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
-import { Button, Center, HStack, Text, VStack } from '@chakra-ui/react';
+import { Button, Center, HStack, Link, Text, VStack } from '@chakra-ui/react';
+import { FaGithub } from 'react-icons/fa';
 
 const Home = () => {
   return (
@@ -21,18 +22,22 @@ const Home = () => {
               alert('to the started page');
             }}
           >
-            <Text>Getting Started</Text>
-            <ExternalLinkIcon marginLeft={4} />
+            <Text mr={2}>Getting Started</Text>
+            <ExternalLinkIcon />
           </Button>
-          <Button variant="outline">
-            <Text
-              onClick={() => {
-                alert('link to github');
-              }}
-            >
-              Github
-            </Text>
-          </Button>
+          <Link href="https://github.com/ysh4296/react-native-flying-objects" isExternal>
+            <Button variant="outline">
+              <Text
+                mr={2}
+                onClick={() => {
+                  alert('link to github');
+                }}
+              >
+                Github
+              </Text>
+              <FaGithub />
+            </Button>
+          </Link>
         </HStack>
       </VStack>
     </Center>
