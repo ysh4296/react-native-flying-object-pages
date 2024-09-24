@@ -16,15 +16,17 @@ const Home = () => {
           </VStack>
         </HStack>
         <HStack>
-          <Button
-            variant="solid"
-            onClick={() => {
-              alert('to the started page');
-            }}
-          >
-            <Text mr={2}>Getting Started</Text>
-            <ExternalLinkIcon />
-          </Button>
+          <Link href={'/docs/GettingStarted'}>
+            <Button
+              variant="solid"
+              onClick={() => {
+                alert('to the started page');
+              }}
+            >
+              <Text mr={2}>Getting Started</Text>
+              <ExternalLinkIcon />
+            </Button>
+          </Link>
           <Link href="https://github.com/ysh4296/react-native-flying-objects" isExternal>
             <Button variant="outline">
               <Text
