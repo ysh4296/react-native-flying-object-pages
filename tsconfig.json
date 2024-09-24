@@ -26,6 +26,14 @@
     ],
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "**/*.wasm"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "**/*.mjs",
+    "**/*.mdx",
+    "next.config.js"
+  ],
   "exclude": ["node_modules"]
 }

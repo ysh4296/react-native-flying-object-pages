@@ -1,5 +1,5 @@
 {
-  "name": "physics_engine",
+  "name": "react-native-flying-objects-pages",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -24,6 +24,7 @@
     "@next/mdx": "^14.2.11",
     "@types/mdx": "^2.0.13",
     "framer-motion": "^11.2.12",
+    "github-markdown-css": "^5.6.1",
     "jackspeak": "^2.0.3",
     "next": "14.2.2",
     "next-mdx-remote": "^5.0.0",
