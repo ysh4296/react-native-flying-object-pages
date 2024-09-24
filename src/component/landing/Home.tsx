@@ -16,7 +16,7 @@ const Home = () => {
           </VStack>
         </HStack>
         <HStack>
-          <Link href={'/docs/GettingStarted'}>
+          <Link href={'/docs/Overview'}>
             <Button
               variant="solid"
               onClick={() => {

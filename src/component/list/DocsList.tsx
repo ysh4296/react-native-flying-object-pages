@@ -1,4 +1,5 @@
 import { Text, VStack } from '@chakra-ui/react';
+import PathButton from './PathButton';
 
 const DocsList = () => {
   return (
@@ -6,12 +7,9 @@ const DocsList = () => {
       <Text fontWeight={700} color="primary.600" w="100%" textAlign="left">
         Getting Started
       </Text>
-      <Text w="100%" textAlign="left">
-        Installation
-      </Text>
-      <Text w="100%" textAlign="left">
-        Examples
-      </Text>
+      <PathButton content="Overview" />
+      <PathButton content="Installation" />
+      <PathButton content="Examples" />
     </VStack>
   );
 };
