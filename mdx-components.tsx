@@ -1,5 +1,7 @@
 import { ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import type { MDXComponents } from 'mdx/types';
+import { CopyBlock } from 'react-code-blocks';
+import code from 'content/code';
 
 export function useMDXComponents(components?: MDXComponents): MDXComponents {
   return {
@@ -36,6 +38,10 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
     },
     li: ({ children }) => {
       return <ListItem>{children}</ListItem>;
+    },
+    CopyBlock: (properties) => {
+      // @ts-ignore
+      return <CopyBlock {...properties} text={code[properties.text]} />;
     },
     ...components,
   };

@@ -8,7 +8,6 @@ const DocsList = () => {
         Getting Started
       </Text>
       <PathButton content="Overview" />
-      <PathButton content="Installation" />
       <PathButton content="Examples" />
     </VStack>
   );

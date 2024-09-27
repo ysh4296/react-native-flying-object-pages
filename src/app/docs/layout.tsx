@@ -5,7 +5,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <HStack h="100vh" pt={16} align="start">
       <DocsList />
-      <Box px={16}>{children}</Box>
+      <Box px={16} width="100%" height="100%" overflowY="auto">
+        {children}
+      </Box>
     </HStack>
   );
 }
