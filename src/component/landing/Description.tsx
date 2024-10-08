@@ -10,7 +10,7 @@ const Description = () => {
           Implement Creative Components!
         </Text>
         <SnackBox snackId="@dbtmdgns4296/flow-example" />
-        <Link>
+        <Link href="/docs/Flow" _hover={{ textDecoration: 'none' }}>
           <Button variant="solid">
             <Text>See More Examples</Text>
             <ExternalLinkIcon marginLeft={4} />
