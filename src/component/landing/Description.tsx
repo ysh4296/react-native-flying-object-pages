@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Text, Center, VStack, Button } from '@chakra-ui/react';
+import { Text, Center, VStack, Button, Link } from '@chakra-ui/react';
 import SnackBox from '@component/SnackBox';
 
 const Description = () => {
@@ -10,10 +10,12 @@ const Description = () => {
           Implement Creative Components!
         </Text>
         <SnackBox snackId="@dbtmdgns4296/flow-example" />
-        <Button variant="solid">
-          <Text>See More Examples</Text>
-          <ExternalLinkIcon marginLeft={4} />
-        </Button>
+        <Link>
+          <Button variant="solid">
+            <Text>See More Examples</Text>
+            <ExternalLinkIcon marginLeft={4} />
+          </Button>
+        </Link>
       </VStack>
     </Center>
   );

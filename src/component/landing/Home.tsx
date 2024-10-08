@@ -17,26 +17,14 @@ const Home = () => {
         </HStack>
         <HStack>
           <Link href={'/docs/Overview'}>
-            <Button
-              variant="solid"
-              onClick={() => {
-                alert('to the started page');
-              }}
-            >
+            <Button variant="solid">
               <Text mr={2}>Getting Started</Text>
               <ExternalLinkIcon />
             </Button>
           </Link>
           <Link href="https://github.com/ysh4296/react-native-flying-objects" isExternal>
             <Button variant="outline">
-              <Text
-                mr={2}
-                onClick={() => {
-                  alert('link to github');
-                }}
-              >
-                Github
-              </Text>
+              <Text mr={2}>Github</Text>
               <FaGithub />
             </Button>
           </Link>

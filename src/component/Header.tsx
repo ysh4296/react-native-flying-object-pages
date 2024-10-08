@@ -21,9 +21,6 @@ const Header = () => {
         <Link href="/" _hover={{ textDecoration: 'none' }}>
           <HStack
             height="100%"
-            onClick={() => {
-              alert('return to Home');
-            }}
             _hover={{
               background: 'white',
               color: 'primary.600',
