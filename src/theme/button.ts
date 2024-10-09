@@ -26,17 +26,17 @@ export const ButtonStyle: ComponentStyleConfig = {
   },
   variants: {
     outline: {
-      color: [colors.primary[500], colors.primary[600], colors.primary[800]],
+      color: 'gray.500', // 희미한 텍스트 색상
       ...layerStyles.base,
       _hover: {
-        bg: 'gray.200',
+        bg: 'gray.100', // 은은한 배경색
       },
     },
     solid: {
-      bg: 'purple.500',
+      bg: colors.primary[500], // 강조된 색상
       ...layerStyles.base,
       _hover: {
-        bg: 'gray.200',
+        bg: colors.primary[600], // 살짝 더 어두운 호버 효과
       },
     },
     icon: {
@@ -47,6 +47,24 @@ export const ButtonStyle: ComponentStyleConfig = {
       _hover: {
         bg: 'gray.200',
         transitionDelay: '100ms',
+      },
+    },
+    activePath: {
+      bg: colors.primary[600], // 강조된 색상
+      color: 'white', // 텍스트는 대비되는 색상
+      border: '2px solid',
+      borderColor: colors.primary[900], // 더 어두운 색상으로 테두리 강조
+      _hover: {
+        bg: colors.primary[700], // 살짝 더 어두운 호버 효과
+      },
+    },
+    inactivePath: {
+      bg: 'gray.100', // 은은한 배경색
+      color: 'gray.500', // 희미한 텍스트 색상
+      border: '1px solid',
+      borderColor: 'gray.300', // 미묘한 테두리 색상
+      _hover: {
+        bg: 'gray.200', // 미세한 호버 효과
       },
     },
   },

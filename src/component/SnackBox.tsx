@@ -20,7 +20,7 @@ const SnackBox = (props: SnackBoxProps) => {
   }
 
   return (
-    <Box width="100%" padding={4} border="1px solid">
+    <Box width="100%" padding={4} border="1px solid" p={4}>
       <div
         data-snack-id={snackId}
         data-snack-platform="web"

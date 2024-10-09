@@ -1,9 +1,13 @@
 'use client';
 
-import { CheckCircleIcon, SunIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import { Box, HStack, IconButton, Link, Text } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
 
+/**
+ * @todo
+ * color theme dark mode & light mode
+ */
 const Header = () => {
   return (
     <Box
@@ -48,7 +52,7 @@ const Header = () => {
               icon={<FaGithub />}
             />
           </Link>
-          <IconButton
+          {/* <IconButton
             variant="icon"
             border="none"
             p={0}
@@ -58,7 +62,7 @@ const Header = () => {
             onClick={() => {
               alert('change to dark theme');
             }}
-          />
+          /> */}
         </HStack>
       </HStack>
     </Box>
