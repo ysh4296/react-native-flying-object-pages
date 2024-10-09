@@ -15,10 +15,6 @@ FROM base AS builder
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
-RUN ls -R /usr/src/app
-RUN ls -R /usr/src/app/src
-RUN ls -R /usr/src/app/src/component
-RUN ls -R /usr/src/app/src/component/landing
 RUN yarn build
 
 # Production image, copy all the files and run next
