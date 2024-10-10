@@ -1,8 +1,9 @@
-import { ListItem, Text, UnorderedList } from '@chakra-ui/react';
+import { Box, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import type { MDXComponents } from 'mdx/types';
-import { CopyBlock } from 'react-code-blocks';
 import code from 'content/code';
 import SnackBox from '@component/SnackBox';
+import CodeBlock from '@component/CodeBlock';
+import { layerStyles } from '@theme/layerStyle';
 
 export function useMDXComponents(components?: MDXComponents): MDXComponents {
   return {
@@ -41,8 +42,12 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
       return <ListItem>{children}</ListItem>;
     },
     CopyBlock: (properties) => {
-      // @ts-ignore
-      return <CopyBlock {...properties} text={code[properties.text]} />;
+      return (
+        <Box p={2} borderRadius="md" border="1px solid" overflowX="auto">
+          {/** @ts-ignore */}
+          <CodeBlock {...properties} text={code[properties.text]} />
+        </Box>
+      );
     },
     SnackBox: (properties) => {
       return <SnackBox {...properties} />;

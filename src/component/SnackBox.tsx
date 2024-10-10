@@ -1,6 +1,6 @@
 'use client';
 
-import { Box } from '@chakra-ui/react';
+import { Box, useColorMode } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 interface SnackBoxProps {
@@ -10,6 +10,7 @@ interface SnackBoxProps {
 const SnackBox = (props: SnackBoxProps) => {
   const { snackId } = props;
   const [isClient, setIsClient] = useState(false);
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     setIsClient(true);
@@ -20,12 +21,12 @@ const SnackBox = (props: SnackBoxProps) => {
   }
 
   return (
-    <Box width="100%" padding={4} border="1px solid" p={4}>
+    <Box width="100%" padding={4} borderRadius="md" border="1px solid" p={4}>
       <div
         data-snack-id={snackId}
         data-snack-platform="web"
         data-snack-preview="true"
-        data-snack-theme="light"
+        data-snack-theme={colorMode}
         style={{
           overflow: 'hidden',
           background: '#fbfcfd',

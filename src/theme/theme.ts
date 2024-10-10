@@ -7,6 +7,8 @@ import { layerStyles } from './layerStyle';
 import { textStyles } from './textStyles';
 
 export const theme = extendTheme({
+  initialColorMode: 'light',
+  useSystemColorMode: false,
   fonts: {
     heading: fonts.bungee.style.fontFamily,
     body: fonts.pretendard.style.fontFamily,

@@ -26,6 +26,7 @@ export const ButtonStyle: ComponentStyleConfig = {
       fontSize: '2xl',
       px: 0,
       py: 0,
+      // bg: 'white',
       transitionDelay: '100ms',
       _hover: {
         bg: 'gray.200',

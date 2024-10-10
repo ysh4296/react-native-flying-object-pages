@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         width="100%"
         height="100%"
         overflowY="auto"
-        borderLeft="solid 1px"
+        borderLeft={['none', 'none', 'solid 2px']}
         borderColor="gray.100"
       >
         {children}

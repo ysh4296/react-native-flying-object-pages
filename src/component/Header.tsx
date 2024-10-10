@@ -1,21 +1,9 @@
 'use client';
 
-import { CheckCircleIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  HStack,
-  IconButton,
-  Link,
-  useDisclosure,
-  VStack,
-} from '@chakra-ui/react';
+import { CheckCircleIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { Box, HStack, IconButton, Link, useColorMode, useDisclosure } from '@chakra-ui/react';
 import { FaBars, FaGithub } from 'react-icons/fa';
-import DocsList from '@component/list/DocsList';
+import MenuDrawer from './MenuDrawer';
 
 /**
  * @todo
@@ -23,6 +11,7 @@ import DocsList from '@component/list/DocsList';
  */
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <>
@@ -34,7 +23,7 @@ const Header = () => {
         borderColor="gray.100"
         opacity={0.9}
         position="fixed"
-        bg="white"
+        backdropFilter="blur(10px)"
         zIndex={99}
       >
         <HStack justifyContent="space-between" height="100%">
@@ -42,7 +31,6 @@ const Header = () => {
             <HStack
               height="100%"
               _hover={{
-                background: 'white',
                 color: 'primary.600',
                 cursor: 'pointer',
               }}
@@ -60,7 +48,7 @@ const Header = () => {
           </Link>
           <HStack>
             <Link
-              hideBelow={'md'}
+              hideBelow="md"
               href="https://github.com/ysh4296/react-native-flying-objects"
               isExternal
             >
@@ -73,6 +61,16 @@ const Header = () => {
               />
             </Link>
             <IconButton
+              hideBelow="md"
+              variant="icon"
+              border="none"
+              p={0}
+              aria-label="Call Segun"
+              size="md"
+              icon={colorMode === 'light' ? <SunIcon /> : <MoonIcon />}
+              onClick={toggleColorMode}
+            />
+            <IconButton
               hideFrom="md"
               variant="icon"
               border="none"
@@ -81,22 +79,11 @@ const Header = () => {
               icon={<FaBars />}
               onClick={onOpen}
             />
-            {/* <IconButton
-            variant="icon"
-            border="none"
-            p={0}
-            aria-label="Call Segun"
-            size="md"
-            icon={<SunIcon />}
-            onClick={() => {
-              alert('change to dark theme');
-            }}
-          /> */}
           </HStack>
         </HStack>
       </Box>
 
-      <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
+      {/* <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth="1px">Docs</DrawerHeader>
@@ -104,19 +91,31 @@ const Header = () => {
             <VStack w="100%" h="100%" justifyContent="space-between">
               <DocsList w="100%" />
 
-              <Link href="https://github.com/ysh4296/react-native-flying-objects" isExternal>
+              <HStack w="100%" justifyContent="flex-end">
+                <Link href="https://github.com/ysh4296/react-native-flying-objects" isExternal>
+                  <IconButton
+                    variant="icon"
+                    border="none"
+                    aria-label="Call Segun"
+                    size="lg"
+                    icon={<FaGithub />}
+                  />
+                </Link>
                 <IconButton
                   variant="icon"
                   border="none"
+                  p={0}
                   aria-label="Call Segun"
-                  size="lg"
-                  icon={<FaGithub />}
+                  size="md"
+                  icon={colorMode === 'light' ? <SunIcon /> : <MoonIcon />}
+                  onClick={toggleColorMode}
                 />
-              </Link>
+              </HStack>
             </VStack>
           </DrawerBody>
         </DrawerContent>
-      </Drawer>
+      </Drawer> */}
+      <MenuDrawer isOpen={isOpen} onClose={onClose} />
     </>
   );
 };
