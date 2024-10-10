@@ -9,10 +9,8 @@ const Home = () => {
         <HStack gap={16}>
           <CheckCircleIcon boxSize={16} />
           <VStack>
-            <Text fontWeight="800" fontSize="6xl">
-              React Native Flying Objects
-            </Text>
-            <Text fontSize="xl">React Native Package for Implement Interactive Objects!</Text>
+            <Text textStyle="h1">React Native Flying Objects</Text>
+            <Text textStyle="p">React Native Package for Implement Interactive Objects!</Text>
           </VStack>
         </HStack>
         <HStack>

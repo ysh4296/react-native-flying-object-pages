@@ -4,7 +4,9 @@ const Footer = () => {
   return (
     <Box w="100vw" h={16} bg="gray.200" boxShadow="xl">
       <HStack justifyContent="center" h="100%">
-        <Text color="gray.500">dbtmdgns4296@naver.com</Text>
+        <Text textStyle="p" color="gray.500">
+          dbtmdgns4296@naver.com
+        </Text>
       </HStack>
     </Box>
   );

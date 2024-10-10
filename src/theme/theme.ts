@@ -4,6 +4,7 @@ import { breakpoints } from '@theme/breakpoints';
 import { ButtonStyle } from '@theme/button';
 import { colors } from '@theme/colors';
 import { layerStyles } from './layerStyle';
+import { textStyles } from './textStyles';
 
 export const theme = extendTheme({
   fonts: {
@@ -16,4 +17,5 @@ export const theme = extendTheme({
   },
   breakpoints: breakpoints,
   layerStyles,
+  textStyles,
 });

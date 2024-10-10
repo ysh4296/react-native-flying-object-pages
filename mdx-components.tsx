@@ -8,28 +8,28 @@ export function useMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     h1: ({ children }) => {
       return (
-        <Text fontWeight={800} fontSize="3xl" p={2}>
+        <Text textStyle="h1" p={2}>
           {children}
         </Text>
       );
     },
     h2: ({ children }) => {
       return (
-        <Text fontWeight={700} fontSize="2xl" p={2}>
+        <Text textStyle="h2" p={2}>
           {children}
         </Text>
       );
     },
     h3: ({ children }) => {
       return (
-        <Text fontWeight={600} fontSize="xl" p={2}>
+        <Text textStyle="h3" p={2}>
           {children}
         </Text>
       );
     },
     p: ({ children }) => {
       return (
-        <Text fontWeight={400} fontSize="md" p={1}>
+        <Text textStyle="p" p={1}>
           {children}
         </Text>
       );

@@ -13,7 +13,7 @@ const PathButton = (props: PathButtonProps) => {
   return (
     <Link w="100%" href={`/docs/${props.content}`} _hover={{ textDecoration: 'none' }}>
       <Button w="100%" variant={id === props.content ? 'activePath' : 'inactivePath'}>
-        <Text w="100%" textAlign="left">
+        <Text w="100%" textAlign="right">
           {props.content}
         </Text>
       </Button>

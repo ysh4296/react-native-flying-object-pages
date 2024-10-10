@@ -2,7 +2,7 @@ export const layerStyles = {
   base: {
     border: '1px solid',
     borderColor: 'gray.700',
-    borderRadius: ['sm', 'md', 'lg'],
+    borderRadius: 'md',
     animationDelay: '100ms',
     transitionDelay: '100ms',
     transitionDuration: '300ms',
@@ -18,7 +18,7 @@ export const layerStyles = {
   selected: {
     border: '1px solid',
     borderColor: 'gray.200',
-    borderRadius: ['lg', 'xl', '2xl'],
+    borderRadius: 'md',
     _hover: {
       borderColor: 'red',
     },

@@ -1,7 +1,7 @@
 'use client';
 
 import { CheckCircleIcon } from '@chakra-ui/icons';
-import { Box, HStack, IconButton, Link, Text } from '@chakra-ui/react';
+import { Box, HStack, IconButton, Link } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
 
 /**
@@ -32,14 +32,14 @@ const Header = () => {
             }}
           >
             <CheckCircleIcon boxSize={8} />
-            <Text
-              fontWeight="800"
+            <Box
+              textStyle="h1"
               _hover={{
                 textDecoration: 'none',
               }}
             >
               React Native Flying Objects
-            </Text>
+            </Box>
           </HStack>
         </Link>
         <HStack>

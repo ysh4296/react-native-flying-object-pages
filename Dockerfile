@@ -15,8 +15,11 @@ FROM base AS builder
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
+
+# to use devdependancy for build
 RUN yarn install --production=false
 RUN yarn build
+RUN yarn ci
 
 # Production image, copy all the files and run next
 FROM base AS runner
