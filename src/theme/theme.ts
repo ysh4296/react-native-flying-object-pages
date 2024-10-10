@@ -10,7 +10,7 @@ export const theme = extendTheme({
   initialColorMode: 'light',
   useSystemColorMode: false,
   fonts: {
-    heading: fonts.bungee.style.fontFamily,
+    heading: fonts.pretendard.style.fontFamily,
     body: fonts.pretendard.style.fontFamily,
   },
   colors: colors,
