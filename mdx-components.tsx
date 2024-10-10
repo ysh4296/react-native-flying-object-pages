@@ -3,7 +3,6 @@ import type { MDXComponents } from 'mdx/types';
 import code from 'content/code';
 import SnackBox from '@component/SnackBox';
 import CodeBlock from '@component/CodeBlock';
-import { layerStyles } from '@theme/layerStyle';
 
 export function useMDXComponents(components?: MDXComponents): MDXComponents {
   return {

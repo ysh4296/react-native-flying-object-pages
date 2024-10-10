@@ -21,7 +21,7 @@ const SnackBox = (props: SnackBoxProps) => {
   }
 
   return (
-    <Box width="100%" padding={4} borderRadius="md" border="1px solid" p={4}>
+    <Box width="100%" borderRadius="md" border="1px solid" p={4}>
       <div
         data-snack-id={snackId}
         data-snack-platform="web"
