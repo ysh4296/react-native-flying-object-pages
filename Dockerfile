@@ -16,10 +16,8 @@ WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 
-# to use devdependancy for build
-RUN yarn install --production=false
+Run ls
 RUN yarn build
-
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /usr/src/app

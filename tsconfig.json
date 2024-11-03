@@ -17,7 +17,8 @@
     "paths": {
       "@component/*": ["./component/*"],
       "@theme/*": ["./theme/*"],
-      "@utils/*": ["./utils/*"]
+      "@utils/*": ["./utils/*"],
+      "@content/*": ["./content/*"]
     },
     "plugins": [
       {

@@ -1,12 +1,20 @@
 import createMDX from '@next/mdx';
 import path from 'path';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   output: 'standalone',
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@component': path.resolve('./src/component'),
+      '@theme': path.resolve('./src/theme'),
+      '@utils': path.resolve('./src/utils'),
+      '@content': path.resolve('./src/content'),
+    };
+    return config;
+  },
 };
 
 const withMDX = createMDX({

@@ -1,6 +1,6 @@
 import { Box, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import type { MDXComponents } from 'mdx/types';
-import code from 'content/code';
+import code from '@content/code';
 import SnackBox from '@component/SnackBox';
 import CodeBlock from '@component/CodeBlock';
 
